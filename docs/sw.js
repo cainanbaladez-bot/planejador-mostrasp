@@ -10,7 +10,7 @@
    a pessoa já viu continua aparecendo offline, sem baixar 380 imagens de véspera.
 
    Ao publicar uma versão nova do app, suba o VERSAO — isso descarta o cache velho. */
-const VERSAO = "v1";
+const VERSAO = "v2";
 const SHELL  = "planejador-shell-" + VERSAO;
 const MIDIA  = "planejador-posteres-" + VERSAO;
 

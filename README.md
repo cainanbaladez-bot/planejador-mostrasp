@@ -125,7 +125,10 @@ e fica vermelho abaixo de 25%.
 
 ### ★ com dois níveis
 
-O botão ★ agora cicla: **nada → ★ quero muito ver → ☆ se sobrar tempo → nada**.
+No **card**, o botão ★ cicla: nada → ★ quero muito ver → ☆ se sobrar tempo → nada
+(o \_title\_ diz o que o próximo clique faz). No **modal** é um **combobox** com as três
+opções — ali o ciclo confundia: sem marcação o botão dizia "★ Quero ver", que parecia
+estado em vez de ação, e desmarcar exigia dar a volta inteira.
 Só decide alguma coisa quando algo precisa ser cortado (com a agenda livre, tudo entra);
 é o que segura quem marca 40+ filmes. O `localStorage` migra sozinho o formato antigo
 (lista de ids) para prioridade 1.

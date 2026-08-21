@@ -498,6 +498,16 @@ footer{
   font-family:var(--font-mono);font-size:11px;color:var(--dim);letter-spacing:.08em;
 }
 
+.prio-sel{
+  font-family:var(--font-display);font-weight:700;font-size:14px;
+  padding:11px 34px 11px 14px;max-width:none;cursor:pointer;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239a8f76' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 13px center;
+}
+.prio-sel.on{background-color:var(--amber);border-color:var(--amber);color:#1b1608}
+.prio-sel.on option{background:var(--panel);color:var(--ink)}
+
 .count-linha{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
 .count-linha .result-count{margin-bottom:0}
 .btn-limpar{
@@ -998,7 +1008,9 @@ function renderGrid(){
         ${f.imagem?`<img src="${esc(f.imagem)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg');this.remove()">`:""}
         <span class="sec-tag">${esc(f.secao||"—")}</span>
         <button class="fav${watch.has(f.id)?" on p"+watch.get(f.id):""}"
-          title="${watch.has(f.id)?PRIO_ROT[watch.get(f.id)]:"Marcar: quero muito ver"} — clique para mudar"
+          title="${watch.get(f.id)===1?"★ quero muito ver — clique para: se sobrar tempo"
+                   :watch.get(f.id)===2?"☆ se sobrar tempo — clique para: tirar da lista"
+                   :"Não marcado — clique para: quero muito ver"}"
           onclick="event.stopPropagation();toggleWatch('${f.id}')">${watch.get(f.id)===2?"☆":"★"}</button>
         ${f.lb_nota?`<span class="lb-chip">★ ${Number(f.lb_nota).toFixed(1)}</span>`:""}
       </div>
@@ -1016,6 +1028,18 @@ function renderGrid(){
         </div>`:""}
       </div>
     </article>`).join("") : `<div class="empty">NENHUM FILME COM ESSES FILTROS</div>`;
+}
+
+/* usado pelo combobox do modal: vai direto pro estado escolhido */
+function setPrioridade(id, v){
+  v=Number(v);
+  const antes=watch.get(id);
+  if(v===1||v===2) watch.set(id,v); else watch.delete(id);
+  if(antes===v) return;
+  save(); updateBadge();
+  if(modalFilmId) openModal(modalFilmId,true);
+  renderGrid(); refreshViews();
+  toast(v===1?"★ Quero muito ver":v===2?"☆ Se sobrar tempo":"Tirado da lista");
 }
 
 function toggleWatch(id){
@@ -1056,8 +1080,12 @@ function openModal(id, keepScroll){
       </div>`:""}
       ${f.premio_txt?`<div class="premio-box">🏆 ${esc(f.premio_txt)}</div>`:""}
       <div class="modal-actions">
-        <button class="btn ${watch.has(id)?"on":""}" onclick="toggleWatch('${id}')">${
-          watch.get(id)===1?"★ Quero muito ver":watch.get(id)===2?"☆ Se sobrar tempo":"★ Quero ver"}</button>
+        <select class="prio-sel${watch.has(id)?" on":""}" aria-label="Quero ver este filme?"
+          onchange="setPrioridade('${id}', this.value)">
+          <option value="0"${watch.has(id)?"":" selected"}>Não marcado</option>
+          <option value="1"${watch.get(id)===1?" selected":""}>★ Quero muito ver</option>
+          <option value="2"${watch.get(id)===2?" selected":""}>☆ Se sobrar tempo</option>
+        </select>
         ${f.trailer?`<a class="btn" href="${esc(f.trailer)}" target="_blank" rel="noopener">▶ Trailer</a>`:""}
         ${f.url_pagina?`<a class="btn" href="${esc(f.url_pagina)}" target="_blank" rel="noopener">Página na Mostra ↗</a>`:""}
       </div>
