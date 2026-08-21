@@ -38,8 +38,14 @@ nos aparelhos que já instalaram.
 
 ## Funcionalidades do planejador
 
-- **Filmes**: busca (título/direção/elenco/país, sem acento), filtros por seção
-  (chips coloridos), dia, cinema e ordenação; card com pôster, seção e nº de sessões.
+- **Filmes**: busca (título/direção/elenco/país, sem acento) e filtros por seção
+  (chips coloridos), dia, cinema, festival e **marcação** — *só os que marquei · ★ quero
+  muito · ☆ se sobrar · só os que ainda não marquei · já com sessão na agenda*.
+  Ordenação por **A–Z · ★ minha prioridade · dia e hora da sessão · nota Letterboxd · ano**
+  (a ordem cronológica usa a 1ª sessão que ainda passa pelos filtros de dia/cinema —
+  filtrando por 21/10, a lista sai das 12h às 22h daquele dia).
+  **Limpar**: *limpar marcações* ao lado do contador e *🗑 Limpar agenda* na Minha Agenda —
+  as duas listas são independentes e as duas pedem confirmação.
 - **Dados p/ escolher melhor**: selo **★ nota Letterboxd** no pôster (verde, com link
   e nº de avaliações no modal), louros de **festivais** (CANNES, BERLIM, VENEZA…) no
   card, caixa 🏆 com a frase do prêmio no modal; **filtro por festival / premiados** e
@@ -63,6 +69,11 @@ nos aparelhos que já instalaram.
   - **uma sessão**: botão 📅 no ingresso (modo Lista) e na linha da sessão dentro do
     modal do filme (só aparece se a sessão já está na agenda);
   - **a agenda inteira**: botão *📅 Agenda inteira (.ics)* no topo da Minha Agenda.
+
+  **No celular**: o app do Google Agenda **não tem "importar"** — isso só existe no site,
+  no computador. Por isso cada sessão tem também um botão **G** (*Adicionar ao Google
+  Agenda*), que abre o app já com o evento preenchido. O `.ics` continua sendo o caminho
+  no desktop e para Apple/Outlook.
 
   O arquivo abre no Google Agenda, Apple Calendário e Outlook. Detalhes que importam:
   `UID` estável por sessão + `SEQUENCE` que cresce a cada exportação — então
@@ -140,6 +151,27 @@ Por dentro: busca em profundidade com poda otimista, semeada por uma solução g
 Teto de 1,2 s — se estourar, devolve a melhor que achou e a proposta avisa
 ("≈ melhor que achei em 1,2 s"). Achar a boa resposta é rápido; o que custa é *provar*
 que é a melhor, e isso só aparece marcando 40+ filmes.
+
+## 🔗 Link da agenda (em vez de login)
+
+Não há cadastro, senha nem servidor. A agenda mora no `localStorage` do navegador, e o
+botão **🔗 Link** copia um endereço que carrega **a agenda inteira dentro da própria URL**
+(ids em base 36: uma agenda de 20 sessões mais 20 filmes marcados dá ~200 caracteres).
+A pessoa manda o link para si mesma e abre no celular — ou manda para um amigo.
+
+Abrir um link desses **nunca sobrescreve calado**: se já houver agenda no aparelho,
+aparece uma barra perguntando *"abrir a do link"* ou *"manter a minha"*.
+
+## PWA (instalar no celular, abrir offline)
+
+`docs/` traz `manifest.webmanifest`, `sw.js` e os ícones. Servido por HTTPS, o app instala
+na tela inicial e abre sem internet. O service worker usa **stale-while-revalidate** para o
+app (abre na hora do cache e atualiza em segundo plano — o HTML tem 1,3 MB com os dados
+dentro, esperar a rede deixaria a abertura lenta à toa) e **cache-first** para os pôsteres,
+que são guardados conforme aparecem. Em `file://` o registro nem é tentado.
+
+Testado com o servidor derrubado: o app abriu inteiro do cache, com os 380 filmes e as
+1309 sessões.
 
 ## Preview browser / celular
 
