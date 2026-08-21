@@ -1,6 +1,6 @@
 # Planejador da Mostra
 
-**→ [Abrir o planejador](https://cainanbaladez-bot.github.io/planejador-mostra/)**
+**→ [Abrir o planejador](https://cainanbaladez-bot.github.io/planejador-mostrasp/)**
 
 Planejador pessoal da programação da Mostra Internacional de Cinema de São Paulo.
 A pessoa explora os filmes, marca os que quer ver (★ quero muito / ☆ se sobrar) e
