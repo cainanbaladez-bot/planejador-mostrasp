@@ -1,0 +1,18 @@
+# artefato de build — regenerado por `py -3.10 build_planejador.py`
+# (a versão publicada é docs/index.html, que é idêntica e vai versionada)
+planejador.html
+
+# binários pesados e duplicados do scraper.
+# Os JSONs de dados em mostra-scraper-completo/mostra-scraper/data/ ficam versionados:
+# são eles que o build lê, então sem eles o repositório não reconstrói o app.
+*.zip
+*.db
+/mostra-scraper/
+mostra-scraper-completo/mostra-scraper/data/raw/
+mostra-scraper-completo/mostra-scraper/data/*.csv
+mostra_49_sessoes.csv
+
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

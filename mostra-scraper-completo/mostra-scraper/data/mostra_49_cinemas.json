@@ -1,0 +1,313 @@
+[
+ {
+  "cinema": "Biblioteca Roberto Santos",
+  "endereco": "Rua Cisplatina, 505 - Ipiranga, São Paulo - SP",
+  "salas": [
+   "BIBLIOTECA ROBERTO SANTOS",
+   "CIRCUITO SPCINE - BIBLIO. ROBERTO SANTOS"
+  ]
+ },
+ {
+  "cinema": "CEU Aricanduva",
+  "endereco": "Rua Olga Fadel Abarca, s/n - Jd. Santa Terezinha, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU ARICANDUVA"
+  ]
+ },
+ {
+  "cinema": "CEU Barro Branco",
+  "endereco": "Rua Numa Pompílio, s/n - Conj. Hab. Barro Branco II, Cidade Tiradentes, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU BARRO BRANCO"
+  ]
+ },
+ {
+  "cinema": "CEU Butantã",
+  "endereco": "Avenida Engenheiro Heitor Antônio Eiras García, 1870 - Jd. Esmeralda, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU BUTANTÃ"
+  ]
+ },
+ {
+  "cinema": "CEU Caminho do Mar",
+  "endereco": "Avenida Engenheiro Armando de Arruda Pereira, 5241 - Jabaquara, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU CAMINHO DO MAR"
+  ]
+ },
+ {
+  "cinema": "CEU Carrão",
+  "endereco": "Rua Monte Serrat, 380 - Tatuapé, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU CARRÃO"
+  ]
+ },
+ {
+  "cinema": "CEU Feitiço da Vila",
+  "endereco": "Rua Feitiço da Vila, 399 - Capão Redondo, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU FEITIÇO DA VILA"
+  ]
+ },
+ {
+  "cinema": "CEU Freguesia do Ó",
+  "endereco": "Rua Crespo de Carvalho, 71 - Freguesia do Ó, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU FREGUESIA DO Ó"
+  ]
+ },
+ {
+  "cinema": "CEU Jambeiro",
+  "endereco": "Avenida José Pinheiro Borges, 60 - Guaianases, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU JAMBEIRO"
+  ]
+ },
+ {
+  "cinema": "CEU Jaçanã",
+  "endereco": "Rua Antônio César Neto, 105 - Jaçanã, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU JAÇANÃ"
+  ]
+ },
+ {
+  "cinema": "CEU Meninos",
+  "endereco": "Rua Barbinos, 111 - São João Clímaco, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU MENINOS"
+  ]
+ },
+ {
+  "cinema": "CEU Parque Novo Mundo",
+  "endereco": "Avenida Ernesto Augusto Lopes, 100 - Parque Vila Maria, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU PARQUE NOVO MUNDO"
+  ]
+ },
+ {
+  "cinema": "CEU Parque Veredas",
+  "endereco": "Rua Daniel Muller, 347 - Itaim Paulista, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU PARQUE VEREDAS"
+  ]
+ },
+ {
+  "cinema": "CEU Parque do Carmo",
+  "endereco": "Rua Gaspar da Silva, 240 - Parque do Carmo, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU PARQUE DO CARMO"
+  ]
+ },
+ {
+  "cinema": "CEU Paz",
+  "endereco": "Rua Daniel Cerri, 1549 - Jd. Paraná, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CÉU PAZ"
+  ]
+ },
+ {
+  "cinema": "CEU Perus",
+  "endereco": "Rua Bernardo José de Lorena, s/n - Perus, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU PERUS"
+  ]
+ },
+ {
+  "cinema": "CEU Pinheirinho",
+  "endereco": "Rua Camillo Zanotti, 92 - Conjunto City Jaraguá, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU PINHEIRINHO"
+  ]
+ },
+ {
+  "cinema": "CEU Quinta do Sol",
+  "endereco": "Avenida Luís Imparato, 564 - Parque Cisper, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU QUINTA DO SOL"
+  ]
+ },
+ {
+  "cinema": "CEU São Miguel - Luiz Melodia",
+  "endereco": "Rua José Ferreira Crespo, 475 - Jardim São Vicente, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU SÃO MIGUEL"
+  ]
+ },
+ {
+  "cinema": "CEU São Pedro",
+  "endereco": "Rua Professora Lucila Cerqueira, 194 - Jardim São Pedro, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU SÃO PEDRO"
+  ]
+ },
+ {
+  "cinema": "CEU São Rafael",
+  "endereco": "Rua Cinira Polônio, 100 - Jd. da Conquista, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU SÃO RAFAEL"
+  ]
+ },
+ {
+  "cinema": "CEU Taipas",
+  "endereco": "Rua João Amado Coutinho, 240 - Conj. Res. Elisio Teixeira Leite, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU TAIPAS"
+  ]
+ },
+ {
+  "cinema": "CEU Tremembé",
+  "endereco": "Rua Adauto Bezerra Delgado, 140 - Parque Casa de Pedra, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU TREMEMBÉ"
+  ]
+ },
+ {
+  "cinema": "CEU Três Lagos",
+  "endereco": "Estrada do Barro Branco, 205 - Três Lagos, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU TRÊS LAGOS"
+  ]
+ },
+ {
+  "cinema": "CEU Vila Alpina",
+  "endereco": "Rua João Pedro Lecór, 141 - Jardim Avelino, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU VILA ALPINA"
+  ]
+ },
+ {
+  "cinema": "CEU Vila Atlântica",
+  "endereco": "Rua Coronel José Venâncio Dias, 840 - Vila Atlântica, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU VILA ATLÂNTICA"
+  ]
+ },
+ {
+  "cinema": "CEU Vila do Sol",
+  "endereco": "Avenida dos Funcionários Públicos, 369 - Jd. Vila do Sol, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CEU VILA DO SOL"
+  ]
+ },
+ {
+  "cinema": "Centro Cultural Olido",
+  "endereco": "Avenida São João, 473 - Centro, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE CENTRO CULTURAL OLIDO"
+  ]
+ },
+ {
+  "cinema": "Centro Cultural São Paulo (CCSP)",
+  "endereco": "Rua Vergueiro, 1000 - Paraíso, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE LIMA BARRETO - CCSP",
+   "CIRCUITO SPCINE PAULO EMILIO - CCSP"
+  ]
+ },
+ {
+  "cinema": "Centro de Formação Cultural Cidade Tiradentes",
+  "endereco": "Rua Inácio Monteiro, 6900 - Cidade Tiradentes, São Paulo - SP",
+  "salas": [
+   "CIRCUITO SPCINE - CFC CIDADE TIRADENTES"
+  ]
+ },
+ {
+  "cinema": "Cine Satyros Bijou",
+  "endereco": "Praça Franklin Roosevelt, 172 - Consolação, São Paulo - SP",
+  "salas": [
+   "CINE SATYROS BIJOU"
+  ]
+ },
+ {
+  "cinema": "Cine Segall - Museu Lasar Segall",
+  "endereco": "Rua Berta, 111 - Vila Mariana, São Paulo - SP",
+  "salas": [
+   "Cine Segall"
+  ]
+ },
+ {
+  "cinema": "CineSesc",
+  "endereco": "Rua Augusta, 2075 - Cerqueira César, São Paulo - SP",
+  "salas": [
+   "CINESESC"
+  ]
+ },
+ {
+  "cinema": "Cinemateca Brasileira",
+  "endereco": "Largo Senador Raul Cardoso, 207 - Vila Clementino, São Paulo - SP",
+  "salas": [
+   "CINEMATECA - SALA OSCARITO",
+   "CINEMATECA SALA GRANDE OTELO",
+   "CINEMATECA SALA PETROBRAS"
+  ]
+ },
+ {
+  "cinema": "Cinesala",
+  "endereco": "Rua Fradique Coutinho, 361 - Pinheiros, São Paulo - SP",
+  "salas": [
+   "CINESALA"
+  ]
+ },
+ {
+  "cinema": "Espaço Petrobras de Cinema (Espaço Itaú Augusta)",
+  "endereco": "Rua Augusta, 1475 - Consolação, São Paulo - SP",
+  "salas": [
+   "ESPAÇO PETROBRAS DE CINEMA ANEXO 4",
+   "ESPAÇO PETROBRAS DE CINEMA SALA 1",
+   "ESPAÇO PETROBRAS DE CINEMA SALA 2",
+   "ESPAÇO PETROBRAS DE CINEMA SALA 3"
+  ]
+ },
+ {
+  "cinema": "IMS Paulista (Instituto Moreira Salles)",
+  "endereco": "Avenida Paulista, 2424 - Bela Vista, São Paulo - SP",
+  "salas": [
+   "INSTITUTO MOREIRA SALLES - PAULISTA"
+  ]
+ },
+ {
+  "cinema": "Multiplex PlayArte Marabá",
+  "endereco": "Avenida Ipiranga, 757 - República, São Paulo - SP",
+  "salas": [
+   "MULTIPLEX PLAYARTE MARABÁ - SALA 1",
+   "MULTIPLEX PLAYARTE MARABÁ - SALA 4",
+   "MULTIPLEX PLAYARTE MARABÁ - SALA 5"
+  ]
+ },
+ {
+  "cinema": "Museu da Língua Portuguesa",
+  "endereco": "Praça da Luz, s/n - Centro, São Paulo - SP",
+  "salas": [
+   "MUSEU DA LÍNGUA PORTUGUESA"
+  ]
+ },
+ {
+  "cinema": "Reserva Cultural",
+  "endereco": "Avenida Paulista, 900 - Bela Vista, São Paulo - SP",
+  "salas": [
+   "RESERVA CULTURAL - SALA 1",
+   "RESERVA CULTURAL - SALA 2"
+  ]
+ },
+ {
+  "cinema": "Sala São Paulo",
+  "endereco": "Praça Júlio Prestes, 16 - Campos Elíseos, São Paulo - SP",
+  "salas": [
+   "SALA SÃO PAULO"
+  ]
+ },
+ {
+  "cinema": "Sato Cinema",
+  "endereco": "Rua Augusta, 1470/1475 - Consolação, São Paulo - SP",
+  "salas": [
+   "SATO CINEMA"
+  ]
+ },
+ {
+  "cinema": "Teatro Cultura Artística",
+  "endereco": "Rua Nestor Pestana, 196 - Consolação, São Paulo - SP",
+  "salas": [
+   "CULTURA ARTÍSTICA"
+  ]
+ }
+]
