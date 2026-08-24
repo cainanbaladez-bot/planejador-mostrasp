@@ -140,7 +140,7 @@ os "quero muito" primeiro, depois os "quero ver", depois os "se sobrar"
 nível 1 dá o mesmo número que o nível 1 alcança na solução completa, ou seja,
 nunca se sacrifica um nível alto para caber um baixo.
 
-O  migra sozinho: a chave passou a ser , e o valor
+O `localStorage` migra sozinho: a chave passou a ser `mostra49_watch3`, e o valor
 2 do formato antigo (que queria dizer "se sobrar tempo") vira 3.
 
 ### ⚡ Encaixar
