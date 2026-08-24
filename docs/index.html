@@ -183,7 +183,8 @@ select:focus{outline:none;border-color:var(--amber)}
 }
 .fav:hover{transform:scale(1.12);color:var(--ink)}
 .fav.on{background:var(--amber);border-color:var(--amber);color:#1b1608}
-.fav.on.p2{background:var(--panel2);border-color:var(--amber);color:var(--amber)}
+.fav.on.p2{background:none;border-color:var(--amber);color:var(--amber)}
+.fav.on.p3{background:var(--panel2);border-color:var(--muted);color:var(--muted)}
 .card-body{padding:13px 14px 15px}
 .card-title{
   font-family:var(--font-display);font-weight:700;font-size:16.5px;line-height:1.2;
@@ -778,7 +779,8 @@ footer{
         <option value="">Marcados e não marcados</option>
         <option value="marcado">★☆ Só os que marquei</option>
         <option value="p1">★ Quero muito ver</option>
-        <option value="p2">☆ Se sobrar tempo</option>
+        <option value="p2">★ Quero ver</option>
+        <option value="p3">☆ Se sobrar tempo</option>
         <option value="nao">Só os que ainda não marquei</option>
         <option value="agenda">Já com sessão na agenda</option>
       </select>
@@ -860,19 +862,30 @@ const secColor = s => SEC_COLOR[s] || "#f2a93b";
 /* trocar só estas duas linhas quando virar a 50ª edição */
 const LS_PREFIX="mostra49", EDICAO="49ª Mostra";
 const LS_A=`${LS_PREFIX}_agenda`, LS_W=`${LS_PREFIX}_watch`,
-      LS_MODE=`${LS_PREFIX}_modo`, LS_SEQ=`${LS_PREFIX}_ics_seq`;
+      LS_MODE=`${LS_PREFIX}_modo`, LS_SEQ=`${LS_PREFIX}_ics_seq`,
+      LS_W3=`${LS_PREFIX}_watch3`;
 let agenda = new Set(JSON.parse(localStorage.getItem(LS_A)||"[]").filter(id=>SESSAO.has(id)));
 /* watch guarda prioridade: 1 = quero muito ver, 2 = se sobrar tempo.
    Formato antigo (lista de ids) migra para prioridade 1. */
-let watch = new Map((JSON.parse(localStorage.getItem(LS_W)||"[]"))
-  .map(v=>Array.isArray(v)?v:[v,1]).filter(([id])=>FILME.has(id)));
+/* watch guarda a prioridade. Chave nova porque a escala mudou de 2 para 3
+   níveis: no formato velho o 2 queria dizer "se sobrar tempo", que agora é 3. */
+let watch = new Map((()=>{
+  const novo=localStorage.getItem(LS_W3);
+  if(novo!==null) return JSON.parse(novo).filter(([id])=>FILME.has(id));
+  const velho=JSON.parse(localStorage.getItem(LS_W)||"[]")
+    .map(v=>Array.isArray(v)?v:[v,1]);          /* mais velho ainda: só ids */
+  return velho.map(([id,pr])=>[id, pr===2?3:1]).filter(([id])=>FILME.has(id));
+})());
 let agendaMode = localStorage.getItem(LS_MODE)||"cal";
 let filters = {q:"", secao:"", dia:"", cinema:"", fest:"", marca:"", sort:"titulo"};
 let modalFilmId = null;
 
-const save = ()=>{ localStorage.setItem(LS_A, JSON.stringify([...agenda])); localStorage.setItem(LS_W, JSON.stringify([...watch])); };
+const save = ()=>{ localStorage.setItem(LS_A, JSON.stringify([...agenda])); localStorage.setItem(LS_W3, JSON.stringify([...watch])); };
 
-const PRIO_ROT={1:"quero muito ver",2:"se sobrar tempo"};
+/* 1 = mais quero, 3 = menos quero. O solver corta de trás pra frente. */
+const NIVEIS=[1,2,3];
+const PRIO_ROT={1:"quero muito ver",2:"quero ver",3:"se sobrar tempo"};
+const PRIO_ICONE={1:"★",2:"★",3:"☆"};
 
 /* ───────────────── helpers ───────────────── */
 const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -967,8 +980,7 @@ function filmesFiltrados(){
       const pr=watch.get(f.id);
       const naAgenda=(SESS_BY_FILME.get(f.id)||[]).some(s=>agenda.has(s.sessao_id));
       if(filters.marca==="marcado" && !pr) return false;
-      if(filters.marca==="p1"      && pr!==1) return false;
-      if(filters.marca==="p2"      && pr!==2) return false;
+      if(/^p[123]$/.test(filters.marca) && pr!==Number(filters.marca[1])) return false;
       if(filters.marca==="nao"     && (pr||naAgenda)) return false;
       if(filters.marca==="agenda"  && !naAgenda) return false;
     }
@@ -1018,10 +1030,9 @@ function renderGrid(){
         ${f.imagem?`<img src="${esc(f.imagem)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg');this.remove()">`:""}
         <span class="sec-tag">${esc(f.secao||"—")}</span>
         <button class="fav${watch.has(f.id)?" on p"+watch.get(f.id):""}"
-          title="${watch.get(f.id)===1?"★ quero muito ver — clique para: se sobrar tempo"
-                   :watch.get(f.id)===2?"☆ se sobrar tempo — clique para: tirar da lista"
-                   :"Não marcado — clique para: quero muito ver"}"
-          onclick="event.stopPropagation();toggleWatch('${f.id}')">${watch.get(f.id)===2?"☆":"★"}</button>
+          title="${watch.has(f.id)?`${PRIO_ICONE[watch.get(f.id)]} ${PRIO_ROT[watch.get(f.id)]}`:"não marcado"} — clique para: ${
+            PRIO_ROT[(watch.get(f.id)||0)+1] || "tirar da lista"}"
+          onclick="event.stopPropagation();toggleWatch('${f.id}')">${PRIO_ICONE[watch.get(f.id)]||"★"}</button>
         ${f.lb_nota?`<span class="lb-chip">★ ${Number(f.lb_nota).toFixed(1)}</span>`:""}
       </div>
       <div class="card-body">
@@ -1044,20 +1055,19 @@ function renderGrid(){
 function setPrioridade(id, v){
   v=Number(v);
   const antes=watch.get(id);
-  if(v===1||v===2) watch.set(id,v); else watch.delete(id);
+  if(NIVEIS.includes(v)) watch.set(id,v); else watch.delete(id);
   if(antes===v) return;
   save(); updateBadge();
   if(modalFilmId) openModal(modalFilmId,true);
   renderGrid(); refreshViews();
-  toast(v===1?"★ Quero muito ver":v===2?"☆ Se sobrar tempo":"Tirado da lista");
+  toast(PRIO_ROT[v]?`${PRIO_ICONE[v]} ${PRIO_ROT[v][0].toUpperCase()+PRIO_ROT[v].slice(1)}`:"Tirado da lista");
 }
 
 function toggleWatch(id){
-  /* cicla: nada → quero muito → se sobrar → nada */
-  const at=watch.get(id);
-  if(at===1){ watch.set(id,2); toast("☆ Se sobrar tempo"); }
-  else if(at===2){ watch.delete(id); toast("Tirado da lista"); }
-  else { watch.set(id,1); toast("★ Quero muito ver"); }
+  /* cicla: nada → quero muito → quero ver → se sobrar → nada */
+  const prox=(watch.get(id)||0)+1;
+  if(NIVEIS.includes(prox)){ watch.set(id,prox); toast(`${PRIO_ICONE[prox]} ${PRIO_ROT[prox][0].toUpperCase()+PRIO_ROT[prox].slice(1)}`); }
+  else { watch.delete(id); toast("Tirado da lista"); }
   save(); renderGrid(); refreshViews();
   if(modalFilmId===id) openModal(id,true);
 }
@@ -1096,7 +1106,8 @@ function openModal(id, keepScroll){
           onchange="setPrioridade('${id}', this.value)">
           <option value="0"${watch.has(id)?"":" selected"}>Não marcado</option>
           <option value="1"${watch.get(id)===1?" selected":""}>★ Quero muito ver</option>
-          <option value="2"${watch.get(id)===2?" selected":""}>☆ Se sobrar tempo</option>
+          <option value="2"${watch.get(id)===2?" selected":""}>★ Quero ver</option>
+          <option value="3"${watch.get(id)===3?" selected":""}>☆ Se sobrar tempo</option>
         </select></label>
         ${f.trailer?`<a class="btn" href="${esc(f.trailer)}" target="_blank" rel="noopener">▶ Trailer</a>`:""}
         ${f.url_pagina?`<a class="btn" href="${esc(f.url_pagina)}" target="_blank" rel="noopener">Página na Mostra ↗</a>`:""}
@@ -1468,22 +1479,26 @@ function encaixar(criterio, limiteMs){
     .map(([id,prio])=>({id,prio,cands:candidatos(id)}))
     .sort((a,b)=>(a.cands.length-b.cands.length)||(a.prio-b.prio));
   const n=busca.length;
-  const suf1=new Array(n+1).fill(0), suf2=new Array(n+1).fill(0);
-  for(let i=n-1;i>=0;i--){
-    suf1[i]=suf1[i+1]+(busca[i].prio===1?1:0);
-    suf2[i]=suf2[i+1]+(busca[i].prio===2?1:0);
-  }
+  /* suf[k][i] = quantos filmes de nível k ainda restam a partir de i.
+     É o teto otimista que faz a poda cortar cedo. */
+  const suf=NIVEIS.map(()=>new Array(n+1).fill(0));
+  for(let i=n-1;i>=0;i--)
+    NIVEIS.forEach((niv,k)=>{ suf[k][i]=suf[k][i+1]+(busca[i].prio===niv?1:0); });
   const baseSel=base.map(s=>({s,prio:0}));
+  /* pontuação lexicográfica: primeiro maximiza os "quero muito", depois os
+     "quero ver", depois os "se sobrar", e só então aplica o desempate. */
   const pontuar=sel=>{
-    let n1=0,n2=0,nota=0;
+    const cont=NIVEIS.map(()=>0);
+    let nota=0;
     const dias=new Set(), cines=new Set();
     for(const x of sel){
-      if(x.prio===1)n1++; else if(x.prio===2)n2++;
+      const k=NIVEIS.indexOf(x.prio);
+      if(k>=0) cont[k]++;
       dias.add(x.s.data); cines.add(x.s.cinema);
       nota+=Number((FILME.get(x.s.filme_id)||{}).lb_nota||0);
     }
     const extra = criterio==="desloc" ? -cines.size : criterio==="nota" ? nota : -dias.size;
-    return [n1,n2,extra];
+    return cont.concat([extra]);
   };
   const cmp=(a,b)=>{ for(let i=0;i<a.length;i++) if(a[i]!==b[i]) return a[i]-b[i]; return 0; };
 
@@ -1497,13 +1512,17 @@ function encaixar(criterio, limiteMs){
   }
   let melhor=gul.slice(), melhorP=pontuar(gul.concat(baseSel));
 
-  const sel=[]; let cur1=0,cur2=0, estourou=false;
+  const sel=[]; const cur=NIVEIS.map(()=>0); let estourou=false;
   const t0=performance.now();
   (function dfs(i){
     if(estourou) return;
     if(performance.now()-t0>limiteMs){ estourou=true; return; }
-    if(cur1+suf1[i]<melhorP[0]) return;
-    if(cur1+suf1[i]===melhorP[0] && cur2+suf2[i]<melhorP[1]) return;
+    /* poda: se nem no melhor caso este ramo empata com o melhor já achado, cai fora */
+    for(let k=0;k<NIVEIS.length;k++){
+      const teto=cur[k]+suf[k][i];
+      if(teto<melhorP[k]) return;
+      if(teto>melhorP[k]) break;      /* pode superar aqui: vale continuar */
+    }
     if(i===n){
       const p=pontuar(sel.concat(baseSel));
       if(cmp(p,melhorP)>0){ melhorP=p; melhor=sel.slice(); }
@@ -1513,9 +1532,10 @@ function encaixar(criterio, limiteMs){
     for(const s of it.cands){
       if(sel.some(x=>chocaS(x.s,s))) continue;
       if(base.some(b=>chocaS(b,s))) continue;
-      sel.push({s,prio:it.prio}); if(it.prio===1)cur1++; else cur2++;
+      const k=NIVEIS.indexOf(it.prio);
+      sel.push({s,prio:it.prio}); if(k>=0)cur[k]++;
       dfs(i+1);
-      sel.pop(); if(it.prio===1)cur1--; else cur2--;
+      sel.pop(); if(k>=0)cur[k]--;
       if(estourou) return;
     }
     dfs(i+1);   /* deixar este filme de fora também é uma opção */
@@ -1639,7 +1659,11 @@ function propostaBody(){
   const p=proposta;
   const dias=new Set(p.sel.concat(p.base.map(s=>({s}))).map(x=>x.s.data)).size;
   const cines=new Set(p.sel.map(x=>x.s.cinema)).size;
-  const n1=p.sel.filter(x=>x.prio===1).length, n2=p.sel.filter(x=>x.prio===2).length;
+  const porNivel=NIVEIS.map(niv=>({
+    niv,
+    dentro:p.sel.filter(x=>x.prio===niv).length,
+    fora:p.fora.filter(f=>f.prio===niv).length,
+  })).filter(x=>x.dentro+x.fora>0);
   const crit=[["dias","menos dias"],["desloc","menos deslocamento"],["nota","melhor nota"]];
   const porDia={};
   for(const x of p.sel){ (porDia[x.s.data]??=[]).push(x.s); }
@@ -1648,7 +1672,7 @@ function propostaBody(){
       <div>
         <h3>Encaixei ${p.sel.length} ${p.sel.length===1?"sessão":"sessões"}</h3>
         <p class="prop-sub">
-          ${n1} de ${n1+p.fora.filter(f=>f.prio===1).length} que você quer muito ver${n2?` · ${n2} dos "se sobrar"`:""}
+          ${porNivel.map(x=>`${x.dentro} de ${x.dentro+x.fora} ${esc(PRIO_ROT[x.niv])}`).join(" · ")}
           · ${dias} ${dias===1?"dia":"dias"} no festival · ${cines} ${cines===1?"cinema":"cinemas"}
           ${p.estourou?`<span class="prop-aviso" title="A busca parou no limite de tempo — pode existir combinação um pouco melhor">≈ melhor que achei em 1,2 s</span>`:""}
         </p>
@@ -1671,7 +1695,7 @@ function propostaBody(){
       </div>`).join("")}</div>`:""}
     ${p.fora.length?`<div class="prop-fora">
       <b>Ficaram de fora (${p.fora.length}):</b>
-      ${p.fora.map(f=>`<span class="fora-item${f.prio===1?" p1":""}">
+      ${p.fora.map(f=>`<span class="fora-item${f.prio===1?" p1":""}" title="${esc(PRIO_ROT[f.prio]||"")}">
         ${esc((FILME.get(f.id)||{}).titulo||"?")}<small>${esc(f.motivo)}</small></span>`).join("")}
     </div>`:""}
   </div>`;

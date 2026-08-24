@@ -123,15 +123,25 @@ pra alcançar 280 dos 373 filmes) — o que estrangula é a combinação.
 O contador no topo mostra quanto sobrou: *"X de 1309 sessões · Y filmes ao seu alcance"*,
 e fica vermelho abaixo de 25%.
 
-### ★ com dois níveis
+### ★ com três níveis
 
-No **card**, o botão ★ cicla: nada → ★ quero muito ver → ☆ se sobrar tempo → nada
-(o \_title\_ diz o que o próximo clique faz). No **modal** é um **combobox** com as três
-opções — ali o ciclo confundia: sem marcação o botão dizia "★ Quero ver", que parecia
+**★ Quero muito ver · ★ Quero ver · ☆ Se sobrar tempo** — mais "não marcado".
+O nível do meio é o caso mais comum e faltava.
+
+No **card** o botão ★ cicla pelos quatro estados (o _title_ diz o que o próximo
+clique faz; a cor separa os três: cheio, contornado, apagado). No **modal** é um
+combobox rotulado *QUERO VER?*, com "Não marcado" explícito como opção — ali o
+ciclo confundia, porque sem marcação o botão dizia "★ Quero ver", que lia como
 estado em vez de ação, e desmarcar exigia dar a volta inteira.
-Só decide alguma coisa quando algo precisa ser cortado (com a agenda livre, tudo entra);
-é o que segura quem marca 40+ filmes. O `localStorage` migra sozinho o formato antigo
-(lista de ids) para prioridade 1.
+
+O nível só decide alguma coisa quando algo precisa ser cortado: o encaixe maximiza
+os "quero muito" primeiro, depois os "quero ver", depois os "se sobrar"
+(comparação lexicográfica). Verificado nos três cenários — resolvendo só com o
+nível 1 dá o mesmo número que o nível 1 alcança na solução completa, ou seja,
+nunca se sacrifica um nível alto para caber um baixo.
+
+O  migra sozinho: a chave passou a ser , e o valor
+2 do formato antigo (que queria dizer "se sobrar tempo") vira 3.
 
 ### ⚡ Encaixar
 
