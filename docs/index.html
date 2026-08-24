@@ -498,6 +498,11 @@ footer{
   font-family:var(--font-mono);font-size:11px;color:var(--dim);letter-spacing:.08em;
 }
 
+.prio-campo{display:inline-flex;flex-direction:column;gap:4px}
+.prio-rot{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--dim);padding-left:2px;
+}
 .prio-sel{
   font-family:var(--font-display);font-weight:700;font-size:14px;
   padding:11px 34px 11px 14px;max-width:none;cursor:pointer;
@@ -506,6 +511,7 @@ footer{
   background-repeat:no-repeat;background-position:right 13px center;
 }
 .prio-sel.on{background-color:var(--amber);border-color:var(--amber);color:#1b1608}
+.modal-actions{align-items:flex-end}
 .prio-sel.on option{background:var(--panel);color:var(--ink)}
 
 .count-linha{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
@@ -1084,12 +1090,14 @@ function openModal(id, keepScroll){
       </div>`:""}
       ${f.premio_txt?`<div class="premio-box">🏆 ${esc(f.premio_txt)}</div>`:""}
       <div class="modal-actions">
+        <label class="prio-campo">
+          <span class="prio-rot">Quero ver?</span>
         <select class="prio-sel${watch.has(id)?" on":""}" aria-label="Quero ver este filme?"
           onchange="setPrioridade('${id}', this.value)">
           <option value="0"${watch.has(id)?"":" selected"}>Não marcado</option>
           <option value="1"${watch.get(id)===1?" selected":""}>★ Quero muito ver</option>
           <option value="2"${watch.get(id)===2?" selected":""}>☆ Se sobrar tempo</option>
-        </select>
+        </select></label>
         ${f.trailer?`<a class="btn" href="${esc(f.trailer)}" target="_blank" rel="noopener">▶ Trailer</a>`:""}
         ${f.url_pagina?`<a class="btn" href="${esc(f.url_pagina)}" target="_blank" rel="noopener">Página na Mostra ↗</a>`:""}
       </div>
