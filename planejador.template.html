@@ -59,6 +59,18 @@ body::after{
     linear-gradient(#0a0805,#0a0805);
   border-bottom:1px solid var(--line);
 }
+/* aviso de beta: rola junto com a página (não gruda no topo). Remover na 50ª. */
+.beta{
+  border-bottom:1px solid var(--line);
+  font-family:var(--font-mono);font-size:11px;line-height:1.5;color:var(--muted);letter-spacing:.02em;
+}
+.beta p{max-width:1280px;margin:0 auto;padding:6px 24px}
+.beta b{
+  color:var(--amber);font-weight:600;letter-spacing:.14em;
+  border:1px solid color-mix(in srgb,var(--amber) 45%,transparent);border-radius:3px;
+  padding:0 5px;margin-right:8px;font-size:10px;
+}
+@media (max-width:640px){ .beta p{padding:6px 14px} }
 header{
   position:sticky;top:0;z-index:60;
   background:linear-gradient(#181409f2,#181409e8);
@@ -746,6 +758,7 @@ footer{
 </head>
 <body>
 <div class="strip"></div>
+<div class="beta" role="note"><p><b>BETA</b>Versão de teste, com a programação da 49ª Mostra (2025). A versão final sai quando a programação da 50ª Mostra for publicada.</p></div>
 <header>
   <div class="header-in">
     <div class="brand">

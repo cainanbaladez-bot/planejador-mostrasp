@@ -97,7 +97,9 @@ nos aparelhos que já instalaram.
 4. Ajustar título/datas no `planejador.template.html`: o header, a legenda do mês em
    `calBody()` e — numa linha só — `const LS_PREFIX="mostra49", EDICAO="49ª Mostra";`,
    que já governa as chaves do localStorage, o nome dos arquivos .ics e o `UID` dos eventos.
-5. `py -3.10 build_planejador.py`
+5. Apagar a faixa **BETA** (`<div class="beta">` logo abaixo do `.strip` + o bloco `.beta`
+   do CSS) — ela avisa que a versão no ar ainda usa a programação de 2025.
+6. `py -3.10 build_planejador.py`
 
 ## Disponibilidade, geografia e encaixe automático
 
