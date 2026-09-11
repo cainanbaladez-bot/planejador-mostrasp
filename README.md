@@ -115,7 +115,8 @@ pra alcançar 280 dos 373 filmes) — o que estrangula é a combinação.
    linhas e as faixas viram colunas, com célula de 50×38px.
 3. **Geografia** — 7 regiões derivadas dos bairros reais dos endereços
    (Augusta/Consolação 474 sessões, Vila Mariana/Paraíso 263, Centro 227, Paulista 205,
-   Pinheiros 32, Ipiranga 14, CEUs e periferia 94). Cada região abre em "ajustar" com a
+   Pinheiros 32, Ipiranga 14, CEUs 94 — o grupo inclui o Centro de Formação
+   Cultural Cidade Tiradentes). Cada região abre em "ajustar" com a
    lista de cinemas e o bairro de cada um. As 6 primeiras saem do bairro do endereço;
    os CEUs ficam num grupo só, com o bairro ao lado de cada um, porque atribuir zona a
    cada CEU seria chute meu.

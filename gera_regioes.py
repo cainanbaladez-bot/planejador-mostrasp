@@ -26,7 +26,7 @@ REG=[
 ]
 usados={c for _,_,cs in REG for c in cs}
 resto=sorted([c for c in end if c not in usados])
-REG.append(("ceus","CEUs e periferia",resto))
+REG.append(("ceus","CEUs",resto))
 
 falta=[c for c in end if c not in {c for _,_,cs in REG for c in cs}]
 assert not falta, falta
