@@ -34,7 +34,17 @@ nos aparelhos que já instalaram.
 | `enrich_filmes.py` | Enriquece os filmes: **festivais/prêmios** (regex na sinopse, offline) + **nota do Letterboxd** (raspagem do autocomplete + JSON-LD, casando título original+ano+diretor; cache em `data/letterboxd_cache.json`). Gera `data/enriquecimento.json`, que o build embute. Rodar ANTES do build: `py -3.10 enrich_filmes.py` (~10 min na 1ª vez; `--so-festivais` p/ pular o Letterboxd). |
 | **`docs/`** | O que o GitHub Pages publica: `index.html` (o app), `manifest.webmanifest`, `sw.js` (service worker) e os ícones. Gerado pelo build — não editar `docs/index.html` à mão. |
 | `gera_regioes.py` | Regenera o literal `REGIOES` (agrupamento de cinemas por região) a partir dos bairros dos endereços. Rodar só quando os cinemas mudarem. |
+| `tests/planner-smoke.js` | Teste automático das jornadas críticas (link, armazenamento, encaixe). Rodar: `node tests/planner-smoke.js` depois do build. |
+| `PLANO_SOL.md` | Plano de melhorias escrito pelo **SOL** (17/09/2026) que originou a v8, com o estado do que foi feito e do que ficou pendente. |
 | `mostra-scraper-completo/mostra-scraper/data/` | Fonte dos dados (49ª edição: 380 filmes, 1309 sessões, 16/10–05/11/2025). Ver README do scraper para re-raspar. |
+
+## Histórico
+
+| versão (`sw.js`) | data | o que mudou |
+|---|---|---|
+| **v8** | 18/09/2026 | **Versão sofisticada, feita a partir do plano do SOL** ([`PLANO_SOL.md`](PLANO_SOL.md)): ⚡ Encaixar virou **Montar minha agenda**, com escolha de objetivo antes da proposta, margens, limite por dia, horário máximo e tolerância; três níveis no link; backup/restauração; ↶ Desfazer; `localStorage` à prova de dado corrompido; teste automático. Mais a **medição de eventos** (seção "Medição de uso"). O que ficou de fora do plano está no fim do próprio `PLANO_SOL.md`. |
+| v7 | 10/09/2026 | Faixa BETA; região "CEUs". |
+| até v6 | 08/2026 | App original: filmes, ★, agenda, calendário, .ics, link, PWA, disponibilidade e ⚡ Encaixar. |
 
 ## Funcionalidades do planejador
 
