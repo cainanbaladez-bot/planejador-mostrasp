@@ -690,6 +690,61 @@ footer{
 .fora-item.p1{border-color:#6b3327;color:var(--ink)}
 .fora-item small{display:block;color:var(--dim);font-size:10px;font-family:var(--font-mono)}
 
+/* ─── painel de montagem da agenda ─── */
+.planner-overlay{
+  display:none;position:fixed;inset:0;z-index:1300;background:#090704d9;
+  align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(7px);
+}
+.planner-overlay.open{display:flex;animation:fade .18s}
+.planner-panel{
+  width:min(860px,100%);max-height:min(90vh,820px);overflow:auto;
+  background:var(--bg2);border:1px solid #6b5930;border-radius:18px;
+  box-shadow:0 28px 90px #000b;
+}
+.planner-head{display:flex;gap:18px;align-items:flex-start;padding:22px 24px 18px;border-bottom:1px solid var(--line)}
+.planner-head h2{font-family:var(--font-display);font-size:27px;line-height:1.1;letter-spacing:-.02em}
+.planner-head p{color:var(--muted);font-size:13px;margin-top:6px;max-width:62ch}
+.planner-close{margin-left:auto;flex:none}
+.planner-body{padding:20px 24px 24px}
+.planner-summary{
+  display:flex;flex-wrap:wrap;gap:8px 18px;margin-bottom:18px;padding:10px 13px;
+  background:var(--panel);border-left:3px solid var(--amber);border-radius:7px;
+  font-family:var(--font-mono);font-size:11px;color:var(--muted)
+}
+.planner-summary b{color:var(--ink)}
+.planner-question{font-family:var(--font-display);font-size:17px;font-weight:750;margin-bottom:10px}
+.goal-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:18px}
+.goal-card{
+  position:relative;text-align:left;background:var(--panel);color:var(--ink);border:1px solid var(--line);
+  border-radius:10px;padding:13px 14px 13px 42px;cursor:pointer;min-height:72px;
+}
+.goal-card:hover{border-color:var(--muted)}
+.goal-card.on{border-color:var(--amber);background:linear-gradient(90deg,var(--amber-soft),var(--panel) 50%)}
+.goal-card::before{
+  content:"";position:absolute;left:15px;top:17px;width:14px;height:14px;border-radius:50%;
+  border:1px solid var(--muted);box-shadow:inset 0 0 0 3px var(--panel)
+}
+.goal-card.on::before{background:var(--amber);border-color:var(--amber)}
+.goal-card b{display:block;font:700 14px var(--font-display);margin-bottom:3px}
+.goal-card small{display:block;color:var(--muted);font-size:11.5px;line-height:1.35}
+.planner-settings{border:1px solid var(--line);border-radius:10px;margin-bottom:18px}
+.planner-settings summary{cursor:pointer;padding:11px 13px;color:var(--muted);font-size:12px;font-weight:650}
+.planner-settings[open] summary{border-bottom:1px dashed var(--line)}
+.settings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;padding:13px}
+.setting{display:flex;flex-direction:column;gap:5px;color:var(--muted);font-size:11.5px}
+.setting select,.setting input[type="number"]{width:100%;max-width:none;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:8px}
+.setting.check{grid-column:1/-1;flex-direction:row;align-items:center}
+.setting input[type="checkbox"]{accent-color:var(--amber);width:16px;height:16px}
+.planner-tolerance{display:none;grid-column:1/-1}
+.planner-tolerance.show{display:flex}
+.planner-foot{display:flex;align-items:center;justify-content:flex-end;gap:9px}
+.planner-note{margin-right:auto;color:var(--dim);font-size:11px;max-width:44ch}
+.agenda-guide{width:100%;color:var(--muted);font-size:12px;margin:-6px 0 4px}
+.agenda-guide b{color:var(--amber)}
+.prop-metrics{display:flex;flex-wrap:wrap;gap:7px;margin:11px 0}
+.prop-metric{background:var(--bg2);border:1px solid var(--line);border-radius:7px;padding:6px 9px;font:10.5px var(--font-mono);color:var(--muted)}
+.prop-metric b{color:var(--ink)}
+
 @media (max-width:640px){
   .disp-head h2{font-size:21px}
   .disp-stats{margin-left:0;width:100%}
@@ -704,6 +759,16 @@ footer{
   .prop-acoes{margin-left:0;width:100%}
   .prop-acoes .btn{flex:1;justify-content:center}
   .prop-manter{margin-left:0;width:100%}
+  .planner-overlay{padding:0;align-items:stretch}
+  .planner-panel{width:100%;max-height:none;border-radius:0;border-width:0;min-height:100%}
+  .planner-head{padding:18px 16px 15px;position:sticky;top:0;background:var(--bg2);z-index:2}
+  .planner-head h2{font-size:23px}
+  .planner-body{padding:16px}
+  .goal-list{grid-template-columns:1fr}
+  .settings-grid{grid-template-columns:1fr}
+  .planner-foot{position:sticky;bottom:-16px;background:var(--bg2);padding:12px 0 16px;flex-wrap:wrap}
+  .planner-note{width:100%;margin:0}
+  .planner-foot .btn{flex:1;justify-content:center;min-height:44px}
   .geo-lista{grid-template-columns:1fr}
 }
 
@@ -796,6 +861,7 @@ footer{
         <option value="p3">☆ Se sobrar tempo</option>
         <option value="nao">Só os que ainda não marquei</option>
         <option value="agenda">Já com sessão na agenda</option>
+        <option value="disponivel">Cabe na minha disponibilidade</option>
       </select>
       <select id="f-sort">
         <option value="titulo">A–Z</option>
@@ -827,6 +893,16 @@ footer{
 <div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal" id="modal" role="dialog" aria-modal="true"></div>
 </div>
+<div class="planner-overlay" id="planner-overlay" onclick="if(event.target===this)fecharMontador()">
+  <div class="planner-panel" role="dialog" aria-modal="true" aria-labelledby="planner-title">
+    <div class="planner-head">
+      <div><h2 id="planner-title">Montar minha agenda</h2>
+        <p>Escolha o que importa mais. Você revisa a combinação antes de aplicá-la.</p></div>
+      <button class="icon-btn planner-close" onclick="fecharMontador()" aria-label="Fechar">✕</button>
+    </div>
+    <div class="planner-body" id="planner-body"></div>
+  </div>
+</div>
 <footer class="rodape">
   <p><b>Projeto independente</b> — não é um site oficial da Mostra Internacional de
   Cinema de São Paulo. A programação é lida do site da Mostra; confirme sempre
@@ -835,11 +911,17 @@ footer{
   guardando nada. Use <b>🔗 Link</b> para levá-la a outro aparelho.</p>
 </footer>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input id="backup-input" type="file" accept="application/json,.json" hidden onchange="importarBackup(this.files[0]);this.value=''">
 
 <script>
 window.FILMES=/*__FILMES__*/[];
 window.SESSOES=/*__SESSOES__*/[];
+/* O template é código-fonte e ainda não contém o catálogo. Se alguém o abrir por
+   engano, leva para o artefato gerado em vez de mostrar uma aplicação vazia. */
+if(!window.FILMES.length && /planejador\.template\.html$/i.test(decodeURIComponent(location.pathname))){
+  location.replace(new URL("planejador.html",location.href).href);
+}
 </script>
 <script>
 "use strict";
@@ -876,35 +958,78 @@ const secColor = s => SEC_COLOR[s] || "#f2a93b";
 const LS_PREFIX="mostra49", EDICAO="49ª Mostra";
 const LS_A=`${LS_PREFIX}_agenda`, LS_W=`${LS_PREFIX}_watch`,
       LS_MODE=`${LS_PREFIX}_modo`, LS_SEQ=`${LS_PREFIX}_ics_seq`,
-      LS_W3=`${LS_PREFIX}_watch3`;
-let agenda = new Set(JSON.parse(localStorage.getItem(LS_A)||"[]").filter(id=>SESSAO.has(id)));
+      LS_W3=`${LS_PREFIX}_watch3`, LS_PLAN=`${LS_PREFIX}_planner`;
+let storageFalhou=false;
+function lerLocal(chave, fallback){
+  try{
+    const raw=localStorage.getItem(chave);
+    if(raw===null) return fallback;
+    const valor=JSON.parse(raw);
+    return valor;
+  }catch(e){ storageFalhou=true; return fallback; }
+}
+function gravarLocal(chave, valor){
+  try{ localStorage.setItem(chave,JSON.stringify(valor)); return true; }
+  catch(e){ storageFalhou=true; return false; }
+}
+const agendaSalva=lerLocal(LS_A,[]);
+let agenda = new Set((Array.isArray(agendaSalva)?agendaSalva:[]).filter(id=>SESSAO.has(id)));
 /* watch guarda prioridade: 1 = quero muito ver, 2 = se sobrar tempo.
    Formato antigo (lista de ids) migra para prioridade 1. */
 /* watch guarda a prioridade. Chave nova porque a escala mudou de 2 para 3
    níveis: no formato velho o 2 queria dizer "se sobrar tempo", que agora é 3. */
 let watch = new Map((()=>{
-  const novo=localStorage.getItem(LS_W3);
-  if(novo!==null) return JSON.parse(novo).filter(([id])=>FILME.has(id));
-  const velho=JSON.parse(localStorage.getItem(LS_W)||"[]")
+  let novo=null;
+  try{ novo=localStorage.getItem(LS_W3); }catch(e){ storageFalhou=true; }
+  if(novo!==null){
+    const parsed=lerLocal(LS_W3,[]);
+    return Array.isArray(parsed)?parsed.filter(x=>Array.isArray(x)&&FILME.has(x[0])&&[1,2,3].includes(Number(x[1]))):[];
+  }
+  const velho=lerLocal(LS_W,[])
     .map(v=>Array.isArray(v)?v:[v,1]);          /* mais velho ainda: só ids */
   return velho.map(([id,pr])=>[id, pr===2?3:1]).filter(([id])=>FILME.has(id));
 })());
-let agendaMode = localStorage.getItem(LS_MODE)||"cal";
+let agendaMode;
+try{ agendaMode=localStorage.getItem(LS_MODE)||"cal"; }catch(e){ agendaMode="cal"; storageFalhou=true; }
 let filters = {q:"", secao:"", dia:"", cinema:"", fest:"", marca:"", sort:"titulo"};
 let modalFilmId = null;
+let modalTrigger=null;
 
-const save = ()=>{ localStorage.setItem(LS_A, JSON.stringify([...agenda])); localStorage.setItem(LS_W3, JSON.stringify([...watch])); };
+const save = ()=>{
+  const ok=gravarLocal(LS_A,[...agenda]) & gravarLocal(LS_W3,[...watch]);
+  if(!ok) toast("Não foi possível salvar neste navegador");
+  return !!ok;
+};
+let desfazerEstado=null;
+function guardarDesfazer(rotulo){
+  desfazerEstado={rotulo,agenda:[...agenda],watch:[...watch],disp:[...dispOff||[]],cin:[...cinOff||[]],prefs:{...planPrefs}};
+}
+function desfazerUltima(){
+  if(!desfazerEstado) return;
+  const x=desfazerEstado; desfazerEstado=null;
+  agenda=new Set(x.agenda); watch=new Map(x.watch); dispOff=new Set(x.disp); cinOff=new Set(x.cin);
+  planPrefs=Object.assign({},PLAN_DEFAULT,x.prefs); manterAgenda=planPrefs.manter!==false;
+  save(); saveRestr(); gravarLocal(LS_PLAN,planPrefs); proposta=null;
+  updateBadge(); renderGrid(); refreshViews(); toast(`Desfeito: ${x.rotulo}`);
+}
 
 /* 1 = mais quero, 3 = menos quero. O solver corta de trás pra frente. */
 const NIVEIS=[1,2,3];
 const PRIO_ROT={1:"quero muito ver",2:"quero ver",3:"se sobrar tempo"};
 const PRIO_ICONE={1:"★",2:"★",3:"☆"};
+const PLAN_DEFAULT={objetivo:"max",tolerancia:0,manter:true,margemCinema:40,limiteDia:0,horaFim:""};
+const planSalvo=lerLocal(LS_PLAN,{});
+let planPrefs=Object.assign({},PLAN_DEFAULT,planSalvo&&typeof planSalvo==="object"?planSalvo:{});
 
 /* ───────────────── helpers ───────────────── */
 const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm = s => String(s??"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 const mins = h => { const [a,b]=h.split(":").map(Number); return a*60+b; };
-const durMin = d => { const m=parseInt(d,10); return isNaN(m)?110:m; };
+const DURACAO_ESTIMADA=110;
+const durMin = d => { const m=parseInt(d,10); return Number.isFinite(m)&&m>0?m:DURACAO_ESTIMADA; };
+const diaNum = iso => Math.floor(Date.UTC(...iso.split("-").map((x,i)=>Number(x)-(i===1?1:0)))/86400000);
+const inicioAbs = s => diaNum(s.data)*1440+mins(s.hora);
+const fimAbs = s => inicioAbs(s)+durMin(s.duracao);
 const pad = n => String(n).padStart(2,"0");
 const MESES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
 const DOW=["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
@@ -914,20 +1039,42 @@ function diaLabel(iso){ const d=dObj(iso); return `${DOW[d.getDay()]}, ${d.getDa
 function diaCurto(iso){ const d=dObj(iso); return `${DOW3[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth()+1)}`; }
 function fimSessao(s){ const m=mins(s.hora)+durMin(s.duracao); return `${pad(Math.floor(m/60)%24)}:${pad(m%60)}`; }
 
+/* ── medição de uso: o que a pessoa FAZ, não só que abriu ──
+   Cada ação vira um evento "mostra/<nome>" no GoatCounter, uma vez por abertura da
+   página (repetir a mesma ação não conta de novo). Assim o painel lê "quantas pessoas
+   marcaram filme / montaram agenda / exportaram", não quantos cliques houve.
+   Sem cookie e sem nada visível; se o contador estiver bloqueado, não faz nada. */
+const MEDIDOS=new Set();
+function medir(ev){
+  if(MEDIDOS.has(ev)) return;
+  MEDIDOS.add(ev);
+  const enviar=()=>{ try{ window.goatcounter.count({path:"mostra/"+ev,title:"mostra: "+ev,event:true}); }catch(e){} };
+  if(window.goatcounter&&window.goatcounter.count) enviar();
+  else if(document.readyState!=="complete") addEventListener("load",()=>setTimeout(enviar,300),{once:true});
+}
+
 function toast(msg){
   const t=document.getElementById("toast");
   t.textContent=msg; t.classList.add("show");
   clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2200);
 }
 
-/* conflitos: retorna lista de sessões da agenda que chocam com s */
+function problemaEntre(a,b){
+  const ai=inicioAbs(a), af=fimAbs(a), bi=inicioAbs(b), bf=fimAbs(b);
+  if(ai<bf && bi<af) return "sobreposição";
+  const primeiro=ai<=bi?a:b, segundo=ai<=bi?b:a;
+  const margem=primeiro.cinema!==segundo.cinema?Number(planPrefs.margemCinema||40):0;
+  if(inicioAbs(segundo)-fimAbs(primeiro)<margem)
+    return margem?`faltam ${margem} min para trocar de cinema`:"sem intervalo suficiente";
+  return "";
+}
+/* conflitos: retorna sessões incompatíveis com s, usando a mesma regra do montador */
 function conflitos(s, ignoreSelf=true){
-  const ini=mins(s.hora), fim=ini+durMin(s.duracao), out=[];
+  const out=[];
   for(const id of agenda){
     if(ignoreSelf && id===s.sessao_id) continue;
-    const o=SESSAO.get(id); if(!o || o.data!==s.data) continue;
-    const oi=mins(o.hora), of=oi+durMin(o.duracao);
-    if(ini<of && oi<fim) out.push(o);
+    const o=SESSAO.get(id); if(!o) continue;
+    if(problemaEntre(s,o)) out.push(o);
   }
   return out;
 }
@@ -938,8 +1085,8 @@ function setView(v){
   document.getElementById("view-filmes").hidden = v!=="filmes";
   document.getElementById("view-disp").hidden   = v!=="disp";
   document.getElementById("view-agenda").hidden = v!=="agenda";
-  if(v==="agenda") renderAgenda();
-  if(v==="disp")   renderDisp();
+  if(v==="agenda"){ renderAgenda(); medir("aba-agenda"); }
+  if(v==="disp")  { renderDisp();   medir("aba-disponibilidade"); }
   window.scrollTo({top:0});
 }
 function refreshViews(){
@@ -996,6 +1143,7 @@ function filmesFiltrados(){
       if(/^p[123]$/.test(filters.marca) && pr!==Number(filters.marca[1])) return false;
       if(filters.marca==="nao"     && (pr||naAgenda)) return false;
       if(filters.marca==="agenda"  && !naAgenda) return false;
+      if(filters.marca==="disponivel" && !(SESS_BY_FILME.get(f.id)||[]).some(liberada)) return false;
     }
     if(filters.dia || filters.cinema){
       const ss=SESS_BY_FILME.get(f.id)||[];
@@ -1038,7 +1186,9 @@ function renderGrid(){
   document.getElementById("count").textContent = `${list.length} ${list.length===1?"filme":"filmes"}`;
   const inAgenda = new Set([...agenda].map(id=>SESSAO.get(id)?.filme_id));
   document.getElementById("grid").innerHTML = list.length ? list.map((f,i)=>`
-    <article class="card${inAgenda.has(f.id)?" in-agenda":""}" style="--sec:${secColor(f.secao)};animation-delay:${Math.min(i,20)*22}ms" onclick="openModal('${f.id}')">
+    <article class="card${inAgenda.has(f.id)?" in-agenda":""}" role="button" tabindex="0" aria-label="Abrir ${esc(f.titulo)}"
+      style="--sec:${secColor(f.secao)};animation-delay:${Math.min(i,20)*22}ms" onclick="openModal('${f.id}')"
+      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${f.id}')} ">
       <div class="poster${f.imagem?"":" noimg"}" data-initial="${esc((f.titulo||"?")[0])}">
         ${f.imagem?`<img src="${esc(f.imagem)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg');this.remove()">`:""}
         <span class="sec-tag">${esc(f.secao||"—")}</span>
@@ -1070,6 +1220,7 @@ function setPrioridade(id, v){
   const antes=watch.get(id);
   if(NIVEIS.includes(v)) watch.set(id,v); else watch.delete(id);
   if(antes===v) return;
+  if(NIVEIS.includes(v)) medir("marcou-filme");
   save(); updateBadge();
   if(modalFilmId) openModal(modalFilmId,true);
   renderGrid(); refreshViews();
@@ -1079,7 +1230,7 @@ function setPrioridade(id, v){
 function toggleWatch(id){
   /* cicla: nada → quero muito → quero ver → se sobrar → nada */
   const prox=(watch.get(id)||0)+1;
-  if(NIVEIS.includes(prox)){ watch.set(id,prox); toast(`${PRIO_ICONE[prox]} ${PRIO_ROT[prox][0].toUpperCase()+PRIO_ROT[prox].slice(1)}`); }
+  if(NIVEIS.includes(prox)){ watch.set(id,prox); medir("marcou-filme"); toast(`${PRIO_ICONE[prox]} ${PRIO_ROT[prox][0].toUpperCase()+PRIO_ROT[prox].slice(1)}`); }
   else { watch.delete(id); toast("Tirado da lista"); }
   save(); renderGrid(); refreshViews();
   if(modalFilmId===id) openModal(id,true);
@@ -1088,6 +1239,7 @@ function toggleWatch(id){
 /* ───────────────── modal ───────────────── */
 function openModal(id, keepScroll){
   const f=FILME.get(id); if(!f) return;
+  if(!keepScroll) modalTrigger=document.activeElement;
   modalFilmId=id;
   const ss=SESS_BY_FILME.get(id)||[];
   const porDia={};
@@ -1140,7 +1292,7 @@ function openModal(id, keepScroll){
                 ${confs.length?`<span class="warn"> ⚠ choca com ${esc(confs[0].titulo)}</span>`:""}
               </span>
               ${s.link_compra?`<a class="icon-btn" title="Comprar ingresso" href="${esc(s.link_compra)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🎟</a>`:""}
-              ${on?`<a class="icon-btn g" title="Adicionar ao Google Agenda" href="${esc(linkGoogle(s))}" target="_blank" rel="noopener" onclick="event.stopPropagation()">G</a>
+              ${on?`<a class="icon-btn g" title="Adicionar ao Google Agenda" href="${esc(linkGoogle(s))}" target="_blank" rel="noopener" onclick="event.stopPropagation();medir('google-agenda')">G</a>
               <button class="icon-btn" title="Baixar esta sessão em .ics" onclick="exportSessaoICS('${s.sessao_id}')">📅</button>`:""}
               <button class="sess-add${on?" on":""}" onclick="toggleSessao('${s.sessao_id}')">${on?"✓ NA AGENDA":"+ AGENDA"}</button>
             </div>`;
@@ -1150,21 +1302,28 @@ function openModal(id, keepScroll){
   ov.classList.add("open");
   ov.scrollTop=st;
   document.body.style.overflow="hidden";
+  if(!keepScroll) setTimeout(()=>el.querySelector(".modal-close")?.focus(),0);
 }
 function closeModal(){
   document.getElementById("overlay").classList.remove("open");
   document.body.style.overflow="";
   modalFilmId=null;
   renderGrid();
+  if(modalTrigger&&modalTrigger.focus) modalTrigger.focus();
 }
-document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&modalFilmId) closeModal(); });
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Escape") return;
+  if(document.getElementById("planner-overlay").classList.contains("open")) fecharMontador();
+  else if(modalFilmId) closeModal();
+});
 
 function toggleSessao(id){
   const s=SESSAO.get(id); if(!s) return;
+  guardarDesfazer(agenda.has(id)?"remover sessão":"adicionar sessão");
   if(agenda.has(id)){ agenda.delete(id); toast("Sessão removida da agenda"); }
   else{
     const confs=conflitos(s);
-    agenda.add(id);
+    agenda.add(id); medir("sessao-manual");
     toast(confs.length?`⚠ Adicionada — choca com ${confs[0].titulo}`:`✓ ${s.titulo} · ${diaCurto(s.data)} ${s.hora}`);
   }
   save(); updateBadge();
@@ -1290,7 +1449,7 @@ function agendaListBody(items, porDia, watchPend){
           </div>
           <div class="ticket-side">
             ${s.link_compra?`<a class="icon-btn" title="Comprar ingresso" href="${esc(s.link_compra)}" target="_blank" rel="noopener">🎟</a>`:""}
-            <a class="icon-btn g" title="Adicionar ao Google Agenda (funciona no celular)" href="${esc(linkGoogle(s))}" target="_blank" rel="noopener">G</a>
+            <a class="icon-btn g" title="Adicionar ao Google Agenda (funciona no celular)" href="${esc(linkGoogle(s))}" target="_blank" rel="noopener" onclick="medir('google-agenda')">G</a>
             <button class="icon-btn" title="Baixar esta sessão em .ics (Apple, Outlook)" onclick="exportSessaoICS('${s.sessao_id}')">📅</button>
             <button class="icon-btn del" title="Remover da agenda" onclick="toggleSessao('${s.sessao_id}')">✕</button>
           </div>
@@ -1311,7 +1470,12 @@ function agendaListBody(items, porDia, watchPend){
     </div>`:""}`;
 }
 
-function setAgendaMode(m){ agendaMode=m; localStorage.setItem(LS_MODE,m); renderAgenda(); }
+function setAgendaMode(m){
+  agendaMode=m;
+  try{ localStorage.setItem(LS_MODE,m); }
+  catch(e){ storageFalhou=true; toast("Não foi possível salvar esta preferência"); }
+  renderAgenda();
+}
 
 function renderAgenda(){
   const root=document.getElementById("agenda-root");
@@ -1348,12 +1512,16 @@ function renderAgenda(){
         ${nConf?`<span class="conf">⚠ <b style="color:var(--red)">${nConf}</b> em conflito</span>`:""}
       </div>
       <div class="agenda-actions">
-        <button class="btn" onclick="rodarEncaixe('dias')"${watch.size?"":" disabled"} title="Escolhe as sessões dos filmes marcados que cabem na sua disponibilidade">⚡ Encaixar</button>
+        ${desfazerEstado?`<button class="btn" onclick="desfazerUltima()" title="Desfaz ${esc(desfazerEstado.rotulo)}">↶ Desfazer</button>`:""}
+        <button class="btn primary" onclick="abrirMontador()"${watch.size?"":" disabled"} title="Escolha um objetivo e gere uma proposta de agenda">⚡ Montar minha agenda</button>
         <button class="btn perigo" onclick="limparAgenda()"${items.length?"":" disabled"} title="Tira todas as sessões da agenda">🗑 Limpar agenda</button>
         <button class="btn" onclick="copiarLink()" title="Copia um link com a sua agenda inteira — abra no celular, sem precisar de conta">🔗 Link</button>
+        <button class="btn" onclick="exportarBackup()" title="Baixa marcações, agenda e preferências em JSON">⇩ Backup</button>
+        <button class="btn" onclick="document.getElementById('backup-input').click()" title="Restaura um backup JSON">⇧ Restaurar</button>
         <button class="btn" onclick="copyAgenda()"${items.length?"":" disabled"}>⧉ Copiar</button>
         <button class="btn primary" onclick="exportICS()"${items.length?"":" disabled"} title="Baixa um .ics com todas as sessões — abre no Google Agenda, Apple e Outlook">📅 Agenda inteira (.ics)</button>
       </div>
+      <p class="agenda-guide"><b>1</b> Marque filmes &nbsp;→&nbsp; <b>2</b> Defina disponibilidade &nbsp;→&nbsp; <b>3</b> Monte e revise sua agenda</p>
     </div>
     ${propostaBody()}
     ${agendaMode==="cal" ? calBody()
@@ -1392,21 +1560,31 @@ function faixaDe(hora){
 
 const LS_DISP=`${LS_PREFIX}_disp`, LS_CIN=`${LS_PREFIX}_cinemas`;
 /* guardamos o que está BLOQUEADO — conjunto vazio = disponível sempre, em todo lugar */
-let dispOff=new Set(JSON.parse(localStorage.getItem(LS_DISP)||"[]"));
-let cinOff =new Set(JSON.parse(localStorage.getItem(LS_CIN)||"[]"));
-let manterAgenda=true;
+const dispSalva=lerLocal(LS_DISP,[]), cinSalva=lerLocal(LS_CIN,[]);
+let dispOff=new Set(Array.isArray(dispSalva)?dispSalva:[]);
+let cinOff =new Set(Array.isArray(cinSalva)?cinSalva:[]);
+let manterAgenda=planPrefs.manter!==false;
 let proposta=null;
 const saveRestr=()=>{
-  localStorage.setItem(LS_DISP,JSON.stringify([...dispOff]));
-  localStorage.setItem(LS_CIN,JSON.stringify([...cinOff]));
+  medir("disponibilidade");
+  const ok=gravarLocal(LS_DISP,[...dispOff]) & gravarLocal(LS_CIN,[...cinOff]);
+  if(!ok) toast("Não foi possível salvar a disponibilidade");
 };
 const chaveCel=(d,f)=>`${d}|${f}`;
-const liberada=s=>!dispOff.has(chaveCel(s.data,faixaDe(s.hora))) && !cinOff.has(s.cinema);
-const absMin=s=>dObj(s.data).getTime()/60000 + mins(s.hora);
+function liberada(s){
+  if(!s || cinOff.has(s.cinema)) return false;
+  const ini=mins(s.hora), fim=ini+durMin(s.duracao);
+  if(!Number.isFinite(ini)||ini<600||fim>1440) return false;
+  for(let i=0;i<FAIXAS.length;i++){
+    const fi=FAIXAS[i].ini*60, ff=FAIXAS[i].fim*60;
+    if(ini<ff && fi<fim && dispOff.has(chaveCel(s.data,i))) return false;
+  }
+  if(planPrefs.horaFim && fim>mins(planPrefs.horaFim)) return false;
+  return true;
+}
+const absMin=inicioAbs;
 function chocaS(a,b){
-  const folga=a.cinema!==b.cinema?40:0;   /* 40 min pra atravessar a cidade */
-  const ia=absMin(a), fa=ia+durMin(a.duracao), ib=absMin(b), fb=ib+durMin(b.duracao);
-  return ia<fb+folga && ib<fa+folga;
+  return !!problemaEntre(a,b);
 }
 function statsRestr(){
   const ok=SESSOES.filter(liberada);
@@ -1428,7 +1606,7 @@ function aplicarPerfil(id){
     const w=dObj(d).getDay();
     FAIXAS.forEach((_,f)=>{ if(!p.ok(w,f)) dispOff.add(chaveCel(d,f)); });
   }
-  saveRestr(); renderDisp(); refreshViews();
+  saveRestr(); renderDisp(); refreshViews(); medir("perfil-"+p.id);
   toast(`✓ ${p.rot} — ajuste o que quiser na grade`);
 }
 
@@ -1467,6 +1645,15 @@ document.addEventListener("pointerup",()=>{
   if(pintando===null) return;
   pintando=null; saveRestr(); atualizarStatsDisp(); refreshViews();
 });
+/* cliques gerados por teclado não disparam pointerdown */
+document.addEventListener("click",e=>{
+  const el=e.target.closest&&e.target.closest(".disp-cel");
+  if(!el||e.detail!==0) return;
+  const k=chaveCel(el.dataset.d,+el.dataset.f), ligar=dispOff.has(k);
+  if(ligar) dispOff.delete(k); else dispOff.add(k);
+  el.classList.toggle("on",ligar); el.setAttribute("aria-pressed",ligar?"true":"false");
+  saveRestr(); atualizarStatsDisp(); refreshViews();
+});
 
 /* geografia (B4) */
 function alternarRegiao(rid){
@@ -1484,104 +1671,188 @@ function alternarCinema(rid,i,marcado){
 /* ── encaixe: uma sessão por filme, sem sobreposição ── */
 function candidatos(fid){ return (SESS_BY_FILME.get(fid)||[]).filter(liberada); }
 
-function encaixar(criterio, limiteMs){
-  criterio=criterio||"dias"; limiteMs=limiteMs||1200;
-  const base=manterAgenda?[...agenda].map(i=>SESSAO.get(i)).filter(Boolean):[];
-  const travados=new Set(base.map(s=>s.filme_id));
-  const busca=[...watch.entries()].filter(([id])=>FILME.has(id)&&!travados.has(id))
-    .map(([id,prio])=>({id,prio,cands:candidatos(id)}))
-    .sort((a,b)=>(a.cands.length-b.cands.length)||(a.prio-b.prio));
-  const n=busca.length;
-  /* suf[k][i] = quantos filmes de nível k ainda restam a partir de i.
-     É o teto otimista que faz a poda cortar cedo. */
-  const suf=NIVEIS.map(()=>new Array(n+1).fill(0));
-  for(let i=n-1;i>=0;i--)
-    NIVEIS.forEach((niv,k)=>{ suf[k][i]=suf[k][i+1]+(busca[i].prio===niv?1:0); });
-  const baseSel=base.map(s=>({s,prio:0}));
-  /* pontuação lexicográfica: primeiro maximiza os "quero muito", depois os
-     "quero ver", depois os "se sobrar", e só então aplica o desempate. */
-  const pontuar=sel=>{
-    const cont=NIVEIS.map(()=>0);
-    let nota=0;
-    const dias=new Set(), cines=new Set();
-    for(const x of sel){
-      const k=NIVEIS.indexOf(x.prio);
-      if(k>=0) cont[k]++;
-      dias.add(x.s.data); cines.add(x.s.cinema);
-      nota+=Number((FILME.get(x.s.filme_id)||{}).lb_nota||0);
-    }
-    const extra = criterio==="desloc" ? -cines.size : criterio==="nota" ? nota : -dias.size;
-    return cont.concat([extra]);
-  };
-  const cmp=(a,b)=>{ for(let i=0;i<a.length;i++) if(a[i]!==b[i]) return a[i]-b[i]; return 0; };
+const OBJETIVOS=[
+  {id:"max",nome:"Máximo de filmes",desc:"Encaixa a maior quantidade possível, mesmo que um favorito longo ceda lugar a dois filmes."},
+  {id:"prio",nome:"Minhas prioridades",desc:"Protege primeiro “Quero muito”, depois “Quero ver” e “Se sobrar tempo” — mesmo que caibam menos."},
+  {id:"trocas",nome:"Menor deslocamento",desc:"Reduz as trocas de cinema. É a medida confiável disponível sem inventar quilômetros ou tempo de trajeto."},
+  {id:"dias",nome:"Menos dias",desc:"Concentra a programação em menos idas ao festival."},
+  {id:"espera",nome:"Menos tempo esperando",desc:"Reduz intervalos livres entre sessões do mesmo dia."},
+  {id:"nota",nome:"Melhores avaliações",desc:"Com a mesma quantidade de filmes, favorece as maiores notas disponíveis do Letterboxd."},
+];
+let plannerTrigger=null;
+function selecionarObjetivo(id){
+  if(!OBJETIVOS.some(x=>x.id===id)) return;
+  planPrefs.objetivo=id;
+  document.querySelectorAll(".goal-card").forEach(b=>b.classList.toggle("on",b.dataset.goal===id));
+  document.querySelectorAll(".goal-card").forEach(b=>b.setAttribute("aria-pressed",b.dataset.goal===id?"true":"false"));
+  const t=document.getElementById("planner-tolerance");
+  if(t) t.classList.toggle("show",["trocas","dias","espera"].includes(id));
+}
+function plannerBody(){
+  const st=statsRestr(), diasOk=DIAS.filter(d=>FAIXAS.some((_,i)=>!dispOff.has(chaveCel(d,i)))).length;
+  return `<div class="planner-summary">
+    <span><b>${watch.size}</b> filmes marcados</span><span><b>${st.filmes}</b> filmes ao alcance</span>
+    <span><b>${diasOk}</b> dias com algum horário livre</span></div>
+    <div class="planner-question">O que você quer priorizar?</div>
+    <div class="goal-list">${OBJETIVOS.map(o=>`<button class="goal-card${planPrefs.objetivo===o.id?" on":""}"
+      data-goal="${o.id}" aria-pressed="${planPrefs.objetivo===o.id}" onclick="selecionarObjetivo('${o.id}')">
+      <b>${esc(o.nome)}</b><small>${esc(o.desc)}</small></button>`).join("")}</div>
+    <details class="planner-settings"><summary>Ajustes da agenda</summary><div class="settings-grid">
+      <label class="setting check"><input id="plan-manter" type="checkbox" ${planPrefs.manter!==false?"checked":""}>
+        Manter as sessões que já estão na agenda</label>
+      <label class="setting">Tempo para trocar de cinema
+        <select id="plan-margem">${[20,30,40,60].map(n=>`<option value="${n}"${Number(planPrefs.margemCinema)===n?" selected":""}>${n} minutos</option>`).join("")}</select></label>
+      <label class="setting">Máximo de filmes por dia
+        <select id="plan-limite"><option value="0">Sem limite</option>${[1,2,3,4,5,6].map(n=>`<option value="${n}"${Number(planPrefs.limiteDia)===n?" selected":""}>${n}</option>`).join("")}</select></label>
+      <label class="setting">Terminar até
+        <input id="plan-fim" type="time" value="${esc(planPrefs.horaFim||"")}" aria-label="Horário máximo de término"></label>
+      <label class="setting planner-tolerance${["trocas","dias","espera"].includes(planPrefs.objetivo)?" show":""}" id="planner-tolerance">
+        Para melhorar este critério, aceito abrir mão de
+        <select id="plan-tolerancia"><option value="0">nenhum filme</option><option value="1"${Number(planPrefs.tolerancia)===1?" selected":""}>até 1 filme</option><option value="2"${Number(planPrefs.tolerancia)===2?" selected":""}>até 2 filmes</option></select></label>
+    </div></details>
+    <div class="planner-foot"><p class="planner-note">A agenda só muda depois que você revisar e aplicar a proposta.</p>
+      <button class="btn" onclick="fecharMontador()">Cancelar</button>
+      <button class="btn primary" onclick="gerarDoMontador()">Gerar proposta</button></div>`;
+}
+function abrirMontador(){
+  if(!watch.size){ toast("Marque filmes com ★ primeiro"); return; }
+  plannerTrigger=document.activeElement; medir("montar-abriu");
+  document.getElementById("planner-body").innerHTML=plannerBody();
+  const ov=document.getElementById("planner-overlay"); ov.classList.add("open");
+  document.body.style.overflow="hidden";
+  setTimeout(()=>ov.querySelector(".goal-card.on")?.focus(),0);
+}
+function fecharMontador(){
+  document.getElementById("planner-overlay").classList.remove("open");
+  document.body.style.overflow=modalFilmId?"hidden":"";
+  if(plannerTrigger&&plannerTrigger.focus) plannerTrigger.focus();
+}
+function gerarDoMontador(){
+  planPrefs.manter=document.getElementById("plan-manter").checked;
+  planPrefs.margemCinema=Number(document.getElementById("plan-margem").value);
+  planPrefs.limiteDia=Number(document.getElementById("plan-limite").value);
+  planPrefs.horaFim=document.getElementById("plan-fim").value;
+  const tol=document.getElementById("plan-tolerancia"); planPrefs.tolerancia=tol?Number(tol.value):0;
+  manterAgenda=planPrefs.manter; gravarLocal(LS_PLAN,planPrefs); fecharMontador();
+  medir("montar-gerou"); medir("objetivo-"+planPrefs.objetivo);
+  toast("Calculando a melhor combinação…");
+  setTimeout(()=>rodarEncaixe(planPrefs.objetivo),30);
+}
 
-  /* semente gulosa (a que termina mais cedo): dá um piso alto e a poda corta cedo */
-  const gul=[];
-  for(const it of busca){
-    const c=it.cands.slice().sort((a,b)=>(absMin(a)+durMin(a.duracao))-(absMin(b)+durMin(b.duracao)));
-    for(const s of c){
-      if(!gul.some(x=>chocaS(x.s,s)) && !base.some(b=>chocaS(b,s))){ gul.push({s,prio:it.prio}); break; }
+function metricasAgenda(sel, base=[]){
+  const xs=base.concat(sel.map(x=>x.s)).slice().sort((a,b)=>inicioAbs(a)-inicioAbs(b));
+  const dias=new Set(xs.map(s=>s.data)), cines=new Set(xs.map(s=>s.cinema));
+  let trocas=0, espera=0, nota=0, notas=0;
+  for(let i=0;i<xs.length;i++){
+    const f=FILME.get(xs[i].filme_id)||{};
+    if(Number(f.lb_nota)>0){ nota+=Number(f.lb_nota); notas++; }
+    const ant=xs[i-1];
+    if(ant&&ant.data===xs[i].data){
+      const margem=ant.cinema!==xs[i].cinema?Number(planPrefs.margemCinema||40):0;
+      if(ant.cinema!==xs[i].cinema) trocas++;
+      espera+=Math.max(0,inicioAbs(xs[i])-fimAbs(ant)-margem);
     }
   }
-  let melhor=gul.slice(), melhorP=pontuar(gul.concat(baseSel));
-
-  const sel=[]; const cur=NIVEIS.map(()=>0); let estourou=false;
-  const t0=performance.now();
-  (function dfs(i){
+  return {filmes:new Set(xs.map(s=>s.filme_id)).size,dias:dias.size,cines:cines.size,trocas,espera,nota,notas};
+}
+const cmpScore=(a,b)=>{ for(let i=0;i<Math.max(a.length,b.length);i++) if((a[i]||0)!==(b[i]||0)) return (a[i]||0)-(b[i]||0); return 0; };
+function scoreAgenda(sel,base,objetivo,minFilmes=0){
+  const m=metricasAgenda(sel,base), cont=NIVEIS.map(n=>sel.filter(x=>x.prio===n).length);
+  if(m.filmes<minFilmes) return null;
+  if(objetivo==="prio") return cont.concat([m.filmes,-m.trocas,-m.espera]);
+  if(objetivo==="trocas") return [-m.trocas,m.filmes].concat(cont,[-m.espera]);
+  if(objetivo==="dias") return [-m.dias,m.filmes].concat(cont,[-m.trocas,-m.espera]);
+  if(objetivo==="espera") return [-m.espera,m.filmes].concat(cont,[-m.trocas]);
+  if(objetivo==="nota") return [m.filmes,m.nota,m.notas].concat(cont,[-m.trocas]);
+  return [m.filmes].concat(cont,[-m.trocas,-m.espera]);
+}
+function buscarAgenda(busca,base,objetivo,minFilmes,limiteMs,semente){
+  const inicio=performance.now(), sel=[];
+  let melhor=(semente||[]).slice(), melhorP=scoreAgenda(melhor,base,objetivo,minFilmes), estourou=false;
+  const limiteDia=Number(planPrefs.limiteDia||0);
+  const porDiaBase={}; base.forEach(s=>porDiaBase[s.data]=(porDiaBase[s.data]||0)+1);
+  function dfs(i){
     if(estourou) return;
-    if(performance.now()-t0>limiteMs){ estourou=true; return; }
-    /* poda: se nem no melhor caso este ramo empata com o melhor já achado, cai fora */
-    for(let k=0;k<NIVEIS.length;k++){
-      const teto=cur[k]+suf[k][i];
-      if(teto<melhorP[k]) return;
-      if(teto>melhorP[k]) break;      /* pode superar aqui: vale continuar */
-    }
-    if(i===n){
-      const p=pontuar(sel.concat(baseSel));
-      if(cmp(p,melhorP)>0){ melhorP=p; melhor=sel.slice(); }
+    if(performance.now()-inicio>limiteMs){ estourou=true; return; }
+    if(i===busca.length){
+      const p=scoreAgenda(sel,base,objetivo,minFilmes);
+      if(p&&(!melhorP||cmpScore(p,melhorP)>0)){ melhor=sel.slice(); melhorP=p; }
       return;
     }
     const it=busca[i];
     for(const s of it.cands){
-      if(sel.some(x=>chocaS(x.s,s))) continue;
-      if(base.some(b=>chocaS(b,s))) continue;
-      const k=NIVEIS.indexOf(it.prio);
-      sel.push({s,prio:it.prio}); if(k>=0)cur[k]++;
-      dfs(i+1);
-      sel.pop(); if(k>=0)cur[k]--;
+      if(sel.some(x=>chocaS(x.s,s))||base.some(b=>chocaS(b,s))) continue;
+      if(limiteDia){
+        const noDia=(porDiaBase[s.data]||0)+sel.filter(x=>x.s.data===s.data).length;
+        if(noDia>=limiteDia) continue;
+      }
+      sel.push({s,prio:it.prio}); dfs(i+1); sel.pop();
       if(estourou) return;
     }
-    dfs(i+1);   /* deixar este filme de fora também é uma opção */
-  })(0);
+    dfs(i+1);
+  }
+  dfs(0);
+  return {sel:melhor,estourou};
+}
 
-  const dentro=new Set(melhor.map(x=>x.s.filme_id));
+function encaixar(criterio, limiteMs){
+  criterio=criterio||planPrefs.objetivo||"max"; limiteMs=limiteMs||1200;
+  const base=manterAgenda?[...agenda].map(i=>SESSAO.get(i)).filter(Boolean):[];
+  const travados=new Set(base.map(s=>s.filme_id));
+  const busca=[...watch.entries()].filter(([id])=>FILME.has(id)&&!travados.has(id))
+    .map(([id,prio])=>({id,prio,cands:candidatos(id)}))
+    .sort((a,b)=>(a.cands.length-b.cands.length)||(criterio==="prio"?a.prio-b.prio:0)||a.id.localeCompare(b.id));
+  busca.forEach(it=>it.cands.sort((a,b)=>inicioAbs(a)-inicioAbs(b)||String(a.sessao_id).localeCompare(String(b.sessao_id))));
+  const gul=[];
+  for(const it of busca){
+    for(const s of it.cands){
+      if(Number(planPrefs.limiteDia||0)){
+        const noDia=base.filter(b=>b.data===s.data).length+gul.filter(x=>x.s.data===s.data).length;
+        if(noDia>=Number(planPrefs.limiteDia)) continue;
+      }
+      if(!gul.some(x=>chocaS(x.s,s)) && !base.some(b=>chocaS(b,s))){ gul.push({s,prio:it.prio}); break; }
+    }
+  }
+  const exigePiso=["trocas","dias","espera"].includes(criterio);
+  let referencia=null, resultado;
+  if(exigePiso){
+    referencia=buscarAgenda(busca,base,"max",0,Math.max(350,limiteMs*.55),gul);
+    const nRef=metricasAgenda(referencia.sel,base).filmes;
+    const fixos=new Set(base.map(s=>s.filme_id)).size;
+    const piso=Math.max(fixos,nRef-Number(planPrefs.tolerancia||0),nRef>0?1:0);
+    resultado=buscarAgenda(busca,base,criterio,piso,Math.max(300,limiteMs*.45),referencia.sel);
+    resultado.piso=piso; resultado.nRef=nRef;
+  }else resultado=buscarAgenda(busca,base,criterio,0,limiteMs,gul);
+  const melhor=resultado.sel, dentro=new Set(melhor.map(x=>x.s.filme_id));
   const fora=busca.filter(it=>!dentro.has(it.id)).map(it=>({
     id:it.id, prio:it.prio,
     motivo: it.cands.length===0
       ? ((SESS_BY_FILME.get(it.id)||[]).length ? "nenhuma sessão cabe na sua disponibilidade" : "sem sessão na programação")
-      : "todas as sessões batem com outros filmes marcados",
+      : (resultado.estourou?"não entrou na melhor combinação encontrada":"cedeu lugar a outra combinação"),
   }));
-  /* se todo mundo coube, nao existe melhor: o aviso de tempo nao se aplica */
-  return {sel:melhor, base, fora, criterio, estourou: estourou && fora.length>0};
+  return {sel:melhor,base,fora,criterio,estourou:resultado.estourou||(referencia&&referencia.estourou),
+    metricas:metricasAgenda(melhor,base),piso:resultado.piso,nRef:resultado.nRef};
 }
 
-function rodarEncaixe(criterio){
+function rodarEncaixe(criterio,limiteMs){
   if(!watch.size){ toast("Marque filmes com ★ primeiro"); return; }
-  proposta=encaixar(criterio);
+  proposta=encaixar(criterio,limiteMs);
   renderAgenda();
+  toast(proposta.estourou?"Proposta pronta — a busca atingiu o limite de tempo":"✓ Proposta pronta para revisar");
   const t=document.getElementById("proposta");
   if(t) t.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 function aplicarProposta(){
   if(!proposta) return;
+  guardarDesfazer("aplicar proposta");
   if(!manterAgenda) agenda.clear();
   proposta.sel.forEach(x=>agenda.add(x.s.sessao_id));
   const n=proposta.sel.length;
-  proposta=null; save(); updateBadge(); renderAgenda();
+  proposta=null; save(); updateBadge(); renderAgenda(); medir("proposta-aplicada");
   toast(`✓ ${n} ${n===1?"sessão encaixada":"sessões encaixadas"}`);
 }
-function descartarProposta(){ proposta=null; renderAgenda(); }
-function alternarManter(v){ manterAgenda=v; if(proposta) rodarEncaixe(proposta.criterio); }
+function descartarProposta(){ proposta=null; renderAgenda(); medir("proposta-descartada"); }
+function alternarManter(v){ manterAgenda=v; planPrefs.manter=v; gravarLocal(LS_PLAN,planPrefs); if(proposta) rodarEncaixe(proposta.criterio); }
 
 /* ── tela de disponibilidade ── */
 function perfisBody(){
@@ -1670,34 +1941,40 @@ function renderDisp(){
 function propostaBody(){
   if(!proposta) return "";
   const p=proposta;
-  const dias=new Set(p.sel.concat(p.base.map(s=>({s}))).map(x=>x.s.data)).size;
-  const cines=new Set(p.sel.map(x=>x.s.cinema)).size;
+  const m=p.metricas||metricasAgenda(p.sel,p.base);
   const porNivel=NIVEIS.map(niv=>({
     niv,
     dentro:p.sel.filter(x=>x.prio===niv).length,
     fora:p.fora.filter(f=>f.prio===niv).length,
   })).filter(x=>x.dentro+x.fora>0);
-  const crit=[["dias","menos dias"],["desloc","menos deslocamento"],["nota","melhor nota"]];
+  const obj=OBJETIVOS.find(x=>x.id===p.criterio)||OBJETIVOS[0];
   const porDia={};
   for(const x of p.sel){ (porDia[x.s.data]??=[]).push(x.s); }
   return `<div class="proposta" id="proposta">
     <div class="prop-top">
       <div>
-        <h3>Encaixei ${p.sel.length} ${p.sel.length===1?"sessão":"sessões"}</h3>
+        <h3>Proposta com ${m.filmes} ${m.filmes===1?"filme":"filmes"}</h3>
         <p class="prop-sub">
           ${porNivel.map(x=>`${x.dentro} de ${x.dentro+x.fora} ${esc(PRIO_ROT[x.niv])}`).join(" · ")}
-          · ${dias} ${dias===1?"dia":"dias"} no festival · ${cines} ${cines===1?"cinema":"cinemas"}
-          ${p.estourou?`<span class="prop-aviso" title="A busca parou no limite de tempo — pode existir combinação um pouco melhor">≈ melhor que achei em 1,2 s</span>`:""}
+          ${p.estourou?`<span class="prop-aviso" title="A busca parou no limite de tempo — pode existir combinação melhor">≈ melhor combinação encontrada no tempo disponível</span>`:""}
         </p>
       </div>
       <div class="prop-acoes">
+        <button class="btn" onclick="abrirMontador()">Alterar critérios</button>
+        ${p.estourou?`<button class="btn" onclick="rodarEncaixe('${p.criterio}',5000)">Buscar combinação melhor</button>`:""}
         <button class="btn" onclick="descartarProposta()">Descartar</button>
         <button class="btn primary" onclick="aplicarProposta()"${p.sel.length?"":" disabled"}>✓ Aplicar</button>
       </div>
     </div>
+    <div class="prop-metrics">
+      <span class="prop-metric">Objetivo <b>${esc(obj.nome)}</b></span>
+      <span class="prop-metric"><b>${m.dias}</b> ${m.dias===1?"dia":"dias"}</span>
+      <span class="prop-metric"><b>${m.trocas}</b> ${m.trocas===1?"troca":"trocas"} de cinema</span>
+      <span class="prop-metric"><b>${Math.floor(m.espera/60)}h${pad(m.espera%60)}</b> de espera</span>
+      ${m.notas?`<span class="prop-metric"><b>${m.notas}</b> filmes com nota</span>`:""}
+    </div>
     <div class="prop-crit">
-      Priorizar:
-      ${crit.map(([k,r])=>`<button class="crit${p.criterio===k?" on":""}" onclick="rodarEncaixe('${k}')">${r}</button>`).join("")}
+      ${p.nRef!==undefined?`Referência: ${p.nRef} filmes · mínimo aceito nesta busca: ${p.piso}`:"Objetivo aplicado à proposta inteira"}
       <label class="prop-manter"><input type="checkbox" ${manterAgenda?"checked":""}
         onchange="alternarManter(this.checked)"> manter o que já está na agenda</label>
     </div>
@@ -1740,16 +2017,17 @@ const de36=t=>String(parseInt(t,36));
 
 function montarLink(){
   const p=new URLSearchParams();
+  p.set("v","2"); p.set("e",LS_PREFIX.replace(/\D/g,""));
   if(agenda.size) p.set("a",[...agenda].map(b36).join("."));
-  const q=[...watch].filter(([,v])=>v===1).map(([k])=>b36(k));
-  const s=[...watch].filter(([,v])=>v===2).map(([k])=>b36(k));
-  if(q.length) p.set("q",q.join("."));
-  if(s.length) p.set("s",s.join("."));
+  for(const niv of NIVEIS){
+    const ids=[...watch].filter(([,v])=>v===niv).map(([k])=>b36(k));
+    if(ids.length) p.set(`p${niv}`,ids.join("."));
+  }
   return location.origin+location.pathname+"#"+p.toString();
 }
 async function copiarLink(){
   if(!agenda.size && !watch.size){ toast("Nada para compartilhar ainda"); return; }
-  const url=montarLink();
+  const url=montarLink(); medir("link-copiado");
   try{
     await navigator.clipboard.writeText(url);
     toast("🔗 Link copiado — mande para você mesmo e abra no celular");
@@ -1759,20 +2037,54 @@ async function copiarLink(){
   }
 }
 
+function exportarBackup(){
+  const dados={schema:2,edicao:LS_PREFIX,criadoEm:new Date().toISOString(),agenda:[...agenda],
+    watch:[...watch],disponibilidadeBloqueada:[...dispOff],cinemasBloqueados:[...cinOff],preferencias:planPrefs};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(dados,null,2)],{type:"application/json"}));
+  const a=document.createElement("a"); a.href=url; a.download=`${LS_PREFIX}-backup.json`; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),2000); toast("Backup baixado"); medir("backup");
+}
+async function importarBackup(arq){
+  if(!arq) return;
+  try{
+    const d=JSON.parse(await arq.text());
+    if(d.schema!==2||d.edicao!==LS_PREFIX||!Array.isArray(d.agenda)||!Array.isArray(d.watch))
+      throw new Error("Este arquivo não pertence a esta edição do planejador");
+    const ag=d.agenda.filter(id=>SESSAO.has(id));
+    const wa=d.watch.filter(x=>Array.isArray(x)&&FILME.has(x[0])&&NIVEIS.includes(Number(x[1])));
+    if(!confirm(`Restaurar ${ag.length} sessões e ${wa.length} filmes marcados?\n\nA agenda atual será substituída.`)) return;
+    guardarDesfazer("restaurar backup");
+    agenda=new Set(ag); watch=new Map(wa);
+    dispOff=new Set(Array.isArray(d.disponibilidadeBloqueada)?d.disponibilidadeBloqueada:[]);
+    cinOff=new Set(Array.isArray(d.cinemasBloqueados)?d.cinemasBloqueados:[]);
+    planPrefs=Object.assign({},PLAN_DEFAULT,d.preferencias||{}); manterAgenda=planPrefs.manter!==false;
+    save(); saveRestr(); gravarLocal(LS_PLAN,planPrefs); proposta=null;
+    updateBadge(); renderGrid(); refreshViews(); toast("Backup restaurado"); medir("restaurou");
+  }catch(e){ toast(e.message||"Não foi possível ler o backup"); }
+}
+
 function lerLink(){
   const h=location.hash.replace(/^#/,"");
   if(!h) return null;
   const p=new URLSearchParams(h);
   const ids=t=>(p.get(t)||"").split(".").filter(Boolean).map(de36);
   const ag=ids("a").filter(id=>SESSAO.has(id));
-  const q =ids("q").filter(id=>FILME.has(id));
-  const s =ids("s").filter(id=>FILME.has(id));
-  return (ag.length||q.length||s.length) ? {ag,q,s} : null;
+  if(p.get("v")==="2"){
+    const ed=p.get("e");
+    if(ed&&ed!==LS_PREFIX.replace(/\D/g,"")) return {incompativel:true,ed};
+    const marc=NIVEIS.flatMap(n=>ids(`p${n}`).filter(id=>FILME.has(id)).map(id=>[id,n]));
+    return (ag.length||marc.length) ? {ag,marc} : null;
+  }
+  /* formato anterior: q era prioridade 1 e s era o segundo nível da época */
+  const marc=[...ids("q").filter(id=>FILME.has(id)).map(id=>[id,1]),
+    ...ids("s").filter(id=>FILME.has(id)).map(id=>[id,2])];
+  return (ag.length||marc.length) ? {ag,marc,legado:true} : null;
 }
 function aplicarLink(l){
+  if(l.incompativel){ toast(`Este link é da ${l.ed}ª edição`); return; }
   agenda=new Set(l.ag);
-  watch=new Map([...l.q.map(id=>[id,1]), ...l.s.map(id=>[id,2])]);
-  save(); updateBadge(); refreshViews();
+  watch=new Map(l.marc);
+  save(); updateBadge(); renderGrid(); refreshViews();
   history.replaceState(null,"",location.pathname);
   const n=l.ag.length;
   toast(n?`✓ Agenda aberta — ${n} ${n===1?"sessão":"sessões"}`:"✓ Lista de filmes aberta");
@@ -1784,6 +2096,8 @@ function dispensarLink(){
 function checarLink(){
   const l=lerLink();
   if(!l) return;
+  medir("chegou-por-link");
+  if(l.incompativel){ toast(`Link incompatível: ${l.ed}ª edição`); return; }
   /* agenda vazia: abre direto. Se já tem coisa, nunca sobrescreve sem perguntar. */
   if(!agenda.size && !watch.size){ aplicarLink(l); return; }
   const d=document.createElement("div");
@@ -1796,6 +2110,10 @@ function checarLink(){
   document.body.appendChild(d);
 }
 addEventListener("DOMContentLoaded",checarLink);
+
+/* instalado como app (PWA): quem instala e quem já abre pelo ícone */
+addEventListener("appinstalled",()=>medir("pwa-instalou"));
+if((window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone) medir("abriu-como-app");
 
 /* service worker: só registra quando servido por http(s) — em file:// nem tenta */
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
@@ -1838,6 +2156,7 @@ function limparMarcacoes(){
   if(!watch.size){ toast("Nenhum filme marcado"); return; }
   const n=watch.size;
   if(!confirm(`Tirar a marcação de ${n} ${n===1?"filme":"filmes"}?\n\nAs sessões que já estão na agenda continuam lá.`)) return;
+  guardarDesfazer("limpar marcações");
   watch.clear(); save(); renderGrid(); refreshViews(); atualizarBtnLimpar();
   toast(`${n} ${n===1?"filme desmarcado":"filmes desmarcados"}`);
 }
@@ -1845,6 +2164,7 @@ function limparAgenda(){
   if(!agenda.size){ toast("Agenda já está vazia"); return; }
   const n=agenda.size;
   if(!confirm(`Tirar as ${n} ${n===1?"sessão":"sessões"} da agenda?\n\nOs filmes marcados com ★ continuam marcados.`)) return;
+  guardarDesfazer("limpar agenda");
   agenda.clear(); proposta=null; save(); updateBadge(); renderAgenda(); renderGrid();
   toast(`Agenda esvaziada — ${n} ${n===1?"sessão removida":"sessões removidas"}`);
 }
@@ -1939,6 +2259,7 @@ function slugArq(s){
 function exportSessaoICS(id){
   const s=SESSAO.get(id);
   if(!s){ toast("Sessão não encontrada"); return; }
+  medir("ics-sessao");
   icsBaixar(icsEvento(s, icsProxSeq()), `${LS_PREFIX}-${slugArq(s.titulo)}-${s.data}.ics`);
   toast(`📅 ${s.titulo} · ${diaCurto(s.data)} ${s.hora}`);
 }
@@ -1948,7 +2269,7 @@ function exportICS(){
   const items=[...agenda].map(id=>SESSAO.get(id)).filter(Boolean)
     .sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora));
   if(!items.length){ toast("Agenda vazia"); return; }
-  const seq=icsProxSeq();
+  const seq=icsProxSeq(); medir("ics-agenda");
   icsBaixar(items.flatMap(s=>icsEvento(s,seq)), `${LS_PREFIX}-agenda.ics`);
   toast(`📅 ${items.length} ${items.length===1?"sessão exportada":"sessões exportadas"}`);
 }
@@ -1965,6 +2286,7 @@ function copyAgenda(){
     for(const s of porDia[d]) txt+=`${s.hora} · ${s.titulo} · ${s.cinema} (${s.sala})\n`;
     txt+="\n";
   }
+  medir("agenda-copiada");
   navigator.clipboard.writeText(txt).then(()=>toast("⧉ Agenda copiada"));
 }
 
@@ -1972,6 +2294,7 @@ function copyAgenda(){
 buildFilters();
 renderGrid();
 updateBadge();
+if(storageFalhou) setTimeout(()=>toast("Alguns dados salvos estavam inválidos e foram recuperados"),0);
 </script>
 </body>
 </html>

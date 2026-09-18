@@ -3,7 +3,7 @@
 **→ [Abrir o planejador](https://cainanbaladez-bot.github.io/planejador-mostrasp/)**
 
 Planejador pessoal da programação da Mostra Internacional de Cinema de São Paulo.
-A pessoa explora os filmes, marca os que quer ver (★ quero muito / ☆ se sobrar) e
+A pessoa explora os filmes, marca os que quer ver (★ quero muito / ★ quero ver / ☆ se sobrar) e
 monta a agenda — com detecção de conflito de horário, encaixe automático das sessões
 dentro da disponibilidade dela e exportação para o calendário.
 
@@ -85,8 +85,9 @@ nos aparelhos que já instalaram.
   **lista vertical de dias** (estilo "agenda" do Google, sem rolagem lateral), a grade
   de filmes vira 2 colunas, o modal ocupa a tela inteira e os alvos de toque vão a 40px.
   Testado a 375px: nenhuma tela rola pro lado.
-- **Persistência**: localStorage — chaves derivadas de `LS_PREFIX` no template
-  (`mostra49_agenda`, `mostra49_watch`, `mostra49_modo`, `mostra49_ics_seq`).
+- **Persistência**: localStorage — chaves derivadas de `LS_PREFIX` no template. Escritas e
+  leituras inválidas são tratadas sem impedir a abertura do app. O botão **⇩ Backup** baixa
+  agenda, marcações, disponibilidade, cinemas e preferências; **⇧ Restaurar** importa o arquivo.
 
 ## Quando sair a 50ª Mostra
 
@@ -146,21 +147,26 @@ nunca se sacrifica um nível alto para caber um baixo.
 O `localStorage` migra sozinho: a chave passou a ser `mostra49_watch3`, e o valor
 2 do formato antigo (que queria dizer "se sobrar tempo") vira 3.
 
-### ⚡ Encaixar
+### ⚡ Montar minha agenda
 
-Botão no topo da Minha Agenda. Escolhe **uma sessão por filme marcado**, sem
-sobreposição e com 40 min de folga quando troca de cinema, respeitando disponibilidade
-e geografia. Mostra uma **proposta** (não aplica nada sozinho) com:
+O botão no topo da Minha Agenda abre primeiro as escolhas do planejamento. A pessoa
+seleciona o objetivo principal antes de gerar a proposta:
 
-- quantos encaixaram, quantos dos "quero muito", dias no festival e cinemas;
-- as sessões escolhidas, por dia;
-- **o que ficou de fora e por quê** — "nenhuma sessão cabe na sua disponibilidade" ou
-  "todas as sessões batem com outros filmes marcados";
-- **desempate escolhido pela pessoa**: *menos dias · menos deslocamento · melhor nota*
-  (trocar re-roda na hora — num teste com 20 filmes: 9 dias/8 cinemas vs 12 dias/7
-  cinemas vs 10 dias/8 cinemas);
-- caixa *manter o que já está na agenda* (ligada) — o encaixe **nunca sobrescreve
-  calado**; e *Aplicar* / *Descartar*.
+- **máximo de filmes**;
+- **minhas prioridades** — protege os três níveis de marcação;
+- **menos deslocamentos** — reduz trocas de cinema, pois a programação não traz
+  coordenadas verificadas para calcular quilômetros;
+- **menos dias**, **menos espera** ou **melhores notas**.
+
+Também é possível manter as sessões já escolhidas, configurar 20/30/40/60 minutos para
+troca de cinema, limitar filmes por dia, definir o último horário aceitável e permitir
+uma tolerância de 0–2 filmes quando o objetivo reduz um custo. Para esses objetivos, o
+planejador encontra primeiro o máximo possível e só aceita uma agenda dentro da tolerância.
+
+A proposta mostra filmes, dias, trocas de cinema, espera e cobertura de notas, além das
+sessões escolhidas e do motivo de cada exclusão. Ela só altera a agenda quando a pessoa
+pressiona **Aplicar**. **Buscar combinação melhor** amplia a busca de 1,2 para 5 segundos.
+Todas as edições importantes oferecem **↶ Desfazer**.
 
 Por dentro: busca em profundidade com poda otimista, semeada por uma solução gulosa
 (a sessão que termina mais cedo), ordenando os filmes do mais restrito para o menos.
@@ -171,12 +177,37 @@ que é a melhor, e isso só aparece marcando 40+ filmes.
 ## 🔗 Link da agenda (em vez de login)
 
 Não há cadastro, senha nem servidor. A agenda mora no `localStorage` do navegador, e o
-botão **🔗 Link** copia um endereço que carrega **a agenda inteira dentro da própria URL**
-(ids em base 36: uma agenda de 20 sessões mais 20 filmes marcados dá ~200 caracteres).
+botão **🔗 Link** copia um endereço versionado que carrega **a agenda inteira e os três
+níveis de prioridade dentro da própria URL** (ids em base 36: uma agenda de 20 sessões mais
+20 filmes marcados dá cerca de 200 caracteres).
 A pessoa manda o link para si mesma e abre no celular — ou manda para um amigo.
 
 Abrir um link desses **nunca sobrescreve calado**: se já houver agenda no aparelho,
 aparece uma barra perguntando *"abrir a do link"* ou *"manter a minha"*.
+
+## Medição de uso (GoatCounter)
+
+Mesma conta dos outros sites (`fsa-fomento.goatcounter.com`), sem cookie e sem banner.
+Além da abertura da página, desde 17/09/2026 o app manda **eventos** `mostra/<ação>`
+pela função `medir()` do template — **uma vez por abertura da página** (repetir a ação
+não conta de novo), então o número lido é de *pessoas que fizeram*, não de cliques.
+
+| evento | quando |
+|---|---|
+| `marcou-filme` | primeira marcação ★ (estrela ou combobox) |
+| `aba-disponibilidade` / `aba-agenda` | abriu a aba |
+| `disponibilidade` · `perfil-<id>` | mexeu na grade/cinemas · aplicou um perfil pronto |
+| `sessao-manual` | pôs sessão na agenda à mão |
+| `montar-abriu` · `montar-gerou` · `objetivo-<id>` | abriu o montador · gerou proposta · objetivo escolhido |
+| `proposta-aplicada` / `proposta-descartada` | decidiu a proposta |
+| `ics-sessao` · `ics-agenda` · `google-agenda` | levou pro calendário |
+| `link-copiado` · `chegou-por-link` | compartilhou · abriu um link de agenda |
+| `agenda-copiada` · `backup` · `restaurou` | texto, backup e restauração |
+| `pwa-instalou` · `abriu-como-app` | instalou / abriu pelo ícone |
+
+Quem lê: o painel privado `analise-empirica-fsa-2014-2023/scripts/27_uso.py`
+(localhost:8790), ripa do Planejador → "O que fizeram lá dentro" e "Como quiseram montar".
+Evento novo = chamar `medir("nome")` aqui e pôr o rótulo em `ACAO_MOSTRA` lá.
 
 ## PWA (instalar no celular, abrir offline)
 
