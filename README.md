@@ -213,6 +213,8 @@ não conta de novo), então o número lido é de *pessoas que fizeram*, não de 
 | `ics-sessao` · `ics-agenda` · `google-agenda` | levou pro calendário |
 | `link-copiado` · `chegou-por-link` | compartilhou · abriu um link de agenda |
 | `agenda-copiada` · `backup` · `restaurou` | texto, backup e restauração |
+| `instalar-clicou` · `instalar-fechou` | tocou em 📲 Instalar · fechou a barra |
+| `instalar-aceitou` / `instalar-recusou` | respondeu à janela de instalação do Android |
 | `pwa-instalou` · `abriu-como-app` | instalou / abriu pelo ícone |
 
 Quem lê: o painel privado `analise-empirica-fsa-2014-2023/scripts/27_uso.py`
@@ -229,6 +231,27 @@ que são guardados conforme aparecem. Em `file://` o registro nem é tentado.
 
 Testado com o servidor derrubado: o app abriu inteiro do cache, com os 380 filmes e as
 1309 sessões.
+
+### 📲 Instalar no celular (24/09/2026)
+
+O navegador sozinho quase não oferece a instalação: no Android o Chrome às vezes mostra uma
+barrinha, e no iPhone o Safari **nunca** oferece — tem que saber o caminho *Compartilhar →
+Adicionar à Tela de Início*. No primeiro dia do Planejador do Rio, 1 pessoa instalou (Android)
+e nenhuma em iPhone, com quase metade do público em iOS. Por isso o app agora oferece:
+
+- **Barra discreta embaixo**, 12 s depois de abrir, **só no celular** e fora do app instalado.
+  O `×` guarda a recusa (`<LS_PREFIX>_instalar` no localStorage) e ela não volta.
+- **Android/Chrome:** o botão chama a janela do próprio Chrome (`beforeinstallprompt`,
+  guardado com `preventDefault`).
+- **iPhone:** abre uma folha com os 3 passos do Compartilhar, com o ícone desenhado.
+- **Navegador de dentro de outro app** (X, Instagram, WhatsApp, Facebook — detectado pelo
+  user agent): esses não instalam, então o texto manda abrir no navegador primeiro. É o caso
+  de quem chega pelo link do X.
+- **Link fixo no rodapé** ("📲 Instalar no celular") para quem fechou a barra.
+- Some de vez depois do `appinstalled` ou de um "aceitou".
+
+Mesmo código nos dois planejadores (SP e Rio). Os ramos iPhone / dentro do X / dentro do
+Instagram / PC foram testados rodando o bloco com o user agent trocado.
 
 ## Preview browser / celular
 
