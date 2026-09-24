@@ -10,7 +10,7 @@
    a pessoa já viu continua aparecendo offline, sem baixar 380 imagens de véspera.
 
    Ao publicar uma versão nova do app, suba o VERSAO — isso descarta o cache velho. */
-const VERSAO = "v8";
+const VERSAO = "v9";
 const SHELL  = "planejador-shell-" + VERSAO;
 const MIDIA  = "planejador-posteres-" + VERSAO;
 
@@ -35,7 +35,7 @@ self.addEventListener("activate", e => {
   e.waitUntil(
     caches.keys()
       .then(ks => Promise.all(
-        ks.filter(k => k.startsWith("planejador-") && k !== SHELL && k !== MIDIA)
+        ks.filter(k => /^planejador-(shell|posteres)-/.test(k) && k !== SHELL && k !== MIDIA)
           .map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
