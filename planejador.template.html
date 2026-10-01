@@ -1257,7 +1257,7 @@ function renderGrid(){
         <div class="card-dir">${esc(f.diretores)}</div>
         <div class="card-meta">
           <span>${esc(f.pais)}</span><span>${esc(f.ano)}</span><span>${esc(f.duracao)}</span>
-          <span class="sess">${f.n_sessoes} ${f.n_sessoes===1?"sessão":"sessões"}</span>
+          <span class="sess">${f.n_sessoes} ${Number(f.n_sessoes)===1?"sessão":"sessões"}</span>
         </div>
         ${(f.premiado||(f.festivais||[]).length)?`<div class="laurels">
           ${f.premiado?`<span class="laurel win">🏆 PREMIADO</span>`:""}
@@ -1947,7 +1947,7 @@ function geoBody(){
         <button class="geo-h" onclick="alternarRegiao('${r.id}')">
           <span class="geo-cx">${on===total?"✓":on===0?"":"–"}</span>
           <span class="geo-t">${esc(r.rot)}</span>
-          <span class="geo-n">${r.ses} sessões${total>1?` · ${on}/${total} cinemas`:""}</span>
+          <span class="geo-n">${r.ses} ${r.ses===1?"sessão":"sessões"}${total>1?` · ${on}/${total} cinemas`:""}</span>
         </button>
         ${total>1?`<button class="geo-mais" onclick="this.closest('.geo-reg').classList.toggle('aberto')">ajustar ▾</button>`:""}
       </div>
@@ -2123,7 +2123,7 @@ async function importarBackup(arq){
       throw new Error("Este arquivo não pertence a esta edição do planejador");
     const ag=d.agenda.filter(id=>SESSAO.has(id));
     const wa=d.watch.filter(x=>Array.isArray(x)&&FILME.has(x[0])&&NIVEIS.includes(Number(x[1])));
-    if(!confirm(`Restaurar ${ag.length} sessões e ${wa.length} filmes marcados?\n\nA agenda atual será substituída.`)) return;
+    if(!confirm(`Restaurar ${ag.length} ${ag.length===1?"sessão":"sessões"} e ${wa.length} ${wa.length===1?"filme marcado":"filmes marcados"}?\n\nA agenda atual será substituída.`)) return;
     guardarDesfazer("restaurar backup");
     agenda=new Set(ag); watch=new Map(wa);
     dispOff=new Set(Array.isArray(d.disponibilidadeBloqueada)?d.disponibilidadeBloqueada:[]);
