@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icone-192.png">
-<title>Planejador · 49ª Mostra de Cinema de São Paulo</title>
+<title>Planejador · 50ª Mostra de Cinema de São Paulo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -392,6 +392,13 @@ select:focus{outline:none;border-color:var(--amber)}
 }
 
 /* ─── agenda ─── */
+/* modo festival: sessão que já começou */
+.sess-row.passou{opacity:.45}
+.sess-passou{font:600 10.5px var(--font-mono);color:var(--dim);letter-spacing:.08em;text-transform:uppercase;padding:0 6px}
+.side-chip.passou{opacity:.35;cursor:default;text-decoration:line-through}
+.dica-backup{display:flex;gap:10px;align-items:flex-start;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin-bottom:16px;font-size:13px;color:var(--muted);line-height:1.45}
+.dica-backup a{color:var(--amber)}
+.dica-backup button{margin-left:auto;background:none;border:0;color:var(--dim);font-size:18px;cursor:pointer;line-height:1}
 .agenda-top{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-bottom:22px}
 .mode-switch{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
 .mode-btn{
@@ -857,12 +864,11 @@ footer{
 </head>
 <body>
 <div class="strip"></div>
-<div class="beta" role="note"><p><b>BETA</b>Versão de teste, com a programação da 49ª Mostra (2025). A versão final sai quando a programação da 50ª Mostra for publicada.</p></div>
 <header>
   <div class="header-in">
     <div class="brand">
-      <h1>Planejador <em>▸ 49ª Mostra</em></h1>
-      <div class="sub">Mostra Internacional de Cinema · São Paulo · 16 out — 5 nov 2025</div>
+      <h1>Planejador <em>▸ 50ª Mostra</em></h1>
+      <div class="sub">Mostra Internacional de Cinema · São Paulo · 14 out — 1º nov 2026</div>
     </div>
     <nav class="tabs">
       <button class="tab active" data-view="filmes" onclick="setView('filmes')">Filmes</button>
@@ -917,11 +923,12 @@ footer{
   <section id="view-disp" hidden><div id="disp-root"></div></section>
 
   <section id="view-agenda" hidden>
+    <div id="agenda-avisos"></div>
     <div id="agenda-root"></div>
   </section>
 </main>
 
-<footer>DADOS · MOSTRA.ORG · 49ª EDIÇÃO — AGENDA SALVA NESTE NAVEGADOR</footer>
+<footer>DADOS · MOSTRA.ORG · 50ª EDIÇÃO — AGENDA SALVA NESTE NAVEGADOR</footer>
 
 <!-- modal -->
 <div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
@@ -990,6 +997,15 @@ for(const s of SESSOES){
 for(const arr of SESS_BY_FILME.values()) arr.sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora));
 
 const DIAS = [...new Set(SESSOES.map(s=>s.data))].sort();
+/* ── modo festival (29/09/2026): o app sabe que horas são no Rio ──────────────
+   Sessão que já começou fica apagada, sem "+ AGENDA", e sai do montador e dos
+   filtros. `?agora=2026-10-03T15:00` na URL simula outro momento (para testar). */
+const AGORA_TESTE=(()=>{ const m=/[?&]agora=([\d:T-]+)/.exec(location.search);
+  return m?new Date(m[1].length<=16?m[1]+":00-03:00":m[1]):null; })();
+const agora=()=>AGORA_TESTE||new Date();
+const inicioSessao=s=>new Date(`${s.data}T${s.hora}:00-03:00`);
+const passou=s=>inicioSessao(s)<=agora();
+const diaRio=dt=>new Date(dt.getTime()-3*3600e3).toISOString().slice(0,10);
 const CINEMAS = [...new Set(SESSOES.map(s=>s.cinema))].sort((a,b)=>a.localeCompare(b,'pt'));
 const SECOES = [...new Set(FILMES.map(f=>f.secao).filter(Boolean))];
 SECOES.sort((a,b)=>FILMES.filter(f=>f.secao===b).length - FILMES.filter(f=>f.secao===a).length);
@@ -1009,7 +1025,7 @@ const secColor = s => SEC_COLOR[s] || "#f2a93b";
 
 /* ───────────────── state ───────────────── */
 /* trocar só estas duas linhas quando virar a 50ª edição */
-const LS_PREFIX="mostra49", EDICAO="49ª Mostra";
+const LS_PREFIX="mostra50", EDICAO="50ª Mostra";
 const LS_A=`${LS_PREFIX}_agenda`, LS_W=`${LS_PREFIX}_watch`,
       LS_MODE=`${LS_PREFIX}_modo`, LS_SEQ=`${LS_PREFIX}_ics_seq`,
       LS_W3=`${LS_PREFIX}_watch3`, LS_PLAN=`${LS_PREFIX}_planner`;
@@ -1049,7 +1065,15 @@ let filters = {q:"", secao:"", dia:"", cinema:"", fest:"", marca:"", sort:"titul
 let modalFilmId = null;
 let modalTrigger=null;
 
+/* Pede ao navegador que não limpe os dados sozinho (Chrome/Android e app instalado
+   costumam conceder; o Safari ignora). Não protege de a pessoa limpar à mão. */
+let pediuPersistir=false;
+function pedirPersistencia(){
+  if(pediuPersistir||!(agenda.size||watch.size)) return; pediuPersistir=true;
+  try{ navigator.storage&&navigator.storage.persist&&navigator.storage.persist().catch(()=>{}); }catch(e){}
+}
 const save = ()=>{
+  pedirPersistencia();
   const ok=gravarLocal(LS_A,[...agenda]) & gravarLocal(LS_W3,[...watch]);
   if(!ok) toast("Não foi possível salvar neste navegador");
   return !!ok;
@@ -1155,7 +1179,10 @@ function updateBadge(){
 /* ───────────────── filmes view ───────────────── */
 function buildFilters(){
   const dSel=document.getElementById("f-dia");
-  dSel.innerHTML = `<option value="">Qualquer dia</option>` + DIAS.map(d=>`<option value="${d}">${esc(diaCurto(d))}</option>`).join("");
+  const HOJE=diaRio(agora()), AMANHA=diaRio(new Date(agora().getTime()+864e5));
+  const noFestival=DIAS.length && HOJE>=DIAS[0] && HOJE<=DIAS[DIAS.length-1];
+  const diasVisiveis=noFestival?DIAS.filter(d=>d>=HOJE):DIAS;
+  dSel.innerHTML = `<option value="">${noFestival?"De hoje em diante":"Qualquer dia"}</option>` + diasVisiveis.map(d=>`<option value="${d}">${d===HOJE?"Hoje · ":d===AMANHA?"Amanhã · ":""}${esc(diaCurto(d))}</option>`).join("");
   const cSel=document.getElementById("f-cinema");
   cSel.innerHTML = `<option value="">Todos os cinemas</option>` + CINEMAS.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
   const festCnt={};
@@ -1201,7 +1228,7 @@ function filmesFiltrados(){
     }
     if(filters.dia || filters.cinema){
       const ss=SESS_BY_FILME.get(f.id)||[];
-      if(!ss.some(s=>(!filters.dia||s.data===filters.dia)&&(!filters.cinema||s.cinema===filters.cinema))) return false;
+      if(!ss.some(s=>!passou(s)&&(!filters.dia||s.data===filters.dia)&&(!filters.cinema||s.cinema===filters.cinema))) return false;
     }
     return true;
   });
@@ -1212,6 +1239,7 @@ function filmesFiltrados(){
     for(const s of (SESS_BY_FILME.get(f.id)||[])){
       if(filters.dia && s.data!==filters.dia) continue;
       if(filters.cinema && s.cinema!==filters.cinema) continue;
+      if(passou(s)) continue;
       const k=s.data+s.hora;
       if(m===null||k<m) m=k;
     }
@@ -1339,8 +1367,9 @@ function openModal(id, keepScroll){
           <div class="sess-day-h">${esc(diaLabel(d))}</div>
           ${porDia[d].map(s=>{
             const on=agenda.has(s.sessao_id);
-            const confs=on?[]:conflitos(s);
-            return `<div class="sess-row">
+            const foi=passou(s);
+            const confs=on||foi?[]:conflitos(s);
+            return `<div class="sess-row${foi?" passou":""}">
               <span class="hora">${esc(s.hora)}</span>
               <span class="local"><b>${esc(s.cinema)}</b> · ${esc(s.sala)}${s.legendas?` · leg. ${esc(s.legendas)}`:""}
                 ${confs.length?`<span class="warn"> ⚠ choca com ${esc(confs[0].titulo)}</span>`:""}
@@ -1348,7 +1377,7 @@ function openModal(id, keepScroll){
               ${s.link_compra?`<a class="icon-btn" title="Comprar ingresso" href="${esc(s.link_compra)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🎟</a>`:""}
               ${on?`<a class="icon-btn g" title="Adicionar ao Google Agenda" href="${esc(linkGoogle(s))}" target="_blank" rel="noopener" onclick="event.stopPropagation();medir('google-agenda')">G</a>
               <button class="icon-btn" title="Baixar esta sessão em .ics" onclick="exportSessaoICS('${s.sessao_id}')">📅</button>`:""}
-              <button class="sess-add${on?" on":""}" onclick="toggleSessao('${s.sessao_id}')">${on?"✓ NA AGENDA":"+ AGENDA"}</button>
+              ${foi&&!on?`<span class="sess-passou">já passou</span>`:`<button class="sess-add${on?" on":""}" onclick="toggleSessao('${s.sessao_id}')">${on?"✓ NA AGENDA":"+ AGENDA"}</button>`}
             </div>`;
           }).join("")}
         </div>`).join("") || `<p style="color:var(--dim)">Sem sessões cadastradas.</p>`}
@@ -1415,9 +1444,10 @@ function calBody(){
             ${ss.map(s=>{
               const on=agenda.has(s.sessao_id);
               const confs=conflitos(s);
-              const conf=!on&&confs.length;
+              const foi=!on&&passou(s);
+              const conf=!on&&!foi&&confs.length;
               const d=dObj(s.data);
-              return `<button class="side-chip${on?" on":conf?" conf":""}"
+              return `<button class="side-chip${on?" on":foi?" passou":conf?" conf":""}"${foi?" disabled":""}
                 title="${esc(s.cinema)} · ${esc(s.sala)}${conf?` — ⚠ choca com ${esc(confs[0].titulo)}`:""}"
                 onclick="toggleSessao('${s.sessao_id}')">
                 <span class="c1">${on?"✓ ":conf?"⚠ ":""}${DOW3[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth()+1)} · ${esc(s.hora)}</span>
@@ -1462,7 +1492,7 @@ function calBody(){
       <div class="cal-legend">
         <span><span class="sw" style="background:var(--amber)"></span>SESSÃO NA AGENDA</span>
         <span><span class="sw" style="background:var(--red)"></span>CONFLITO DE HORÁRIO</span>
-        <span class="mes">Out — Nov 2025 · 49ª Mostra</span>
+        <span class="mes">Out — Nov 2026 · 50ª Mostra</span>
       </div>
       <div class="cal-wrap"><div class="cal">
         ${DOWFULL.map(d=>`<div class="cal-hd">${d}</div>`).join("")}
@@ -1531,7 +1561,12 @@ function setAgendaMode(m){
   renderAgenda();
 }
 
+/* Safari do iPhone apaga os dados de site sem visita há 7 dias (o app instalado, não);
+   navegador de dentro do X/Instagram guarda numa gaveta própria. Nos dois casos, dica
+   de mandar o link para si mesmo — até a pessoa fechar. */
+
 function renderAgenda(){
+  document.getElementById("agenda-avisos").innerHTML=dicaBackupHTML();
   const root=document.getElementById("agenda-root");
   const items=[...agenda].map(id=>SESSAO.get(id)).filter(Boolean)
     .sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora));
@@ -1588,12 +1623,11 @@ function renderAgenda(){
 
 /* ═══════════ disponibilidade · geografia · encaixe automático ═══════════ */
 const REGIOES=[
-  {id:"augusta",rot:"Augusta / Consolação",ses:474,cinemas:[{n:"Espaço Petrobras de Cinema (Espaço Itaú Augusta)",b:"Consolação"},{n:"CineSesc",b:"Cerqueira César"},{n:"Sato Cinema",b:"Consolação"},{n:"Cine Satyros Bijou",b:"Consolação"},{n:"Teatro Cultura Artística",b:"Consolação"}]},
-  {id:"vilamariana",rot:"Vila Mariana / Paraíso",ses:263,cinemas:[{n:"Cinemateca Brasileira",b:"Vila Clementino"},{n:"Centro Cultural São Paulo (CCSP)",b:"Paraíso"},{n:"Cine Segall - Museu Lasar Segall",b:"Vila Mariana"}]},
-  {id:"centro",rot:"Centro",ses:227,cinemas:[{n:"Multiplex PlayArte Marabá",b:"República"},{n:"Centro Cultural Olido",b:"Centro"},{n:"Museu da Língua Portuguesa",b:"Centro"},{n:"Sala São Paulo",b:"Campos Elíseos"}]},
-  {id:"paulista",rot:"Paulista",ses:205,cinemas:[{n:"Reserva Cultural",b:"Bela Vista"},{n:"IMS Paulista (Instituto Moreira Salles)",b:"Bela Vista"}]},
-  {id:"pinheiros",rot:"Pinheiros",ses:32,cinemas:[{n:"Cinesala",b:"Pinheiros"}]},
-  {id:"ipiranga",rot:"Ipiranga",ses:14,cinemas:[{n:"Biblioteca Roberto Santos",b:"Ipiranga"}]},
+  {id:"augusta",rot:"Augusta / Consolação",ses:793,cinemas:[{n:"Espaço Petrobras de Cinema (Espaço Itaú Augusta)",b:"Consolação"},{n:"CineSesc",b:"Cerqueira César"},{n:"Sato Cinema",b:"Consolação"},{n:"Cine Satyros Bijou",b:"Consolação"},{n:"Teatro Cultura Artística",b:"Consolação"},{n:"Cine Belas Artes",b:"Consolação"},{n:"Cinesystem Belas Artes Frei Caneca",b:"Consolação"}]},
+  {id:"paulista",rot:"Paulista / Bela Vista",ses:221,cinemas:[{n:"Reserva Cultural",b:"Bela Vista"},{n:"IMS Paulista (Instituto Moreira Salles)",b:"Bela Vista"},{n:"Itaú Cultural",b:"Bela Vista"},{n:"Sesc Paulista",b:"Bela Vista"},{n:"Teatro Sérgio Cardoso",b:"Bela Vista"}]},
+  {id:"oeste",rot:"Pinheiros / Jardins / Butantã",ses:166,cinemas:[{n:"Cinesala",b:"Pinheiros"},{n:"Cine Tutu",b:"Vila Madalena"},{n:"MIS - Museu da Imagem e do Som",b:"Jardim Europa"},{n:"Sala Petrobras (Solar Fábio Prado)",b:"Jardim Paulistano"},{n:"CINUSP Paulo Emílio",b:"Butantã"}]},
+  {id:"vilamariana",rot:"Vila Mariana / Paraíso",ses:109,cinemas:[{n:"Cinemateca Brasileira",b:"Vila Clementino"},{n:"Centro Cultural São Paulo (CCSP)",b:"Paraíso"},{n:"Cine Segall - Museu Lasar Segall",b:"Vila Mariana"}]},
+  {id:"centro",rot:"Centro",ses:18,cinemas:[{n:"Centro Cultural Olido",b:"Centro"},{n:"Sala São Paulo",b:"Campos Elíseos"}]},
   {id:"ceus",rot:"CEUs",ses:94,cinemas:[{n:"CEU Aricanduva",b:"Jd. Santa Terezinha"},{n:"CEU Barro Branco",b:""},{n:"CEU Butantã",b:"Jd. Esmeralda"},{n:"CEU Caminho do Mar",b:"Jabaquara"},{n:"CEU Carrão",b:"Tatuapé"},{n:"CEU Feitiço da Vila",b:"Capão Redondo"},{n:"CEU Freguesia do Ó",b:"Freguesia do Ó"},{n:"CEU Jambeiro",b:"Guaianases"},{n:"CEU Jaçanã",b:"Jaçanã"},{n:"CEU Meninos",b:"São João Clímaco"},{n:"CEU Parque Novo Mundo",b:"Parque Vila Maria"},{n:"CEU Parque Veredas",b:"Itaim Paulista"},{n:"CEU Parque do Carmo",b:"Parque do Carmo"},{n:"CEU Paz",b:"Jd. Paraná"},{n:"CEU Perus",b:"Perus"},{n:"CEU Pinheirinho",b:"Conjunto City Jaraguá"},{n:"CEU Quinta do Sol",b:"Parque Cisper"},{n:"CEU São Miguel - Luiz Melodia",b:"Jardim São Vicente"},{n:"CEU São Pedro",b:"Jardim São Pedro"},{n:"CEU São Rafael",b:"Jd. da Conquista"},{n:"CEU Taipas",b:"Conj. Res. Elisio Teixeira Leite"},{n:"CEU Tremembé",b:"Parque Casa de Pedra"},{n:"CEU Três Lagos",b:"Três Lagos"},{n:"CEU Vila Alpina",b:"Jardim Avelino"},{n:"CEU Vila Atlântica",b:"Vila Atlântica"},{n:"CEU Vila do Sol",b:"Jd. Vila do Sol"},{n:"Centro de Formação Cultural Cidade Tiradentes",b:"Cidade Tiradentes"}]}
 ];
 const CIN_REG=new Map(); REGIOES.forEach(r=>r.cinemas.forEach(c=>CIN_REG.set(c.n,r.id)));
@@ -1626,7 +1660,7 @@ const saveRestr=()=>{
 };
 const chaveCel=(d,f)=>`${d}|${f}`;
 function liberada(s){
-  if(!s || cinOff.has(s.cinema)) return false;
+  if(!s || cinOff.has(s.cinema) || passou(s)) return false;
   const ini=mins(s.hora), fim=ini+durMin(s.duracao);
   if(!Number.isFinite(ini)||ini<600||fim>1440) return false;
   for(let i=0;i<FAIXAS.length;i++){
@@ -2238,6 +2272,8 @@ async function abrirInstalar(){
     corpo=`<ol><li>Toque em <b>Compartilhar</b> ${IC_COMPARTILHAR} na barra do Safari.</li>
       <li>Role a lista e toque em <b>Adicionar à Tela de Início</b>.</li>
       <li>Toque em <b>Adicionar</b>.</li></ol>
+      <p class="dica">No iPhone o app instalado começa <b>vazio</b>: se já montou agenda aqui, toque antes em
+      <b>📤 Compartilhar</b>, mande o link para você e abra esse link dentro do app.</p>
       <p class="dica">Não aparece “Adicionar à Tela de Início”? Você deve estar no navegador de outro app:
       toque em <b>Abrir no Safari</b> (a bússola) e repita.</p>`;
   }else{
@@ -2436,7 +2472,7 @@ function copyAgenda(){
   if(!items.length){ toast("Agenda vazia"); return; }
   const porDia={};
   for(const s of items){ (porDia[s.data]??=[]).push(s); }
-  let txt="🎬 MINHA AGENDA — 49ª MOSTRA\n\n";
+  let txt="🎬 MINHA AGENDA — 50ª MOSTRA\n\n";
   for(const d of Object.keys(porDia).sort()){
     txt+=`— ${diaLabel(d).toUpperCase()}\n`;
     for(const s of porDia[d]) txt+=`${s.hora} · ${s.titulo} · ${s.cinema} (${s.sala})\n`;

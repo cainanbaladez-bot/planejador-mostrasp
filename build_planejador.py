@@ -28,8 +28,8 @@ CAMPOS_SESSAO = [
 def enxuga(lista, campos):
     return [{c: item.get(c, "") for c in campos} for item in lista]
 
-filmes = json.loads((DATA / "mostra_49_filmes.json").read_text(encoding="utf-8"))
-sessoes = json.loads((DATA / "mostra_49_sessoes.json").read_text(encoding="utf-8"))
+filmes = json.loads((DATA / "mostra_50_filmes.json").read_text(encoding="utf-8"))
+sessoes = json.loads((DATA / "mostra_50_sessoes.json").read_text(encoding="utf-8"))
 
 # enriquecimento opcional (festivais + Letterboxd) — gerado por enrich_filmes.py
 arq_enriq = DATA / "enriquecimento.json"

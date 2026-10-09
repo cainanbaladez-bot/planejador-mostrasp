@@ -36,7 +36,7 @@ nos aparelhos que já instalaram.
 | `gera_regioes.py` | Regenera o literal `REGIOES` (agrupamento de cinemas por região) a partir dos bairros dos endereços. Rodar só quando os cinemas mudarem. |
 | `tests/planner-smoke.js` | Teste automático das jornadas críticas (link, armazenamento, encaixe). Rodar: `node tests/planner-smoke.js` depois do build. |
 | `PLANO_SOL.md` | Plano de melhorias escrito pelo **SOL** (17/09/2026) que originou a v8, com o estado do que foi feito e do que ficou pendente. |
-| `mostra-scraper-completo/mostra-scraper/data/` | Fonte dos dados (49ª edição: 380 filmes, 1309 sessões, 16/10–05/11/2025). Ver README do scraper para re-raspar. |
+| `mostra-scraper-completo/mostra-scraper/data/` | Fonte dos dados — **50ª edição (desde 09/10/2026): 399 filmes, 1401 sessões, 49 cinemas, 14/10–01/11/2026**; os arquivos da 49ª (`mostra_49_*`) ficam como histórico. Ver README do scraper para re-raspar. |
 
 ## Histórico
 
@@ -99,7 +99,40 @@ nos aparelhos que já instalaram.
   leituras inválidas são tratadas sem impedir a abertura do app. O botão **⇩ Backup** baixa
   agenda, marcações, disponibilidade, cinemas e preferências; **⇧ Restaurar** importa o arquivo.
 
-## Quando sair a 50ª Mostra
+## 50ª Mostra — virada feita em 09/10/2026
+
+Programação raspada no dia em que saiu: **399 filmes, 1401 sessões, 49 cinemas, 14/10 a
+01/11/2026**. O que foi feito, na ordem do roteiro abaixo:
+
+- **Raspador:** 9 salas novas sem endereço entraram na tabela `VENUES` do `scrape_mostra.py`
+  — Cine Belas Artes (as grafias "Sala 1" e "Sl 1 Leon Cakoff" viram um cinema só),
+  Cinesystem Belas Artes Frei Caneca (salas 1 a 5 = um cinema), **Sala Petrobras no Solar
+  Fábio Prado** (sala temporária da 50ª, Av. Brig. Faria Lima 2705), **Cine Tutu** (cinema de
+  rua aberto em 02/10/2026, R. Girassol 555), CINUSP, Itaú Cultural, MIS, Sesc Paulista e
+  Teatro Sérgio Cardoso. Com isso, 54 "cinemas" viraram 49, todos com endereço.
+- **Regiões (`gera_regioes.py`, `EDICAO=50`):** Augusta/Consolação 793 sessões ·
+  Paulista/Bela Vista 221 · Pinheiros/Jardins/Butantã 166 · Vila Mariana/Paraíso 109 ·
+  Centro 18 · CEUs 94. O script **não joga mais o que sobra nos CEUs**: cinema sem região
+  explícita faz o `assert` falhar (antes os cinemas novos iriam calados para "CEUs").
+- **Template:** textos da 50ª, `LS_PREFIX="mostra50"` (a agenda da 49ª fica guardada à
+  parte), faixa BETA removida.
+- **Trazido do Planejador do Rio:** modo festival (sessão que já começou fica "já passou",
+  sem "+ AGENDA", fora do montador e dos filtros; filtro de dia começa em Hoje/Amanhã;
+  `?agora=2026-10-20T15:00` na URL para testar) e proteção da agenda
+  (`storage.persist()`, dica de backup para Safari do iPhone e navegador de dentro do X/
+  Instagram, aviso de que o app instalado no iPhone começa vazio). O teste fixa
+  `?agora=2025-10-01T00:00`, porque usa sessões de teste de 2025.
+- **Letterboxd conferido pelo diretor (09/10/2026):** o `enrich_filmes.py` casa por título +
+  ano OU diretor, e na 50ª **11 notas eram de outro filme** com título parecido (ex.: *A Cor
+  do Sol* recebia a nota de *Over Your Dead Body*). Conferi o diretor das notas e zerei as 11
+  (no `enriquecimento.json` e no cache, com `"conferido"`). Ficaram **196 com nota**, 200 com
+  festival, 60 premiados. Ao comparar diretor, cuidado com grafia (Peleshian/Pelechian,
+  Al-Khatib/Alkhatib, "Jr.", sobrenome composto, ordem asiática) — não é só o último nome.
+- **Ainda não trazido:** o aviso de sessão remarcada/tirada (`MUDOU` + histórico de
+  sessões) e a atualização diária automática — os dois existem no Rio e valem para SP se a
+  programação for re-raspada durante a Mostra.
+
+## Quando sair a 50ª Mostra (roteiro usado na virada)
 
 1. `python mostra-scraper-completo/mostra-scraper/scrape_mostra.py --edition 50`
 2. Apontar `DATA` no `build_planejador.py` para os novos JSONs (e renomear campos se mudar).

@@ -146,7 +146,7 @@ def nota_lb(slug):
 
 def main():
     so_fest = "--so-festivais" in sys.argv
-    filmes = json.loads((DATA / "mostra_49_filmes.json").read_text(encoding="utf-8"))
+    filmes = json.loads((DATA / "mostra_50_filmes.json").read_text(encoding="utf-8"))
     cache = json.loads(CACHE.read_text(encoding="utf-8")) if CACHE.exists() else {}
     out = {}
     pend = [f for f in filmes if f["id"] not in cache]

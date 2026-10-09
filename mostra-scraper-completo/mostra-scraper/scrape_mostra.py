@@ -68,6 +68,25 @@ VENUES = [
      "Avenida Ipiranga, 757 - República, São Paulo - SP"),
     ("CINEMATECA BRASILEIRA", "Cinemateca Brasileira",
      "Largo Senador Raul Cardoso, 207 - Vila Clementino, São Paulo - SP"),
+    # ── salas novas da 50ª (09/10/2026) ──
+    ("CINE BELAS ARTES", "Cine Belas Artes",              # "SALA 1" e "SL 1 LEON CAKOFF"
+     "Rua da Consolação, 2423 - Consolação, São Paulo - SP"),
+    ("CINESYSTEM BELAS ARTES FREI CANECA", "Cinesystem Belas Artes Frei Caneca",   # salas 1 a 5
+     "Rua Frei Caneca, 569 - Consolação, São Paulo - SP"),
+    ("SOLAR SALA PETROBRAS", "Sala Petrobras (Solar Fábio Prado)",   # sala temporária da 50ª
+     "Avenida Brigadeiro Faria Lima, 2705 - Jardim Paulistano, São Paulo - SP"),
+    ("CINE TUTU", "Cine Tutu",                                        # aberto em 02/10/2026
+     "Rua Girassol, 555 - Vila Madalena, São Paulo - SP"),
+    ("CINUSP", "CINUSP Paulo Emílio",
+     "Rua do Anfiteatro, 181 - Butantã, São Paulo - SP"),
+    ("ITAU CULTURAL", "Itaú Cultural",
+     "Avenida Paulista, 149 - Bela Vista, São Paulo - SP"),
+    ("MIS - MUSEU DA IMAGEM E DO SOM", "MIS - Museu da Imagem e do Som",
+     "Avenida Europa, 158 - Jardim Europa, São Paulo - SP"),
+    ("SESC PAULISTA", "Sesc Paulista",
+     "Avenida Paulista, 119 - Bela Vista, São Paulo - SP"),
+    ("TEATRO SERGIO CARDOSO", "Teatro Sérgio Cardoso",
+     "Rua Rui Barbosa, 153 - Bela Vista, São Paulo - SP"),
     ("CINESESC", "CineSesc",
      "Rua Augusta, 2075 - Cerqueira César, São Paulo - SP"),
     ("CINESALA", "Cinesala",
