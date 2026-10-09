@@ -179,6 +179,51 @@ select:focus{outline:none;border-color:var(--amber)}
   font-family:var(--font-display);font-size:64px;font-weight:800;color:#40381f;
   background:repeating-linear-gradient(-45deg, var(--panel2) 0 14px, #262112 14px 28px);
 }
+/* ─── 🌍 aba Mapa (09/10/2026) ─── */
+.mapa-top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 24px;margin-bottom:14px}
+.mapa-top h2{font-family:var(--font-display);font-size:24px;letter-spacing:-.01em}
+.mapa-top p{color:var(--muted);font-size:13.5px;max-width:62ch;line-height:1.5;margin-top:4px}
+.mapa-leg{display:flex;align-items:center;gap:6px;font:10.5px var(--font-mono);color:var(--dim);margin-left:auto;flex-wrap:wrap}
+.mapa-leg i{display:inline-block;width:22px;height:10px;border-radius:2px}
+.mapa-wrap{position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:8px}
+.mapa-wrap svg{display:block;width:100%;height:auto}
+.mapa-wrap path{stroke:var(--bg);stroke-width:.4;transition:fill .15s}
+.mapa-wrap path.tem,.mapa-wrap circle.tem{cursor:pointer}
+.mapa-wrap path.tem:hover,.mapa-wrap circle.tem:hover{fill:#ffd27a}
+.mapa-wrap path.sel,.mapa-wrap circle.sel{stroke:var(--ink);stroke-width:1.4}
+.mapa-wrap circle{stroke:var(--bg);stroke-width:1}
+.mapa-tip{position:absolute;pointer-events:none;background:var(--ink);color:#1b1608;font-size:12.5px;
+  line-height:1.4;padding:7px 10px;border-radius:8px;max-width:260px;box-shadow:0 8px 24px -8px #000;z-index:5}
+.mapa-tip b{font-weight:700}
+.mapa-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;margin-top:18px}
+@media (max-width:900px){ .mapa-grid{grid-template-columns:1fr} }
+.mapa-h{font:600 11px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:2px 0 10px}
+.pais-sel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.pais-sel h3{font-family:var(--font-display);font-size:21px;margin-bottom:4px}
+.pais-sel .num{color:var(--muted);font-size:13px;margin-bottom:10px;line-height:1.5}
+.pais-sel .parc{font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.6}
+.pais-filmes{display:grid;gap:6px;max-height:520px;overflow:auto;padding-right:4px}
+.pf{display:grid;grid-template-columns:54px 1fr;gap:10px;align-items:center;background:var(--bg2);
+  border:1px solid var(--line);border-radius:9px;padding:6px;cursor:pointer;text-align:left;color:inherit;font:inherit}
+.pf:hover{border-color:var(--amber)}
+.pf img,.pf .sem-img{width:54px;height:36px;object-fit:cover;border-radius:5px;background:var(--panel2)}
+.pf b{display:block;font-size:13.5px;color:var(--ink);line-height:1.3}
+.pf span{display:block;font-size:11.5px;color:var(--dim);line-height:1.4}
+.paises-lista{display:flex;flex-wrap:wrap;gap:6px}
+.pais-chip{background:var(--bg2);border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:5px 10px;
+  font:12px var(--font-body);cursor:pointer}
+.pais-chip b{color:var(--ink);font-weight:600;margin-left:4px}
+.pais-chip:hover,.pais-chip.on{border-color:var(--amber);color:var(--ink)}
+.pais-chip.hist{font-style:italic}
+.destaques{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:22px}
+.dest{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px}
+.dest span{display:block;font:600 10.5px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.dest strong{display:block;font-family:var(--font-display);font-size:24px;color:var(--amber);margin:6px 0 4px;line-height:1.1}
+.dest p{font-size:12.5px;color:var(--muted);line-height:1.5}
+.dest ol{margin:6px 0 0 18px;font-size:12.5px;color:var(--muted);line-height:1.6}
+.pais-link{background:none;border:0;padding:0;color:var(--ink);text-decoration:underline;text-underline-offset:2px;cursor:pointer;font:inherit}
+.pais-link:hover{color:var(--amber)}
+@media (max-width:640px){ .mapa-top h2{font-size:20px} .mapa-leg{margin-left:0} .pais-filmes{max-height:none} }
 .sec-tag{
   position:absolute;left:10px;top:10px;z-index:2;
   font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;font-weight:600;
@@ -872,6 +917,7 @@ footer{
     </div>
     <nav class="tabs">
       <button class="tab active" data-view="filmes" onclick="setView('filmes')">Filmes</button>
+      <button class="tab" data-view="mapa" onclick="setView('mapa')">Mapa</button>
       <button class="tab" data-view="disp" onclick="setView('disp')">Disponibilidade</button>
       <button class="tab" data-view="agenda" onclick="setView('agenda')">Minha Agenda<span class="badge" id="agenda-badge"></span></button>
       <div class="viewtoggle" id="viewtoggle" role="group" aria-label="Pré-visualizar layout">
@@ -920,6 +966,7 @@ footer{
   </section>
 
   <!-- ══ MINHA AGENDA (calendário + lista) ══ -->
+  <section id="view-mapa" hidden><div id="mapa-root"></div></section>
   <section id="view-disp" hidden><div id="disp-root"></div></section>
 
   <section id="view-agenda" hidden>
@@ -978,6 +1025,7 @@ footer{
 <script>
 window.FILMES=/*__FILMES__*/[];
 window.SESSOES=/*__SESSOES__*/[];
+window.MAPA=/*__MAPA__*/{};
 /* O template é código-fonte e ainda não contém o catálogo. Se alguém o abrir por
    engano, leva para o artefato gerado em vez de mostrar uma aplicação vazia. */
 if(!window.FILMES.length && /planejador\.template\.html$/i.test(decodeURIComponent(location.pathname))){
@@ -1158,13 +1206,151 @@ function conflitos(s, ignoreSelf=true){
 }
 
 /* ───────────────── view switching ───────────────── */
+/* ── 🌍 Mapa por país (09/10/2026) ──────────────────────────────────────────────
+   Contorno dos países vem do build (mapa_paises.py: Natural Earth 1:110m, Equal Earth).
+   Coprodução conta para TODOS os países do filme ("Brasil, Portugal" = 1 para cada).
+   Escala sequencial de um tom (âmbar), 5 faixas; país sem filme fica no fundo. A lista
+   de países embaixo é a tabela do mapa — e o caminho para Singapura, Hong Kong e os
+   países que não existem mais (sem desenho). */
+const paisesDe=f=>(f.pais||"").split(",").map(s=>s.trim()).filter(Boolean);
+const PAIS_FILMES=new Map();
+for(const f of FILMES) for(const p of paisesDe(f)){ if(!PAIS_FILMES.has(p)) PAIS_FILMES.set(p,[]); PAIS_FILMES.get(p).push(f); }
+const MAPA_PT={};                                  // nome no mapa → nomes da Mostra
+for(const [pt,r] of Object.entries((window.MAPA||{}).paises||{})) if(r.m) (MAPA_PT[r.m]??=[]).push(pt);
+const FAIXAS_MAPA=[[1,1,"1"],[2,4,"2–4"],[5,9,"5–9"],[10,29,"10–29"],[30,1e9,"30+"]];
+const CORES_MAPA=["#56411e","#795824","#9f712b","#c88d33","#f2a93b"], SEM_FILME="#2c271b";
+const corMapa=n=>{ for(let i=0;i<FAIXAS_MAPA.length;i++) if(n>=FAIXAS_MAPA[i][0]&&n<=FAIXAS_MAPA[i][1]) return CORES_MAPA[i]; return SEM_FILME; };
+const filmesDe=pts=>[...new Set(pts.flatMap(p=>PAIS_FILMES.get(p)||[]))];
+let paisSel=null, mapaPronto=false;
+
+function renderMapa(){
+  const root=document.getElementById("mapa-root");
+  if(!window.MAPA||!MAPA.d){ root.innerHTML=`<p style="color:var(--dim)">Mapa indisponível nesta versão.</p>`; return; }
+  if(!mapaPronto){ root.innerHTML=mapaHTML(); ligarMapa(root); mapaPronto=true; }
+  renderPaisSel();
+}
+function mapaHTML(){
+  const [x0,y0,w,h]=MAPA.vb;
+  const paths=Object.entries(MAPA.d).map(([m,d])=>{
+    const n=filmesDe(MAPA_PT[m]||[]).length;
+    return `<path d="${d}" data-m="${esc(m)}" fill="${n?corMapa(n):SEM_FILME}"${n?' class="tem"':""}></path>`;
+  }).join("");
+  const pontos=Object.entries(MAPA.paises).filter(([,r])=>r.p).map(([pt,r])=>{
+    const n=(PAIS_FILMES.get(pt)||[]).length;
+    return `<circle cx="${r.p[0]}" cy="${r.p[1]}" r="3.6" data-pt="${esc(pt)}" fill="${corMapa(n)}" class="tem"></circle>`;
+  }).join("");
+  const lista=[...PAIS_FILMES].sort((a,b)=>b[1].length-a[1].length||a[0].localeCompare(b[0],"pt"));
+  const leg=FAIXAS_MAPA.map((f,i)=>`<i style="background:${CORES_MAPA[i]}"></i>${f[2]}`).join(" ");
+  return `
+  <div class="mapa-top"><div>
+    <h2>Filmes por país</h2>
+    <p>${PAIS_FILMES.size} países na ${esc(EDICAO)}. Toque num país para ver os filmes. Coprodução conta para
+    todos os países envolvidos.</p></div>
+    <div class="mapa-leg" aria-label="Legenda: número de filmes">filmes: ${leg} <i style="background:${SEM_FILME}"></i>nenhum</div>
+  </div>
+  <div class="mapa-wrap"><svg viewBox="${x0} ${y0} ${w} ${h}" role="img" aria-label="Mapa-múndi com o número de filmes por país">${paths}${pontos}</svg>
+    <div class="mapa-tip" hidden></div></div>
+  <div class="mapa-grid">
+    <div><div class="mapa-h">Todos os países · ${lista.length}</div>
+      <div class="paises-lista">${lista.map(([p,fs])=>`<button class="pais-chip${MAPA.paises[p]?.h?" hist":""}" data-pt="${esc(p)}"
+        title="${MAPA.paises[p]?.h?esc(p+" — "+MAPA.paises[p].h):""}">${esc(p)}<b>${fs.length}</b></button>`).join("")}</div></div>
+    <div id="pais-sel"></div>
+  </div>
+  <div class="mapa-h" style="margin-top:26px">Destaques de coprodução</div>
+  <div class="destaques">${destaquesMapa()}</div>`;
+}
+function ligarMapa(root){
+  const svg=root.querySelector("svg"), tip=root.querySelector(".mapa-tip"), wrap=root.querySelector(".mapa-wrap");
+  const ptsDo=el=>el.dataset.pt?[el.dataset.pt]:(MAPA_PT[el.dataset.m]||[]);
+  svg.addEventListener("mousemove",e=>{
+    const el=e.target.closest(".tem"); if(!el){ tip.hidden=true; return; }
+    const pts=ptsDo(el), fs=filmesDe(pts), solo=fs.filter(f=>paisesDe(f).length===1).length;
+    tip.innerHTML=`<b>${esc(pts.join(" / "))}</b><br>${fs.length} ${fs.length===1?"filme":"filmes"} · ${solo} só do país, ${fs.length-solo} em coprodução`;
+    const r=wrap.getBoundingClientRect(); tip.hidden=false;
+    tip.style.left=Math.min(e.clientX-r.left+14, r.width-tip.offsetWidth-6)+"px";
+    tip.style.top=(e.clientY-r.top+14)+"px";
+  });
+  svg.addEventListener("mouseleave",()=>{tip.hidden=true;});
+  svg.addEventListener("click",e=>{ const el=e.target.closest(".tem"); if(el) selecionarPais(ptsDo(el)); });
+  root.addEventListener("click",e=>{
+    const b=e.target.closest(".pais-chip,.pais-link"); if(b) selecionarPais([b.dataset.pt]);
+  });
+}
+function selecionarPais(pts){
+  paisSel=pts; medir("mapa-pais"); renderPaisSel();
+  const alvo=document.getElementById("pais-sel"); if(alvo&&innerWidth<900) alvo.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function renderPaisSel(){
+  const el=document.getElementById("pais-sel"); if(!el) return;
+  document.querySelectorAll("#mapa-root .sel,#mapa-root .pais-chip.on").forEach(x=>x.classList.remove("sel","on"));
+  if(!paisSel){ el.innerHTML=`<div class="pais-sel"><h3>Escolha um país</h3><p class="num">No mapa ou na lista ao lado.
+    Aparecem todos os filmes em que ele está, sozinho ou em coprodução.</p></div>`; return; }
+  for(const p of paisSel){
+    document.querySelectorAll(`#mapa-root [data-pt="${CSS.escape(p)}"]`).forEach(x=>x.classList.add(x.tagName==="BUTTON"?"on":"sel"));
+    const m=MAPA.paises[p]?.m; if(m) document.querySelector(`#mapa-root path[data-m="${CSS.escape(m)}"]`)?.classList.add("sel");
+  }
+  const fs=filmesDe(paisSel).sort((a,b)=>a.titulo.localeCompare(b.titulo,"pt"));
+  const solo=fs.filter(f=>paisesDe(f).length===1).length;
+  const parc={}; for(const f of fs) for(const p of paisesDe(f)) if(!paisSel.includes(p)) parc[p]=(parc[p]||0)+1;
+  const top=Object.entries(parc).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const hist=paisSel.map(p=>MAPA.paises[p]?.h).filter(Boolean);
+  el.innerHTML=`<div class="pais-sel"><h3>${esc(paisSel.join(" / "))}</h3>
+    <p class="num">${fs.length} ${fs.length===1?"filme":"filmes"} · ${solo} só do país · ${fs.length-solo} em coprodução${hist.length?` · <i>${esc(hist.join("; "))}</i>`:""}</p>
+    ${top.length?`<p class="parc">Coproduz mais com: ${top.map(([p,n])=>`<button class="pais-link" data-pt="${esc(p)}">${esc(p)}</button> (${n})`).join(", ")}</p>`:""}
+    <div class="pais-filmes">${fs.map(f=>{ const outros=paisesDe(f).filter(p=>!paisSel.includes(p));
+      return `<button class="pf" onclick="openModal('${f.id}')">${f.imagem?`<img src="${esc(f.imagem)}" alt="" loading="lazy">`:`<i class="sem-img"></i>`}
+        <div><b>${watch.has(f.id)?"★ ":""}${esc(f.titulo)}</b><span>${esc(f.diretores||"")}${f.ano?` · ${esc(f.ano)}`:""}</span>
+        <span>${outros.length?`com ${esc(outros.join(", "))}`:"só "+esc(paisSel.join(" / "))}</span></div></button>`; }).join("")}</div></div>`;
+}
+function destaquesMapa(){
+  const tot=FILMES.length, link=p=>`<button class="pais-link" data-pt="${esc(p)}">${esc(p)}</button>`;
+  const cont=[...PAIS_FILMES].map(([p,fs])=>({p,n:fs.length,solo:fs.filter(f=>paisesDe(f).length===1).length}))
+    .sort((a,b)=>b.n-a.n);
+  const copro=FILMES.filter(f=>paisesDe(f).length>1);
+  const maior=[...FILMES].sort((a,b)=>paisesDe(b).length-paisesDe(a).length)[0];
+  const pares={};
+  for(const f of copro){ const ps=[...new Set(paisesDe(f))].sort((a,b)=>a.localeCompare(b,"pt"));
+    for(let i=0;i<ps.length;i++) for(let j=i+1;j<ps.length;j++){ const k=ps[i]+"|"+ps[j]; pares[k]=(pares[k]||0)+1; } }
+  const topPares=Object.entries(pares).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const br=PAIS_FILMES.get("Brasil")||[], brParc={};
+  for(const f of br) for(const p of paisesDe(f)) if(p!=="Brasil") brParc[p]=(brParc[p]||0)+1;
+  const brTop=Object.entries(brParc).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  const brSolo=br.filter(f=>paisesDe(f).length===1).length;
+  const parceiro=cont.filter(c=>c.n>=8).map(c=>({...c,taxa:(c.n-c.solo)/c.n})).sort((a,b)=>b.taxa-a.taxa||b.n-a.n)[0];
+  const soCopro=cont.filter(c=>!c.solo&&!MAPA.paises[c.p]?.h);
+  const regioes={}; for(const [p,r] of Object.entries(MAPA.paises)) if(r.r) regioes[r.r]=(regioes[r.r]||0)+1;
+  const pct=n=>Math.round(100*n/tot)+"%";
+  const c0=cont[0];
+  return [
+    `<div class="dest"><span>País mais presente</span><strong>${link(c0.p)}</strong>
+      <p>${c0.n} filmes, ${pct(c0.n)} da programação · ${c0.solo} só do país, ${c0.n-c0.solo} em coprodução.
+      Depois vêm ${cont.slice(1,4).map(c=>`${link(c.p)} (${c.n})`).join(", ")}.</p></div>`,
+    `<div class="dest"><span>Coproduções</span><strong>${pct(copro.length)}</strong>
+      <p>${copro.length} dos ${tot} filmes têm dois países ou mais.</p></div>`,
+    maior?`<div class="dest"><span>Maior coprodução</span><strong>${paisesDe(maior).length} países</strong>
+      <p><button class="pais-link" onclick="openModal('${maior.id}')">${esc(maior.titulo)}</button>: ${paisesDe(maior).map(link).join(", ")}.</p></div>`:"",
+    topPares.length?`<div class="dest"><span>Duplas mais frequentes</span><strong>${topPares[0][0].split("|").map(link).join(" + ")}</strong>
+      <p>${topPares[0][1]} filmes juntos.</p><ol>${topPares.slice(1).map(([k,n])=>`<li>${k.split("|").map(link).join(" + ")} — ${n}</li>`).join("")}</ol></div>`:"",
+    br.length?`<div class="dest"><span>Com quem o Brasil coproduz</span><strong>${brTop.length?link(brTop[0][0]):"—"}</strong>
+      <p>${br.length-brSolo} dos ${br.length} filmes brasileiros são coproduções.</p>
+      <ol>${brTop.map(([p,n])=>`<li>${link(p)} — ${n}</li>`).join("")}</ol></div>`:"",
+    parceiro?`<div class="dest"><span>Sempre em parceria</span><strong>${link(parceiro.p)}</strong>
+      <p>${parceiro.n} filmes, ${Math.round(100*parceiro.taxa)}% em coprodução. ${soCopro.length} países só aparecem em coproduções,
+      como ${soCopro.slice(0,3).map(c=>link(c.p)).join(", ")}.</p></div>`:"",
+    `<div class="dest"><span>Países citados</span><strong>${PAIS_FILMES.size}</strong>
+      <p>${Object.entries(regioes).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`${n} ${esc(r)}`).join(" · ")}.</p></div>`,
+  ].join("");
+}
+
 function setView(v){
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===v));
   document.getElementById("view-filmes").hidden = v!=="filmes";
   document.getElementById("view-disp").hidden   = v!=="disp";
+  document.getElementById("view-mapa").hidden   = v!=="mapa";
   document.getElementById("view-agenda").hidden = v!=="agenda";
   if(v==="agenda"){ renderAgenda(); medir("aba-agenda"); }
   if(v==="disp")  { renderDisp();   medir("aba-disponibilidade"); }
+  if(v==="mapa")  { renderMapa();   medir("aba-mapa"); }
   window.scrollTo({top:0});
 }
 function refreshViews(){

@@ -132,6 +132,32 @@ Programação raspada no dia em que saiu: **399 filmes, 1401 sessões, 49 cinema
   sessões) e a atualização diária automática — os dois existem no Rio e valem para SP se a
   programação for re-raspada durante a Mostra.
 
+## 🌍 Aba Mapa (09/10/2026)
+
+Aba entre *Filmes* e *Disponibilidade*: mapa-múndi com os filmes por país e destaques de
+coprodução.
+
+- **Contorno dos países:** `mapa/countries-110m.json` (world-atlas 2.0.2 = Natural Earth
+  1:110m, TopoJSON). `mapa_paises.py` decodifica, projeta em **Equal Earth** (área
+  proporcional) e o build embute o SVG no HTML (`/*__MAPA__*/`, ~120 KB) — continua offline.
+  Fiji e o leste da Rússia cruzam os 180° no arquivo; o anel é dividido em dois, senão uma
+  linha risca o mapa de ponta a ponta.
+- **País da Mostra → país do mapa:** dicionário `PAISES` em `mapa_paises.py` (com região).
+  Coprodução = vírgula ("Bósnia e Herzegovina" é um país só). Singapura e Hong Kong viram
+  **ponto** (pequenos demais em 1:110m); União Soviética e Alemanha Ocidental não têm desenho
+  e aparecem só na lista, em itálico, com o período. "Canadá (Québec)" conta no Canadá.
+  **Nome novo que não estiver no dicionário: o build avisa** ("AVISO: país sem lugar no mapa").
+- **Na tela:** escala sequencial de um tom (âmbar, 5 faixas: 1, 2–4, 5–9, 10–29, 30+; sem
+  filme = fundo), dica ao passar o mouse, clique abre o painel do país (filmes, quanto é
+  coprodução, com quem mais coproduz). A lista de todos os países embaixo é a tabela do mapa
+  e o caminho para os pequenos e os históricos.
+- **Destaques de coprodução** (calculados no app a partir dos filmes, acompanham a
+  programação): país mais presente, % de coproduções, maior coprodução, duplas mais
+  frequentes, com quem o Brasil coproduz, país "sempre em parceria" e países por região.
+  Na 50ª: Brasil 106 filmes (27%), 45% coproduções, *A Escuta* com 9 países, Alemanha +
+  França 15 filmes, Luxemburgo 100% em coprodução.
+- Eventos `mostra/aba-mapa` e `mostra/mapa-pais` (painel de uso).
+
 ## Quando sair a 50ª Mostra (roteiro usado na virada)
 
 1. `python mostra-scraper-completo/mostra-scraper/scrape_mostra.py --edition 50`

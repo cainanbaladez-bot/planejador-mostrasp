@@ -53,7 +53,14 @@ filmes_js = filmes_js.replace("</", "<\\/")
 sessoes_js = sessoes_js.replace("</", "<\\/")
 
 html = TEMPLATE.read_text(encoding="utf-8")
-html = html.replace("/*__FILMES__*/[]", filmes_js).replace("/*__SESSOES__*/[]", sessoes_js)
+# aba 🌍 Mapa (09/10/2026): contorno dos países + nome da Mostra → país do mapa (mapa_paises.py)
+from mapa_paises import dados_mapa
+mapa, sem_mapa = dados_mapa(filmes)
+if sem_mapa:
+    print("AVISO: país sem lugar no mapa (acrescente em mapa_paises.PAISES):", ", ".join(sem_mapa))
+mapa_js = json.dumps(mapa, ensure_ascii=False, separators=(",", ":")).replace("</", "<\/")
+assert "/*__MAPA__*/{}" in html, "marca do mapa sumiu do template"
+html = html.replace("/*__FILMES__*/[]", filmes_js).replace("/*__SESSOES__*/[]", sessoes_js).replace("/*__MAPA__*/{}", mapa_js)
 SAIDA.write_text(html, encoding="utf-8")
 SAIDA_SITE.parent.mkdir(parents=True, exist_ok=True)
 SAIDA_SITE.write_text(html, encoding="utf-8")
