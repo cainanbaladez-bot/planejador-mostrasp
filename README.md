@@ -379,3 +379,15 @@ que deu o prêmio ganha um símbolo: o **troféu da casa** quando a frase do pr�
 levou ele (`TROFEU_FEST`: Palma de Ouro, Urso de Ouro/Prata/Cristal, Leão de Ouro/Prata, Leopardo
 de Ouro, Tigre, Concha de Ouro/Prata); qualquer outro prêmio leva o **louro** padrão. Sem
 prêmio = só o nome. Mesmo código no planejador do Rio.
+
+**Prêmios só com o texto do festival (09/10/2026):** festivais e prêmios vêm SÓ da sinopse que o
+próprio festival publica, e o `enrich_filmes.py` agora confere antes de aceitar:
+- frase termina em . ? ou ! (pergunta do enredo não gruda no prêmio);
+- festival só conta em frase que fala de festival ("exibido", "competição", "Festival de…",
+  "prêmio"…): cidade do enredo ("vive em Berlim", "Mar del Plata, 1985") não vira festival;
+- prêmio só conta com marca de prêmio + festival/Mostra na mesma frase; fora: Nobel, Pritzker,
+  Jabuti, Pulitzer, Grammy e homenagem a cineasta ("recebe o Prêmio Leon Cakoff nesta 50ª Mostra");
+- `premio_fest` = festival que deu o prêmio (o 1º citado depois da palavra de prêmio; senão o
+  último antes) — é nele que vai o troféu/louro. Festivais novos na lista: Jerusalém,
+  Gotemburgo, Tóquio, Cracóvia, Clermont-Ferrand.
+Regra nova: **nunca completar com fonte externa** — se o texto do festival não diz, não aparece.

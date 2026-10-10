@@ -49,6 +49,7 @@ for f in filmes_slim:
     f["festivais"] = e.get("festivais", [])
     f["premiado"] = e.get("premiado", False)
     f["premio_txt"] = e.get("premio_txt", "")
+    f["premio_fest"] = e.get("premio_fest")   # festival que deu o prêmio (09/10/2026)
     f["lb_nota"] = e.get("lb_nota")
     f["lb_votos"] = e.get("lb_votos")
     f["lb_url"] = e.get("lb_url")
