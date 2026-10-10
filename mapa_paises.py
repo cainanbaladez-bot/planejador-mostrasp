@@ -120,13 +120,13 @@ def dados_mapa(filmes):
         oeste = [(max(lon if lon < 0 else lon - 360, -180), lat) for lon, lat in pts]
         return [leste, oeste]
 
-    xs, ys, desenhos = [], [], {}
+    xs, ys, desenhos, centros = [], [], {}, {}
     for g in topo["objects"]["countries"]["geometries"]:
         nome = g["properties"]["name"]
         if nome in ("Antarctica", "Fr. S. Antarctic Lands"):
             continue
         poligonos = [g["arcs"]] if g["type"] == "Polygon" else g["arcs"]
-        partes = []
+        partes, maior = [], (0, None)              # maior anel = de onde saem os pôsteres
         for poli in poligonos:
             for pts_anel in (a for idx in poli for a in lados(anel(idx))):
                 ant, seg = None, []
@@ -140,7 +140,13 @@ def dados_mapa(filmes):
                         ant = p
                 if len(seg) > 2:
                     partes.append("M" + "L".join(seg) + "Z")
+                    qs = [projeta(lo, la) for lo, la in pts_anel]
+                    area = abs(sum(qs[i - 1][0] * q[1] - q[0] * qs[i - 1][1] for i, q in enumerate(qs))) / 2
+                    if area > maior[0]:
+                        bx, by = [q[0] for q in qs], [q[1] for q in qs]
+                        maior = (area, [round((min(bx) + max(bx)) / 2, 1), round((min(by) + max(by)) / 2, 1)])
         desenhos[nome] = "".join(partes)
+        centros[nome] = maior[1]
 
     x0, y0 = math.floor(min(xs)), math.floor(min(ys))
     vb = [x0, y0, math.ceil(max(xs)) - x0, math.ceil(max(ys)) - y0]
@@ -162,7 +168,7 @@ def dados_mapa(filmes):
         if p not in PAISES:
             sem_mapa.append(p)
         paises[p] = reg
-    return {"vb": vb, "d": desenhos, "paises": paises}, sem_mapa
+    return {"vb": vb, "d": desenhos, "c": centros, "paises": paises}, sem_mapa
 
 
 if __name__ == "__main__":

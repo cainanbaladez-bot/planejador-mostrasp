@@ -151,12 +151,23 @@ coprodução.
   filme = fundo), dica ao passar o mouse, clique abre o painel do país (filmes, quanto é
   coprodução, com quem mais coproduz). A lista de todos os países embaixo é a tabela do mapa
   e o caminho para os pequenos e os históricos.
-- **Destaques de coprodução** (calculados no app a partir dos filmes, acompanham a
-  programação): país mais presente, % de coproduções, maior coprodução, duplas mais
-  frequentes, com quem o Brasil coproduz, país "sempre em parceria" e países por região.
-  Na 50ª: Brasil 106 filmes (27%), 45% coproduções, *A Escuta* com 9 países, Alemanha +
-  França 15 filmes, Luxemburgo 100% em coprodução.
-- Eventos `mostra/aba-mapa` e `mostra/mapa-pais` (painel de uso).
+- **Pôsteres saindo do país (v2, 09/10/2026):** escolher um país (no mapa, na lista ou num
+  nome das listas) escurece o mapa e faz os pôsteres dos filmes saírem do país, com título;
+  clique = ficha. Saem do centro da **maior parte** do país (`MAPA.c`, calculado no build —
+  senão a França sairia do Atlântico por causa da Guiana). Cada card ocupa uma célula de uma
+  grade, as mais próximas do país primeiro: nada se sobrepõe nem sai do mapa. Até 24 no
+  computador e 12 no celular (onde o mapa cresce para 460 px); o último vira "ver todos os N
+  filmes ↓", que leva ao painel com a lista completa. Ordem: com imagem, com sessão ainda por
+  vir, maior nota do Letterboxd. Fecha no ×, no Esc ou tocando fora. A entrada usa
+  `requestAnimationFrame` + temporizador de garantia (aba em segundo plano não dispara rAF
+  e os cards ficavam invisíveis).
+- **Listas "Quem mais aparece" (v2):** 10 países mais recorrentes (filmes e sessões), 5
+  atores, 5 diretores, 5 duplas de coprodução, com quem o Brasil coproduz e 5 filmes com mais
+  países, com barra proporcional e empates indicados. Pessoas contam **obras distintas** (os
+  3 episódios de *La Maison des Bois* contam como uma). Nome de ator/diretor leva à aba
+  Filmes já buscando por ele; país abre o mapa nele. Na 50ª: Rejane Faria 6 filmes; Artavazd
+  Pelechian 8, James Gray 6.
+- Eventos `mostra/aba-mapa`, `mostra/mapa-pais` e `mostra/mapa-filme` (painel de uso).
 
 ## Quando sair a 50ª Mostra (roteiro usado na virada)
 
