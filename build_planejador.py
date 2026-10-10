@@ -44,6 +44,7 @@ for f in filmes_slim:
     f["lb_nota"] = e.get("lb_nota")
     f["lb_votos"] = e.get("lb_votos")
     f["lb_url"] = e.get("lb_url")
+    f["lb_hist"] = e.get("lb_hist")   # 10 faixas de nota (09/10/2026)
 
 filmes_js = json.dumps(filmes_slim, ensure_ascii=False, separators=(",", ":"))
 sessoes_js = json.dumps(enxuga(sessoes, CAMPOS_SESSAO), ensure_ascii=False, separators=(",", ":"))
