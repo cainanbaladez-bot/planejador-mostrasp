@@ -1985,6 +1985,20 @@ function setAgendaMode(m){
    navegador de dentro do X/Instagram guarda numa gaveta própria. Nos dois casos, dica
    de mandar o link para si mesmo — até a pessoa fechar. */
 
+/* (reposta em 10/10/2026: só o comentário tinha sobrado e a Minha Agenda abria vazia) */
+const LS_DICA=`${LS_PREFIX}_dica_backup`;
+function dicaBackupHTML(){
+  const ua=navigator.userAgent;
+  const ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+  const deApp=/FBAN|FBAV|Instagram|Twitter|WhatsApp|Line\/|; wv\)/i.test(ua);
+  const instalado=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
+  if(!agenda.size||instalado||!(ios||deApp)||lerLocal(LS_DICA,false)) return "";
+  const pq=deApp?"neste navegador de dentro do app — se abrir o planejador em outro lugar, ela não vai junto"
+               :"neste Safari — e o iPhone apaga dados de site que ficam 7 dias sem visita";
+  return `<div class="dica-backup">💾 <span>Sua agenda fica só ${pq}.
+    <a href="#" onclick="compartilharAgenda();return false">Mande o link para você mesmo</a> e não perde nada.</span>
+    <button onclick="gravarLocal(LS_DICA,true);renderAgenda()" aria-label="Fechar dica">×</button></div>`;
+}
 function renderAgenda(){
   document.getElementById("agenda-avisos").innerHTML=dicaBackupHTML();
   const root=document.getElementById("agenda-root");

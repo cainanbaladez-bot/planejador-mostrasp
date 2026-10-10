@@ -98,4 +98,18 @@ assert.equal(app.__objetivosOk, true, "os seis objetivos devem estar disponívei
 assert.doesNotThrow(() => boot({ mostra49_agenda: "json inválido", mostra49_watch3: "[" }),
   "armazenamento corrompido não deve impedir o app de abrir");
 
-console.log("planner smoke: 10 casos passaram");
+// 10/10/2026: a Minha Agenda abriu vazia no ar (dicaBackupHTML tinha sumido do template).
+// Abre cada aba com agenda cheia e marcados — qualquer função faltando quebra aqui.
+{
+  const ag = boot(); ag.scrollTo = () => {};
+  vm.runInContext(`
+    for (const f of FILMES.filter(f=>(SESS_BY_FILME.get(f.id)||[]).length).slice(0,12)) {
+      watch.set(f.id,1); agenda.add(SESS_BY_FILME.get(f.id)[0].sessao_id);
+    }
+    setView("filmes"); setView("disp"); setView("agenda"); renderAgenda();
+    globalThis.__agendaHTML = document.getElementById("agenda-root").innerHTML;
+  `, ag);
+  assert.ok(ag.__agendaHTML.length > 200, "a Minha Agenda deve desenhar as sessões marcadas");
+}
+
+console.log("planner smoke: 11 casos passaram");

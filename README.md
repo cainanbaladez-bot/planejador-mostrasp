@@ -393,3 +393,5 @@ próprio festival publica, e o `enrich_filmes.py` agora confere antes de aceitar
 Regra nova: **nunca completar com fonte externa** — se o texto do festival não diz, não aparece.
 
 **Palma de Ouro deitada (10/10/2026):** o símbolo de Cannes virou um ramo na horizontal (3 pares de folíolos), como o troféu; o desenho em pé não lembrava a palma.
+
+**Conserto da Minha Agenda (sw v26, 10/10/2026):** desde a troca para a 50ª (commit 885c9ed) a aba abria vazia — `dicaBackupHTML()` (aviso de backup no iPhone/navegador de app) tinha sumido do template, só o comentário ficou, e `renderAgenda` quebrava. Função reposta (cópia da do Rio, com `LS_DICA`) e o smoke test agora abre as abas Filmes/Disponibilidade/Agenda com agenda cheia (11 casos).
