@@ -372,3 +372,10 @@ faz sentido) e dentro da própria janela de preview.
 mini-histograma) tem `margin-top:auto` — fica na mesma altura em toda a fileira, mesmo com
 título de 1 ou 2 linhas. O build normaliza a duração para "N min." (o site da 50ª manda
 "90 min", "82'" ou só "39").
+
+**Festivais pelo nome (sw v23, 09/10/2026 — substitui os símbolos da proposta C):** card e
+ficha mostram o **nome** do festival em texto miúdo (até 3 no card, depois "+N"). Só o festival
+que deu o prêmio ganha um símbolo: o **troféu da casa** quando a frase do prêmio diz que o filme
+levou ele (`TROFEU_FEST`: Palma de Ouro, Urso de Ouro/Prata/Cristal, Leão de Ouro/Prata, Leopardo
+de Ouro, Tigre, Concha de Ouro/Prata); qualquer outro prêmio leva o **louro** padrão. Sem
+prêmio = só o nome. Mesmo código no planejador do Rio.
