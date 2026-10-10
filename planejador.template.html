@@ -505,6 +505,7 @@ select:focus{outline:none;border-color:var(--amber)}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:filter .13s;
 }
 .cal-ev b{color:var(--amber);font-weight:600}
+.cal-ev .ev-det{display:none}
 .cal-ev.ok{background:#8fbf6f1f;border-left-color:var(--green)}
 .cal-ev.ok b{color:var(--green)}
 .cal-ev.aperto{background:#e6c24a1f;border-left-color:var(--yellow)}
@@ -1028,6 +1029,16 @@ footer{
   .modal-body{padding:6px 18px 22px}
   .ticket-side{flex-direction:row;align-items:flex-start;padding:12px 10px}
 
+  /* agenda do celular mais completa (10/10/2026) */
+  .cal-ev .ev-det{display:flex;flex-direction:column;gap:3px;margin-top:6px;font-family:var(--font-body);font-size:12.5px;line-height:1.35;color:var(--muted)}
+  .ev-fim{font-family:var(--font-mono);font-size:11px;color:var(--ink)}
+  .ev-end{color:var(--muted);text-decoration:none;font-size:12px}
+  .ev-end:active{color:var(--ink)}
+  .ev-folga{font-family:var(--font-mono);font-size:10.5px}
+  .ev-folga.ok{color:var(--green)} .ev-folga.aperto{color:var(--yellow)} .ev-folga.conf{color:var(--red)}
+  .ev-links{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .ev-links a{font:600 11px var(--font-mono);color:var(--amber);text-decoration:none;border:1px solid #f2a93b55;border-radius:99px;padding:5px 10px;min-height:30px;display:inline-flex;align-items:center}
+
   /* ── mobile-first: nada de rolagem lateral, alvo de toque >= 40px ── */
   .brand h1{font-size:24px}
   .overlay{padding:0}
@@ -1068,6 +1079,10 @@ footer{
   .cal-cell .d-mob{display:inline}
   .cal-cell .evs{flex:1;min-width:0}
   .cal-cell .dia-livre{display:inline;color:var(--dim);opacity:.5;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em}
+  /* dia com sessão: rótulo em cima e sessões na largura toda (10/10/2026) */
+  .cal-cell.has{flex-direction:column;gap:8px}
+  .cal-cell.has .dnum{flex:none}
+  .cal-cell.has .evs{width:100%}
   .cal-ev{font-size:11.5px;padding:8px 9px;white-space:normal;margin-bottom:5px}
   .cal-legend .mes{margin-left:0;order:-1;width:100%;margin-bottom:2px}
 }
@@ -1335,6 +1350,21 @@ const DOW3=["DOM","SEG","TER","QUA","QUI","SEX","SÁB"];
 function dObj(iso){ return new Date(iso+"T12:00:00"); }
 function diaLabel(iso){ const d=dObj(iso); return `${DOW[d.getDay()]}, ${d.getDate()} ${MESES[d.getMonth()]}`; }
 function diaCurto(iso){ const d=dObj(iso); return `${DOW3[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth()+1)}`; }
+/* detalhe da sessão no calendário do celular (10/10/2026): fim estimado, cinema/sala,
+   endereço (abre o mapa), folga até a próxima e links da Mostra e do Letterboxd.
+   No computador a grade mensal segue compacta (.ev-det escondido > 640px). */
+function evDetHTML(s,fg,f){
+  const pare='onclick="event.stopPropagation()" target="_blank" rel="noopener"';
+  const mapa=s.endereco_cinema?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.endereco_cinema)}`:"";
+  const folga=fg.prox?`<span class="ev-folga ${fg.nivel}">${fg.gap<0?"sobrepõe":"folga de "+fmtMin(fg.gap)} até ${esc(fg.prox.titulo)}</span>`:"";
+  return `<span class="ev-det">
+    <span class="ev-fim">até ~${fimSessao(s)} · ${esc(s.duracao||"")}</span>
+    <span class="ev-loc">${esc(s.cinema)}${s.sala?` · ${esc(s.sala)}`:""}</span>
+    ${s.endereco_cinema?`<a class="ev-end" href="${esc(mapa)}" ${pare}>📍 ${esc(s.endereco_cinema)}</a>`:""}
+    ${folga}
+    <span class="ev-links">${f.url_pagina?`<a href="${esc(f.url_pagina)}" ${pare}>Mostra ↗</a>`:""}${f.lb_url?`<a href="${esc(f.lb_url)}" ${pare}>Letterboxd ↗</a>`:""}${s.link_compra?`<a href="${esc(s.link_compra)}" ${pare}>🎟 Ingresso</a>`:""}</span>
+  </span>`;
+}
 function fimSessao(s){ const m=mins(s.hora)+durMin(s.duracao); return `${pad(Math.floor(m/60)%24)}:${pad(m%60)}`; }
 
 /* ── medição de uso: o que a pessoa FAZ, não só que abriu ──
@@ -2126,9 +2156,9 @@ function calBody(){
     const dmob=`${DOW3[cur.getDay()]} ${cur.getDate()} ${MESES[cur.getMonth()]}`;
     cells+=`<div class="cal-cell${dentro?"":" off"}${evs.length?" has":""}">
       <div class="dnum"><span class="d-desk">${dnum}</span><span class="d-mob">${dmob}</span></div>
-      <div class="evs">${evs.map(s=>{ const fg=folgaAgenda(s); return `<button class="cal-ev ${fg.nivel}"
+      <div class="evs">${evs.map(s=>{ const fg=folgaAgenda(s), fl=FILME.get(s.filme_id)||{}; return `<div role="button" tabindex="0" class="cal-ev ${fg.nivel}"
         title="${esc(s.titulo)} · ${esc(s.hora)}–${fimSessao(s)} · ${esc(s.cinema)} (${esc(s.sala)})${fg.prox?` — ${fg.gap<0?"sobrepõe":"folga de "+fmtMin(fg.gap)} até ${esc(fg.prox.titulo)}`:""}"
-        onclick="openModal('${s.filme_id}')"><b>${esc(s.hora)}</b> ${esc(s.titulo)}</button>`; }).join("")
+        onclick="openModal('${s.filme_id}')" onkeydown="if(event.key==='Enter')openModal('${s.filme_id}')"><b>${esc(s.hora)}</b> ${esc(s.titulo)}${evDetHTML(s,fg,fl)}</div>`; }).join("")
         || `<span class="dia-livre">livre</span>`}</div>
     </div>`;
     cur.setDate(cur.getDate()+1);
