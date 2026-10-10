@@ -132,6 +132,20 @@ Programação raspada no dia em que saiu: **399 filmes, 1401 sessões, 49 cinema
   sessões) e a atualização diária automática — os dois existem no Rio e valem para SP se a
   programação for re-raspada durante a Mostra.
 
+### Festivais em símbolo e notas do Letterboxd (09/10/2026)
+
+- **Festivais:** no card, só o símbolo do **troféu** de cada festival, desenho próprio em traço
+  (não o logo oficial, que é marca registrada): palma = Cannes, urso = Berlim, leão = Veneza,
+  leopardo = Locarno, tigre = Roterdã, concha = San Sebastián, louro = os demais (`SVG_FEST`).
+  Nome ao passar o mouse. **Premiado = asterisco âmbar no festival que deu o prêmio**, achado
+  pela frase do prêmio (`festPremio`, padrões em `PAD_FEST`); sem achar, vai no 1º festival.
+  Na ficha: símbolo + nome, o premiado primeiro, e a frase do prêmio.
+- **Letterboxd:** o `enrich_filmes.py` guarda também o histograma (`lb_hist`, 10 faixas de
+  meia estrela, de `letterboxd.com/csi/film/<slug>/rating-histogram/`). **Card:** só o
+  mini-histograma e o número de notas, **sem a média**. **Ficha:** histograma maior, média e
+  número de notas, link para o Letterboxd. A média saiu também da lateral do calendário e dos
+  ingressos — só aparece na ficha (a ordenação por nota continua usando a média).
+
 ## 🌍 Aba Mapa (09/10/2026)
 
 Aba entre *Filmes* e *Disponibilidade*: mapa-múndi com os filmes por país e destaques de
