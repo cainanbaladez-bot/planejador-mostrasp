@@ -1381,6 +1381,23 @@ function medir(ev){
   else if(document.readyState!=="complete") addEventListener("load",()=>setTimeout(enviar,300),{once:true});
 }
 
+/* Por filme (10/10/2026, uso INTERNO — nada disso aparece no site): na 1ª vez que este
+   aparelho agenda ou marca um filme, manda "mostra/agenda/<slug>" ou "mostra/marcou/<slug>".
+   O painel de uso (27_uso.py) soma isso num ranking de filmes mais agendados/marcados.
+   Uma vez por aparelho e por filme (guardado no navegador): desmarcar e marcar de novo
+   não conta outra vez. Não leva nada da pessoa, só o filme. */
+const LS_MEDF=`${LS_PREFIX}_med_filmes`;
+const MED_FILMES=new Set(lerLocal(LS_MEDF,[])||[]);
+function medirFilme(tipo,id){
+  const f=FILME.get(id); if(!f) return;
+  const slug=(f.url_pagina||"").split("/").pop()||String(id), chave=`${tipo}/${slug}`;
+  if(MED_FILMES.has(chave)) return;
+  MED_FILMES.add(chave); gravarLocal(LS_MEDF,[...MED_FILMES]);
+  const enviar=()=>{ try{ window.goatcounter.count({path:"mostra/"+chave,title:`mostra ${tipo}: ${f.titulo}`,event:true}); }catch(e){} };
+  if(window.goatcounter&&window.goatcounter.count) enviar();
+  else addEventListener("load",()=>setTimeout(enviar,300),{once:true});
+}
+
 function toast(msg){
   const t=document.getElementById("toast");
   t.textContent=msg; t.classList.add("show");
@@ -1920,7 +1937,7 @@ function setPrioridade(id, v){
   const antes=watch.get(id);
   if(NIVEIS.includes(v)) watch.set(id,v); else watch.delete(id);
   if(antes===v) return;
-  if(NIVEIS.includes(v)) medir("marcou-filme");
+  if(NIVEIS.includes(v)){ medir("marcou-filme"); medirFilme("marcou",id); }
   save(); updateBadge();
   if(modalFilmId) openModal(modalFilmId,true);
   renderGrid(); refreshViews();
@@ -1930,7 +1947,7 @@ function setPrioridade(id, v){
 function toggleWatch(id){
   /* cicla: nada → quero muito → quero ver → se sobrar → nada */
   const prox=(watch.get(id)||0)+1;
-  if(NIVEIS.includes(prox)){ watch.set(id,prox); medir("marcou-filme"); toast(`${PRIO_ICONE[prox]} ${PRIO_ROT[prox][0].toUpperCase()+PRIO_ROT[prox].slice(1)}`); }
+  if(NIVEIS.includes(prox)){ watch.set(id,prox); medir("marcou-filme"); medirFilme("marcou",id); toast(`${PRIO_ICONE[prox]} ${PRIO_ROT[prox][0].toUpperCase()+PRIO_ROT[prox].slice(1)}`); }
   else { watch.delete(id); toast("Tirado da lista"); }
   save(); renderGrid(); refreshViews();
   if(modalFilmId===id) openModal(id,true);
@@ -2084,7 +2101,7 @@ function toggleSessao(id){
   if(agenda.has(id)){ agenda.delete(id); toast("Sessão removida da agenda"); }
   else{
     const confs=conflitos(s);
-    agenda.add(id); medir("sessao-manual");
+    agenda.add(id); medir("sessao-manual"); medirFilme("agenda",s.filme_id);
     toast(confs.length?`⚠ Adicionada — choca com ${confs[0].titulo}`:`✓ ${s.titulo} · ${diaCurto(s.data)} ${s.hora}`);
   }
   save(); updateBadge();
@@ -2625,7 +2642,7 @@ function aplicarProposta(){
   if(!proposta) return;
   guardarDesfazer("aplicar proposta");
   if(!manterAgenda) agenda.clear();
-  proposta.sel.forEach(x=>agenda.add(x.s.sessao_id));
+  proposta.sel.forEach(x=>{ agenda.add(x.s.sessao_id); medirFilme("agenda",x.s.filme_id); });
   const n=proposta.sel.length;
   proposta=null; save(); updateBadge(); renderAgenda(); medir("proposta-aplicada");
   toast(`✓ ${n} ${n===1?"sessão encaixada":"sessões encaixadas"}`);
