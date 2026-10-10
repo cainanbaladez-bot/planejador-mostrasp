@@ -367,3 +367,8 @@ de verdade (nada de CSS duplicado simulando celular) e o `localStorage` é o mes
 então a agenda acompanha nas duas janelas. Fechar a janelinha volta o botão pro
 estado 🖥 sozinho. O alternador some abaixo de 640px (num celular de verdade não
 faz sentido) e dentro da própria janela de preview.
+
+**Alinhamento do card (sw v22, 09/10/2026):** o card é coluna flex e o rodapé (festivais +
+mini-histograma) tem `margin-top:auto` — fica na mesma altura em toda a fileira, mesmo com
+título de 1 ou 2 linhas. O build normaliza a duração para "N min." (o site da 50ª manda
+"90 min", "82'" ou só "39").

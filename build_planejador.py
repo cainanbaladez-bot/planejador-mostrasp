@@ -31,6 +31,14 @@ def enxuga(lista, campos):
 filmes = json.loads((DATA / "mostra_50_filmes.json").read_text(encoding="utf-8"))
 sessoes = json.loads((DATA / "mostra_50_sessoes.json").read_text(encoding="utf-8"))
 
+# duração no mesmo formato (09/10/2026): o site da 50ª manda "90 min", "82'" ou só "39"
+import re as _re
+def _dur(v):
+    m = _re.fullmatch(r"\s*(\d{1,3})\s*(?:min\.?|'|’)?\s*", str(v or ""))
+    return f"{m.group(1)} min." if m else v
+for _x in filmes + sessoes:
+    _x["duracao"] = _dur(_x.get("duracao"))
+
 # enriquecimento opcional (festivais + Letterboxd) — gerado por enrich_filmes.py
 arq_enriq = DATA / "enriquecimento.json"
 enriq = json.loads(arq_enriq.read_text(encoding="utf-8")) if arq_enriq.exists() else {}
