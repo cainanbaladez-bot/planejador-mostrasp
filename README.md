@@ -165,6 +165,14 @@ coprodução.
   filme = fundo), dica ao passar o mouse, clique abre o painel do país (filmes, quanto é
   coprodução, com quem mais coproduz). A lista de todos os países embaixo é a tabela do mapa
   e o caminho para os pequenos e os históricos.
+- **Seus filmes no mapa (sw v21, 09/10/2026):** o que a pessoa escolheu aparece em outra cor
+  — **azul** = marcado com ★/☆, **verde** = tem sessão na Minha Agenda. País com filme seu
+  ganha contorno azul e um **selo com quantos filmes seus** são dele (verde se algum já está
+  na agenda; clicar no selo = escolher o país). Pôsteres da explosão e lista do painel põem os
+  seus primeiro, com borda na cor; o painel diz "N filmes seus deste país · M na agenda"; a
+  dica do mouse e os chips da lista de países também mostram a contagem. Linha-legenda em
+  cima do mapa ("seus N filmes vêm de P países"). Atualiza na hora ao marcar/desmarcar pela
+  ficha (`refreshViews` → `marcarEscolhidos`). Código: `estadoSeu`, `marcarEscolhidos`.
 - **Pôsteres saindo do país (v2, 09/10/2026):** escolher um país (no mapa, na lista ou num
   nome das listas) escurece o mapa e faz os pôsteres dos filmes saírem do país, com título;
   clique = ficha. Saem do centro da **maior parte** do país (`MAPA.c`, calculado no build —

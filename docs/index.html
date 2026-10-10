@@ -235,6 +235,34 @@ select:focus{outline:none;border-color:var(--amber)}
 .pais-chip b{color:var(--ink);font-weight:600;margin-left:4px}
 .pais-chip:hover,.pais-chip.on{border-color:var(--amber);color:var(--ink)}
 .pais-chip.hist{font-style:italic}
+/* seus filmes no mapa: azul = marcado com estrela, verde = na agenda (09/10/2026) */
+#mapa-root{--seu:#6cb8d8;--seu-ag:var(--green)}
+.mapa-wrap path.seu{stroke:var(--seu);stroke-width:1.1}
+.mapa-wrap circle.seu{stroke:var(--seu);stroke-width:1.4}
+.mapa-wrap path.seu.sel{stroke:var(--ink);stroke-width:1.6}
+.selo{cursor:pointer}
+.selo circle{fill:var(--seu);stroke:var(--bg);stroke-width:1.2}
+.selo text{font:700 8px var(--font-mono);fill:#0e1a20;text-anchor:middle;pointer-events:none}
+.selo:hover circle{fill:#9bd4ec}
+.selo.ag circle{fill:var(--seu-ag)}   /* algum filme do país já tem sessão na agenda */
+.mapa-wrap.aberto .selos{display:none}
+.mapa-seus{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font:10.5px var(--font-mono);color:var(--dim);margin:0 0 10px}
+.mapa-seus .sw{display:inline-block;width:10px;height:10px;border-radius:99px;margin-left:4px}
+.sw.ag{background:var(--seu-ag)} .sw.w{background:var(--seu)}
+.tip-seu{color:#2b6f8e;font-weight:700}
+.exp-tit .tip-seu{color:var(--seu)}
+.exp-card.seu-w{border:2px solid var(--seu)}
+.exp-card.seu-ag{border:2px solid var(--seu-ag)}
+.exp-card.seu-w b{color:var(--seu)} .exp-card.seu-ag b{color:var(--seu-ag)}
+.pf.seu-w{border-color:var(--seu);box-shadow:inset 3px 0 0 var(--seu)}
+.pf.seu-ag{border-color:var(--seu-ag);box-shadow:inset 3px 0 0 var(--seu-ag)}
+.pf .pf-seu{font:10px var(--font-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--seu)}
+.pf.seu-ag .pf-seu{color:var(--seu-ag)}
+.pais-sel .seus-pais{color:var(--seu);font-size:13.5px;margin-bottom:4px}
+.pais-sel .seus-pais b{font-family:var(--font-display);font-size:19px;margin-right:2px}
+.pais-chip.seu{border-color:#6cb8d866}
+.pais-chip em{font-style:normal;font-weight:700;color:#0e1a20;background:var(--seu);border-radius:99px;
+  padding:0 6px;margin-left:5px;font-size:11px}
 .resumo-copro{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:13px;color:var(--muted);margin:0 0 14px}
 .resumo-copro b{color:var(--amber);font-family:var(--font-display);font-size:17px;margin-right:4px}
 .listas{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
@@ -1272,12 +1300,48 @@ const corMapa=n=>{ for(let i=0;i<FAIXAS_MAPA.length;i++) if(n>=FAIXAS_MAPA[i][0]
 const filmesDe=pts=>[...new Set(pts.flatMap(p=>PAIS_FILMES.get(p)||[]))];
 const sessoesDe=fs=>fs.reduce((t,f)=>t+(SESS_BY_FILME.get(f.id)||[]).length,0);
 let paisSel=null, mapaPronto=false;
+/* Seus filmes no mapa (09/10/2026): verde = tem sessão na Minha Agenda; azul = marcado
+   com ★/☆ mas ainda sem sessão. O país ganha contorno azul e um selo com quantos dos
+   SEUS filmes são dele; pôsteres e lista mostram a mesma cor. */
+const naAgendaF=f=>(SESS_BY_FILME.get(f.id)||[]).some(s=>agenda.has(s.sessao_id));
+const estadoSeu=f=>naAgendaF(f)?"ag":watch.has(f.id)?"w":"";
+const seusDe=fs=>fs.filter(estadoSeu);
+const rotSeu=f=>naAgendaF(f)?"na sua agenda":PRIO_ROT[watch.get(f.id)]||"";
+function marcarEscolhidos(){
+  const root=document.getElementById("mapa-root"), svg=root?.querySelector(".mapa-wrap svg"); if(!svg) return;
+  svg.querySelectorAll(".seu").forEach(x=>x.classList.remove("seu"));
+  svg.querySelector(".selos")?.remove();
+  const selos=[];
+  for(const m of Object.keys(MAPA.d)){
+    const ss=seusDe(filmesDe(MAPA_PT[m]||[])), n=ss.length; if(!n) continue;
+    svg.querySelector(`path[data-m="${CSS.escape(m)}"]`)?.classList.add("seu");
+    const c=MAPA.c?.[m]; if(c) selos.push([c,n,MAPA_PT[m],ss.some(naAgendaF)]);
+  }
+  for(const [pt,r] of Object.entries(MAPA.paises)) if(r.p){
+    const ss=seusDe(PAIS_FILMES.get(pt)||[]), n=ss.length; if(!n) continue;
+    svg.querySelector(`circle[data-pt="${CSS.escape(pt)}"]`)?.classList.add("seu"); selos.push([r.p,n,[pt],ss.some(naAgendaF)]);
+  }
+  if(selos.length){
+    const g=document.createElementNS("http://www.w3.org/2000/svg","g"); g.setAttribute("class","selos");
+    g.innerHTML=selos.map(([[x,y],n,pts,ag])=>`<g class="selo${ag?" ag":""}" data-pts="${esc(pts.join("|"))}" transform="translate(${x} ${y-11})">
+      <circle r="${n>9?7.2:6}"></circle><text dy="2.6">${n}</text></g>`).join("");
+    svg.appendChild(g);
+  }
+  root.querySelectorAll(".pais-chip").forEach(b=>{
+    const n=seusDe(PAIS_FILMES.get(b.dataset.pt)||[]).length;
+    b.classList.toggle("seu",!!n); b.querySelector("em")?.remove();
+    if(n) b.insertAdjacentHTML("beforeend",`<em title="${n} ${n===1?"filme seu":"filmes seus"}">${n}</em>`);
+  });
+  const tot=FILMES.filter(estadoSeu), nP=new Set(tot.flatMap(paisesDe)).size, r=root.querySelector(".mapa-seus");
+  if(r) r.innerHTML=tot.length?`<i class="sw ag"></i>na agenda <i class="sw w"></i>marcado ★ · seus ${tot.length} ${tot.length===1?"filme vem":"filmes vêm"} de ${nP} ${nP===1?"país":"países"}`
+    :`marque filmes com ★ ou monte a agenda e eles aparecem destacados aqui`;
+}
 
 function renderMapa(){
   const root=document.getElementById("mapa-root");
   if(!window.MAPA||!MAPA.d){ root.innerHTML=`<p style="color:var(--dim)">Mapa indisponível nesta versão.</p>`; return; }
   if(!mapaPronto){ root.innerHTML=mapaHTML(); ligarMapa(root); mapaPronto=true; }
-  renderPaisSel();
+  marcarEscolhidos(); renderPaisSel();
 }
 function mapaHTML(){
   const [x0,y0,w,h]=MAPA.vb;
@@ -1296,6 +1360,7 @@ function mapaHTML(){
     abrir a ficha. Coprodução conta para todos os países envolvidos.</p></div>
     <div class="mapa-leg" aria-label="Legenda: número de filmes">filmes: ${leg} <i style="background:${SEM_FILME}"></i>nenhum</div>
   </div>
+  <div class="mapa-seus"></div>
   <div class="mapa-wrap"><svg viewBox="${x0} ${y0} ${w} ${h}" role="img" aria-label="Mapa-múndi com o número de filmes por país">${paths}${pontos}</svg>
     <div class="explosao" hidden></div><div class="mapa-tip" hidden></div></div>
   <div class="mapa-grid">
@@ -1309,17 +1374,17 @@ function mapaHTML(){
 }
 function ligarMapa(root){
   const svg=root.querySelector("svg"), tip=root.querySelector(".mapa-tip"), wrap=root.querySelector(".mapa-wrap");
-  const ptsDo=el=>el.dataset.pt?[el.dataset.pt]:(MAPA_PT[el.dataset.m]||[]);
+  const ptsDo=el=>el.dataset.pts?el.dataset.pts.split("|"):el.dataset.pt?[el.dataset.pt]:(MAPA_PT[el.dataset.m]||[]);
   svg.addEventListener("mousemove",e=>{
-    const el=e.target.closest(".tem"); if(!el||wrap.classList.contains("aberto")){ tip.hidden=true; return; }
-    const pts=ptsDo(el), fs=filmesDe(pts), solo=fs.filter(f=>paisesDe(f).length===1).length;
-    tip.innerHTML=`<b>${esc(pts.join(" / "))}</b><br>${fs.length} ${fs.length===1?"filme":"filmes"} · ${sessoesDe(fs)} sessões<br>${solo} só do país, ${fs.length-solo} em coprodução`;
+    const el=e.target.closest(".tem,.selo"); if(!el||wrap.classList.contains("aberto")){ tip.hidden=true; return; }
+    const pts=ptsDo(el), fs=filmesDe(pts), solo=fs.filter(f=>paisesDe(f).length===1).length, seus=seusDe(fs).length;
+    tip.innerHTML=`<b>${esc(pts.join(" / "))}</b><br>${fs.length} ${fs.length===1?"filme":"filmes"} · ${sessoesDe(fs)} sessões<br>${solo} só do país, ${fs.length-solo} em coprodução${seus?`<br><span class="tip-seu">${seus} ${seus===1?"é seu":"são seus"}</span>`:""}`;
     const r=wrap.getBoundingClientRect(); tip.hidden=false;
     tip.style.left=Math.min(e.clientX-r.left+14, r.width-tip.offsetWidth-6)+"px";
     tip.style.top=(e.clientY-r.top+14)+"px";
   });
   svg.addEventListener("mouseleave",()=>{tip.hidden=true;});
-  svg.addEventListener("click",e=>{ const el=e.target.closest(".tem"); if(el) selecionarPais(ptsDo(el),false); });
+  svg.addEventListener("click",e=>{ const el=e.target.closest(".tem,.selo"); if(el) selecionarPais(ptsDo(el),false); });
   root.addEventListener("click",e=>{
     const b=e.target.closest(".pais-chip,.pais-link[data-pt]"); if(b){ selecionarPais([b.dataset.pt],true); return; }
     const n=e.target.closest(".pais-link[data-nome]"); if(n) buscarNome(n.dataset.nome);
@@ -1347,7 +1412,8 @@ function fecharExplosao(){
 }
 function explodir(pts){
   const wrap=document.querySelector("#mapa-root .mapa-wrap"), svg=wrap.querySelector("svg"), lay=wrap.querySelector(".explosao");
-  const fs=filmesDe(pts).sort((a,b)=>(!!b.imagem-!!a.imagem)||((SESS_BY_FILME.get(b.id)||[]).some(s=>!passou(s))-(SESS_BY_FILME.get(a.id)||[]).some(s=>!passou(s)))
+  const ordSeu=f=>({ag:2,w:1}[estadoSeu(f)]||0);
+  const fs=filmesDe(pts).sort((a,b)=>(ordSeu(b)-ordSeu(a))||(!!b.imagem-!!a.imagem)||((SESS_BY_FILME.get(b.id)||[]).some(s=>!passou(s))-(SESS_BY_FILME.get(a.id)||[]).some(s=>!passou(s)))
     ||((Number(b.lb_nota)||0)-(Number(a.lb_nota)||0))||a.titulo.localeCompare(b.titulo,"pt"));
   if(!fs.length) return;
   const estreito=wrap.clientWidth<640;
@@ -1364,13 +1430,15 @@ function explodir(pts){
   const max=Math.min(cel.length, estreito?12:24);
   const mostra=fs.length>max?fs.slice(0,max-1):fs;
   const html=mostra.map((f,i)=>{ const [x,y]=cel[i];
-    return `<button class="exp-card" data-id="${f.id}" style="left:${x}px;top:${y}px;width:${cw}px;height:${ch}px;
-      transform:translate(${ox-x-cw/2}px,${oy-y-ch/2}px) scale(.15);transition-delay:${i*22}ms" title="${esc(f.titulo)}">
+    const es=estadoSeu(f);
+    return `<button class="exp-card${es?" seu-"+es:""}" data-id="${f.id}" style="left:${x}px;top:${y}px;width:${cw}px;height:${ch}px;
+      transform:translate(${ox-x-cw/2}px,${oy-y-ch/2}px) scale(.15);transition-delay:${i*22}ms" title="${esc(f.titulo)}${es?" — "+rotSeu(f):""}">
       ${f.imagem?`<img src="${esc(f.imagem)}" alt="" loading="lazy">`:`<span class="sem-img">🎬</span>`}<b>${esc(f.titulo)}</b></button>`; });
   if(fs.length>mostra.length){ const [x,y]=cel[mostra.length];
     html.push(`<button class="exp-card mais" style="left:${x}px;top:${y}px;width:${cw}px;height:${ch}px;
       transform:translate(${ox-x-cw/2}px,${oy-y-ch/2}px) scale(.15);transition-delay:${mostra.length*22}ms">ver todos os ${fs.length} filmes ↓</button>`); }
-  lay.innerHTML=`<div class="exp-tit">${esc(pts.join(" / "))}<small>${fs.length} ${fs.length===1?"filme":"filmes"} · ${sessoesDe(fs)} sessões</small></div>
+  const nSeus=seusDe(fs).length;
+  lay.innerHTML=`<div class="exp-tit">${esc(pts.join(" / "))}<small>${fs.length} ${fs.length===1?"filme":"filmes"} · ${sessoesDe(fs)} sessões${nSeus?` · <span class="tip-seu">${nSeus} ${nSeus===1?"seu":"seus"}</span>`:""}</small></div>
     <button class="exp-x" aria-label="Fechar">×</button>`+html.join("");
   /* entrada: rAF dá a animação; o temporizador garante o fim mesmo se o navegador não
      desenhar (aba em segundo plano não dispara rAF — os cards ficariam invisíveis) */
@@ -1386,18 +1454,21 @@ function renderPaisSel(){
     document.querySelectorAll(`#mapa-root [data-pt="${CSS.escape(p)}"]`).forEach(x=>x.classList.add(x.tagName==="BUTTON"?"on":"sel"));
     const m=MAPA.paises[p]?.m; if(m) document.querySelector(`#mapa-root path[data-m="${CSS.escape(m)}"]`)?.classList.add("sel");
   }
-  const fs=filmesDe(paisSel).sort((a,b)=>a.titulo.localeCompare(b.titulo,"pt"));
+  const fs=filmesDe(paisSel).sort((a,b)=>(!!estadoSeu(b)-!!estadoSeu(a))||a.titulo.localeCompare(b.titulo,"pt"));
+  const nSeus=seusDe(fs).length, nAg=fs.filter(naAgendaF).length;
   const solo=fs.filter(f=>paisesDe(f).length===1).length;
   const parc={}; for(const f of fs) for(const p of paisesDe(f)) if(!paisSel.includes(p)) parc[p]=(parc[p]||0)+1;
   const top=Object.entries(parc).sort((a,b)=>b[1]-a[1]).slice(0,6);
   const hist=paisSel.map(p=>MAPA.paises[p]?.h).filter(Boolean);
   el.innerHTML=`<div class="pais-sel"><h3>${esc(paisSel.join(" / "))}</h3>
+    ${nSeus?`<p class="seus-pais"><b>${nSeus}</b> ${nSeus===1?"filme seu":"filmes seus"} deste país${nAg?` · ${nAg} na agenda`:""}</p>`:""}
     <p class="num">${fs.length} ${fs.length===1?"filme":"filmes"} · ${sessoesDe(fs)} sessões · ${solo} só do país · ${fs.length-solo} em coprodução${hist.length?` · <i>${esc(hist.join("; "))}</i>`:""}</p>
     ${top.length?`<p class="parc">Coproduz mais com: ${top.map(([p,n])=>`<button class="pais-link" data-pt="${esc(p)}">${esc(p)}</button> (${n})`).join(", ")}</p>`:""}
     <div class="pais-filmes">${fs.map(f=>{ const outros=paisesDe(f).filter(p=>!paisSel.includes(p));
-      return `<button class="pf" onclick="openModal('${f.id}')">${f.imagem?`<img src="${esc(f.imagem)}" alt="" loading="lazy">`:`<i class="sem-img"></i>`}
-        <div><b>${watch.has(f.id)?"★ ":""}${esc(f.titulo)}</b><span>${esc(f.diretores||"")}${f.ano?` · ${esc(f.ano)}`:""}</span>
-        <span>${outros.length?`com ${esc(outros.join(", "))}`:"só "+esc(paisSel.join(" / "))}</span></div></button>`; }).join("")}</div></div>`;
+      const es=estadoSeu(f);
+      return `<button class="pf${es?" seu-"+es:""}" onclick="openModal('${f.id}')">${f.imagem?`<img src="${esc(f.imagem)}" alt="" loading="lazy">`:`<i class="sem-img"></i>`}
+        <div><b>${esc(f.titulo)}</b><span>${esc(f.diretores||"")}${f.ano?` · ${esc(f.ano)}`:""}</span>
+        <span>${outros.length?`com ${esc(outros.join(", "))}`:"só "+esc(paisSel.join(" / "))}</span>${es?`<span class="pf-seu">${esc(rotSeu(f))}</span>`:""}</div></button>`; }).join("")}</div></div>`;
 }
 function rankingPessoas(campo,n){
   const c=new Map();
@@ -1461,6 +1532,7 @@ function setView(v){
 }
 function refreshViews(){
   if(!document.getElementById("view-agenda").hidden) renderAgenda();
+  if(mapaPronto&&!document.getElementById("view-mapa")?.hidden){ marcarEscolhidos(); renderPaisSel(); }
 }
 function updateBadge(){
   const b=document.getElementById("agenda-badge");
