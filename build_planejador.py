@@ -39,6 +39,12 @@ def _dur(v):
 for _x in filmes + sessoes:
     _x["duracao"] = _dur(_x.get("duracao"))
 
+# link da página do filme (10/10/2026): o site trocou /filmes/50/<slug> por /filmes/<slug>;
+# conserta também os dados já raspados
+for _f in filmes:
+    if _f.get("url_pagina"):
+        _f["url_pagina"] = _re.sub(r"(mostra\.org(?:/en)?/filmes)/\d+/", r"\g<1>/", _f["url_pagina"])
+
 # enriquecimento opcional (festivais + Letterboxd) — gerado por enrich_filmes.py
 arq_enriq = DATA / "enriquecimento.json"
 enriq = json.loads(arq_enriq.read_text(encoding="utf-8")) if arq_enriq.exists() else {}

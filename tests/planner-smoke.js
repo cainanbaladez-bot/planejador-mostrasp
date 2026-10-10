@@ -119,4 +119,11 @@ assert.doesNotThrow(() => boot({ mostra49_agenda: "json inválido", mostra49_wat
   assert.ok(ag.__diaHTML.includes("dia-row"), "a aba Por dia deve listar as sessões do dia");
 }
 
-console.log("planner smoke: 11 casos passaram");
+// 10/10/2026: os botões "Página na Mostra" davam 404 (rota /filmes/50/<slug> saiu do ar)
+{
+  const urls = JSON.parse(vm.runInContext("JSON.stringify(FILMES.map(f=>f.url_pagina).filter(Boolean))", boot()));
+  const ruins = urls.filter(u => !/^https:\/\/mostra\.org\/(en\/)?filmes\/[a-z0-9-]+$/.test(u));
+  assert.equal(ruins.length, 0, "link da página do filme fora do formato mostra.org/filmes/<slug>: " + ruins.slice(0, 3).join(", "));
+}
+
+console.log("planner smoke: 12 casos passaram");

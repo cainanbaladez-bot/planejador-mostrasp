@@ -275,8 +275,10 @@ def main():
         f = {
             "id": data.get("id") or item.get("id"),
             "slug": slug,
-            "url_pagina": f"https://mostra.org/filmes/{ed}/{slug}"
-                          if loc == "pt" else f"https://mostra.org/en/filmes/{ed}/{slug}",
+            # 10/10/2026: o site da 50ª trocou a rota para /filmes/<slug> (sem a edição);
+            # /filmes/<ed>/<slug> dá 404
+            "url_pagina": f"https://mostra.org/filmes/{slug}"
+                          if loc == "pt" else f"https://mostra.org/en/filmes/{slug}",
             "titulo": data.get("titulo") or item.get("titulo"),
             "sinopse": clean_html(data.get("sinopse")),
         }
