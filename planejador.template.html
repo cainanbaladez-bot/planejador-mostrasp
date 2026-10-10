@@ -27,6 +27,7 @@
   --red:#e2543a;
   --red-soft:#e2543a22;
   --green:#8fbf6f;
+  --yellow:#e6c24a;
   --font-display:"Bricolage Grotesque", Georgia, serif;
   --font-body:"Schibsted Grotesk", "Segoe UI", sans-serif;
   --font-mono:"Spline Sans Mono", Consolas, monospace;
@@ -504,6 +505,10 @@ select:focus{outline:none;border-color:var(--amber)}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:filter .13s;
 }
 .cal-ev b{color:var(--amber);font-weight:600}
+.cal-ev.ok{background:#8fbf6f1f;border-left-color:var(--green)}
+.cal-ev.ok b{color:var(--green)}
+.cal-ev.aperto{background:#e6c24a1f;border-left-color:var(--yellow)}
+.cal-ev.aperto b{color:var(--yellow)}
 .cal-ev.conf{background:var(--red-soft);border-left-color:var(--red)}
 .cal-ev.conf b{color:var(--red)}
 .cal-ev:hover{filter:brightness(1.25)}
@@ -612,7 +617,12 @@ select:focus{outline:none;border-color:var(--amber)}
   padding:1px 0 9px 34px;position:relative;
 }
 .gap-note::before{content:"↓";position:absolute;left:14px;color:var(--dim)}
-.gap-note.tight{color:var(--amber)}
+.gap-note span{opacity:.7}
+.gap-note.ok{color:var(--green)}
+.gap-note.aperto{color:var(--yellow)}
+.gap-note.conf{color:var(--red)}
+.ticket.aperto{border-color:#e6c24a88}
+.ticket.aperto .stub .h1{color:var(--yellow)}
 .watch-sec{margin-top:44px;border-top:1px dashed var(--line);padding-top:22px}
 .watch-sec h3{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:6px}
 .watch-sec p{font-size:12.5px;color:var(--dim);margin-bottom:13px}
@@ -1314,15 +1324,31 @@ function toast(msg){
   clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2200);
 }
 
+/* Folga entre sessões (10/10/2026, padrão do Cainan): o filme acaba em início + duração,
+   mais 5 min para sair da sala. Do fim+5 até o início da PRÓXIMA sessão da agenda:
+   menos de 30 min = vermelho (conflito), 30 min a 1h = amarelo, mais de 1h = verde.
+   Vale para tudo: cores da agenda, aviso "choca com", contagem e montador. */
+const FOLGA_SAIDA=5, FOLGA_MIN=30, FOLGA_BOA=60;
+const folgaEntre=(a,b)=>inicioAbs(b)-(fimAbs(a)+FOLGA_SAIDA);   // a antes de b
+const nivelFolga=g=>g==null||g>FOLGA_BOA?"ok":g>=FOLGA_MIN?"aperto":"conf";
 function problemaEntre(a,b){
   const ai=inicioAbs(a), af=fimAbs(a), bi=inicioAbs(b), bf=fimAbs(b);
   if(ai<bf && bi<af) return "sobreposição";
   const primeiro=ai<=bi?a:b, segundo=ai<=bi?b:a;
-  const margem=primeiro.cinema!==segundo.cinema?Number(planPrefs.margemCinema||40):0;
-  if(inicioAbs(segundo)-fimAbs(primeiro)<margem)
-    return margem?`faltam ${margem} min para trocar de cinema`:"sem intervalo suficiente";
+  const g=folgaEntre(primeiro,segundo);
+  if(g<FOLGA_MIN) return `só ${Math.max(0,g)} min até a próxima (mínimo ${FOLGA_MIN})`;
   return "";
 }
+/* folga de uma sessão DA AGENDA até a próxima do mesmo dia; sobreposta à anterior = conflito */
+function folgaAgenda(s){
+  const xs=[...agenda].map(id=>SESSAO.get(id)).filter(o=>o&&o.data===s.data&&o.sessao_id!==s.sessao_id);
+  const i0=inicioAbs(s);
+  if(xs.some(o=>inicioAbs(o)<=i0&&fimAbs(o)>i0)) return {nivel:"conf",gap:null,prox:null};
+  const prox=xs.filter(o=>inicioAbs(o)>=i0).sort((a,b)=>inicioAbs(a)-inicioAbs(b))[0]||null;
+  const gap=prox?folgaEntre(s,prox):null;
+  return {nivel:nivelFolga(gap),gap,prox};
+}
+const fmtMin=m=>m>=60?`${Math.floor(m/60)}h${m%60?pad(m%60):""}`:`${m} min`;
 /* conflitos: retorna sessões incompatíveis com s, usando a mesma regra do montador */
 function conflitos(s, ignoreSelf=true){
   const out=[];
@@ -2033,9 +2059,9 @@ function calBody(){
     const dmob=`${DOW3[cur.getDay()]} ${cur.getDate()} ${MESES[cur.getMonth()]}`;
     cells+=`<div class="cal-cell${dentro?"":" off"}${evs.length?" has":""}">
       <div class="dnum"><span class="d-desk">${dnum}</span><span class="d-mob">${dmob}</span></div>
-      <div class="evs">${evs.map(s=>`<button class="cal-ev${conflitos(s).length?" conf":""}"
-        title="${esc(s.titulo)} · ${esc(s.hora)}–${fimSessao(s)} · ${esc(s.cinema)} (${esc(s.sala)})"
-        onclick="openModal('${s.filme_id}')"><b>${esc(s.hora)}</b> ${esc(s.titulo)}</button>`).join("")
+      <div class="evs">${evs.map(s=>{ const fg=folgaAgenda(s); return `<button class="cal-ev ${fg.nivel}"
+        title="${esc(s.titulo)} · ${esc(s.hora)}–${fimSessao(s)} · ${esc(s.cinema)} (${esc(s.sala)})${fg.prox?` — ${fg.gap<0?"sobrepõe":"folga de "+fmtMin(fg.gap)} até ${esc(fg.prox.titulo)}`:""}"
+        onclick="openModal('${s.filme_id}')"><b>${esc(s.hora)}</b> ${esc(s.titulo)}</button>`; }).join("")
         || `<span class="dia-livre">livre</span>`}</div>
     </div>`;
     cur.setDate(cur.getDate()+1);
@@ -2045,8 +2071,9 @@ function calBody(){
     <aside class="cal-side">${side}</aside>
     <div class="cal-col">
       <div class="cal-legend">
-        <span><span class="sw" style="background:var(--amber)"></span>SESSÃO NA AGENDA</span>
-        <span><span class="sw" style="background:var(--red)"></span>CONFLITO DE HORÁRIO</span>
+        <span><span class="sw" style="background:var(--green)"></span>+1H ATÉ A PRÓXIMA</span>
+        <span><span class="sw" style="background:var(--yellow)"></span>30 MIN–1H</span>
+        <span><span class="sw" style="background:var(--red)"></span>MENOS DE 30 MIN</span>
         <span class="mes">Out — Nov 2026 · 50ª Mostra</span>
       </div>
       <div class="cal-wrap"><div class="cal">
@@ -2071,15 +2098,15 @@ function agendaListBody(items, porDia, watchPend){
       let html=`<div class="day-block" id="dia-${d}" style="scroll-margin-top:120px">
         <div class="day-title">${esc(diaLabel(d))}<span class="n">${ss.length} ${ss.length===1?"SESSÃO":"SESSÕES"}</span></div>`;
       ss.forEach((s,i)=>{
-        const confs=conflitos(s);
+        const confs=conflitos(s), fg=folgaAgenda(s);
         const f=FILME.get(s.filme_id)||{};
-        html+=`<div class="ticket${confs.length?" conflict":""}">
+        html+=`<div class="ticket${fg.nivel==="conf"?" conflict":fg.nivel==="aperto"?" aperto":""}">
           <div class="stub"><span class="h1">${esc(s.hora)}</span><span class="h2">— ${esc(fimSessao(s))}</span></div>
           <div class="ticket-body">
             <div class="ticket-title" onclick="openModal('${s.filme_id}')">${esc(s.titulo)}</div>
             <div class="ticket-sub"><b>${esc(s.cinema)}</b> · ${esc(s.sala)}<br>${esc(s.endereco_cinema||"")}</div>
             <div class="ticket-flags">
-              ${confs.length?`<span class="flag red">⚠ CHOCA COM ${esc(confs[0].titulo).toUpperCase()}</span>`:""}
+              ${fg.nivel==="conf"?`<span class="flag red">⚠ ${fg.prox?`CHOCA COM ${esc(fg.prox.titulo).toUpperCase()}`:"SOBREPOSTA À ANTERIOR"}</span>`:""}
               <span class="flag dim" style="color:${secColor(f.secao)};border-color:${secColor(f.secao)}55">${esc(f.secao||"")}</span>
               <span class="flag dim">${esc(s.duracao)}</span>
               ${s.legendas?`<span class="flag dim">LEG. ${esc(s.legendas).toUpperCase()}</span>`:""}
@@ -2094,9 +2121,8 @@ function agendaListBody(items, porDia, watchPend){
         </div>`;
         const nx=ss[i+1];
         if(nx){
-          const gap=mins(nx.hora)-(mins(s.hora)+durMin(s.duracao));
-          const troca=nx.cinema!==s.cinema;
-          if(gap>=0) html+=`<div class="gap-note${troca&&gap<40?" tight":""}">intervalo de ${Math.floor(gap/60)?Math.floor(gap/60)+"h":""}${gap%60}min${troca?` · troca de cinema${gap<40?" — APERTADO":""}`:""}</div>`;
+          const gap=folgaEntre(s,nx), nv=nivelFolga(gap), troca=nx.cinema!==s.cinema;
+          html+=`<div class="gap-note ${nv}">${gap<0?"SOBREPÕE a próxima":`folga de ${fmtMin(gap)} até a próxima`} <span>(fim + ${FOLGA_SAIDA} min de saída)</span>${troca?" · troca de cinema":""}${nv==="conf"&&gap>=0?" — MENOS DE 30 MIN":nv==="aperto"?" — APERTADO":""}</div>`;
         }
       });
       return html+"</div>";
@@ -2151,7 +2177,7 @@ function renderAgenda(){
 
   const porDia={};
   for(const s of items){ (porDia[s.data]??=[]).push(s); }
-  const nConf=items.filter(s=>conflitos(s).length).length;
+  const nConf=items.filter(s=>folgaAgenda(s).nivel==="conf").length;
   const nFilmes=new Set(items.map(s=>s.filme_id)).size;
   const totMin=items.reduce((t,s)=>t+durMin(s.duracao),0);
 
@@ -2356,8 +2382,7 @@ function plannerBody(){
     <details class="planner-settings"><summary>Ajustes da agenda</summary><div class="settings-grid">
       <label class="setting check"><input id="plan-manter" type="checkbox" ${planPrefs.manter!==false?"checked":""}>
         Manter as sessões que já estão na agenda</label>
-      <label class="setting">Tempo para trocar de cinema
-        <select id="plan-margem">${[20,30,40,60].map(n=>`<option value="${n}"${Number(planPrefs.margemCinema)===n?" selected":""}>${n} minutos</option>`).join("")}</select></label>
+      <p class="setting" style="color:var(--dim);font-size:12px">Entre uma sessão e a próxima: fim do filme + ${FOLGA_SAIDA} min de saída e pelo menos ${FOLGA_MIN} min de folga.</p>
       <label class="setting">Máximo de filmes por dia
         <select id="plan-limite"><option value="0">Sem limite</option>${[1,2,3,4,5,6].map(n=>`<option value="${n}"${Number(planPrefs.limiteDia)===n?" selected":""}>${n}</option>`).join("")}</select></label>
       <label class="setting">Terminar até
@@ -2385,7 +2410,6 @@ function fecharMontador(){
 }
 function gerarDoMontador(){
   planPrefs.manter=document.getElementById("plan-manter").checked;
-  planPrefs.margemCinema=Number(document.getElementById("plan-margem").value);
   planPrefs.limiteDia=Number(document.getElementById("plan-limite").value);
   planPrefs.horaFim=document.getElementById("plan-fim").value;
   const tol=document.getElementById("plan-tolerancia"); planPrefs.tolerancia=tol?Number(tol.value):0;
@@ -2404,9 +2428,8 @@ function metricasAgenda(sel, base=[]){
     if(Number(f.lb_nota)>0){ nota+=Number(f.lb_nota); notas++; }
     const ant=xs[i-1];
     if(ant&&ant.data===xs[i].data){
-      const margem=ant.cinema!==xs[i].cinema?Number(planPrefs.margemCinema||40):0;
       if(ant.cinema!==xs[i].cinema) trocas++;
-      espera+=Math.max(0,inicioAbs(xs[i])-fimAbs(ant)-margem);
+      espera+=Math.max(0,folgaEntre(ant,xs[i])-FOLGA_MIN);
     }
   }
   return {filmes:new Set(xs.map(s=>s.filme_id)).size,dias:dias.size,cines:cines.size,trocas,espera,nota,notas};

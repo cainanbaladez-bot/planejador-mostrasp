@@ -75,7 +75,12 @@ vm.runInContext(`
   planPrefs.margemCinema=40;
   const a={sessao_id:"a",filme_id:"a",data:"2025-10-18",hora:"18:00",duracao:"100 min.",cinema:"A"};
   const b={sessao_id:"b",filme_id:"b",data:"2025-10-18",hora:"20:00",duracao:"90 min.",cinema:"B"};
-  globalThis.__trocaOk=problemaEntre(a,b).includes("40 min");
+  // padrão de folga (10/10/2026): fim + 5 min; <30 até a próxima = conflito, 30–60 amarelo, >60 verde
+  globalThis.__trocaOk=!!problemaEntre(a,b)                              // 19:45 → 20:00 = 15 min
+    && !problemaEntre(a,{...b,hora:"20:15"})                              // 30 min = amarelo, não conflito
+    && nivelFolga(folgaEntre(a,{...b,hora:"20:15"}))==="aperto"
+    && nivelFolga(folgaEntre(a,{...b,hora:"20:46"}))==="ok"
+    && nivelFolga(folgaEntre(a,{...b,hora:"20:14"}))==="conf";
 
   const favorito=[{s:a,prio:1}], dois=[{s:a,prio:2},{s:{...b,hora:"22:00"},prio:2}];
   globalThis.__maxOk=cmpScore(scoreAgenda(dois,[],"max"),scoreAgenda(favorito,[],"max"))>0;
@@ -89,7 +94,7 @@ vm.runInContext(`
 assert.equal(app.__linkOk, true, "o link deve preservar os três níveis");
 assert.equal(app.__duracaoOk, true, "a disponibilidade deve considerar a duração completa");
 assert.equal(app.__limiteOk, true, "terminar exatamente no limite deve ser permitido");
-assert.equal(app.__trocaOk, true, "a regra de troca deve ser compartilhada");
+assert.equal(app.__trocaOk, true, "a regra de folga (fim + 5, 30/60 min) deve valer para montador e agenda");
 assert.equal(app.__maxOk, true, "máximo de filmes deve favorecer dois filmes");
 assert.equal(app.__prioOk, true, "prioridades deve preservar o favorito");
 assert.equal(app.__deslocamentoOk, true, "menor deslocamento deve favorecer menos trocas de cinema");

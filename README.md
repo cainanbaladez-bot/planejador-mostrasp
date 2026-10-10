@@ -410,3 +410,17 @@ UM dia em sequência, por horário, em blocos de hora em hora (`renderDia`).
 - No dia de hoje: as que já começaram ficam recolhidas ("mostrar as N que já começaram"),
   menos as da sua agenda, e uma linha vermelha marca a hora atual. Teste: `?agora=2026-10-17T16:10`.
 - Celular: as 5 abas encolhem para caber (fonte 13px, "Minha Agenda" pode quebrar linha).
+
+## 🚦 Folga entre sessões (sw v28, 10/10/2026 — padrão do Cainan)
+
+Regra ÚNICA do app (`folgaEntre`, `nivelFolga`, `problemaEntre`, `folgaAgenda`): o filme acaba
+em início + duração, **+ 5 min para sair**; do fim+5 até o início da **próxima sessão da agenda**:
+- **menos de 30 min = vermelho** (conflito: "⚠ choca com", contagem "em conflito");
+- **30 min a 1h = amarelo** (apertado, mas pode);
+- **mais de 1h = verde** (e a última do dia também).
+Sessão sobreposta à anterior = vermelho. No calendário cada sessão leva a cor da folga até a
+próxima; na lista, a nota entre os ingressos diz "folga de X até a próxima" na mesma cor e o
+"⚠ choca com" fica só na sessão que fica sem folga. O **montador usa a mesma regra** (mínimo de
+30 min depois do fim + 5) — saiu o ajuste "tempo para trocar de cinema" (40 min entre cinemas e
+0 no mesmo cinema), que dava agenda montada pintada de vermelho. Constantes: `FOLGA_SAIDA`,
+`FOLGA_MIN`, `FOLGA_BOA`.
