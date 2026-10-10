@@ -539,7 +539,9 @@ select:focus{outline:none;border-color:var(--amber)}
 }
 .agenda-stats b{color:var(--amber);font-weight:600}
 .agenda-stats .conf{color:var(--red)}
-.agenda-actions{margin-left:auto;display:flex;gap:8px}
+.agenda-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;min-width:0}
+.acoes-sec{display:contents}
+.mais-acoes{display:none}
 .daystrip{
   display:flex;gap:6px;overflow-x:auto;padding:4px 2px 12px;margin-bottom:18px;
   scrollbar-width:thin;
@@ -1040,7 +1042,16 @@ footer{
   .icon-btn{width:40px;height:40px;font-size:15px}
   .sess-row{flex-wrap:wrap}
   .agenda-actions{margin-left:0;width:100%}
-  .agenda-actions .btn{flex:1;justify-content:center}
+  .agenda-actions .btn{flex:1 1 auto;justify-content:center}
+  /* 10/10/2026: os 7 botões numa linha empurravam a página para 687px no celular */
+  .mais-acoes{display:inline-flex;flex:0 0 auto!important}
+  .acoes-sec{display:none}
+  .agenda-actions.abre .acoes-sec{display:flex;flex-wrap:wrap;gap:8px;width:100%}
+  .agenda-actions.abre .acoes-sec .btn{flex:1 1 40%}
+  /* calendário primeiro; "filmes selecionados" depois */
+  .cal-layout{grid-template-columns:minmax(0,1fr)}
+  .cal-col{order:1}
+  .cal-side{order:2;min-width:0}
   .mode-switch{width:100%}
   .mode-btn{flex:1;padding:10px 8px}
   .side-chip{padding:9px 10px;font-size:11px}
@@ -2254,11 +2265,14 @@ function renderAgenda(){
         ${desfazerEstado?`<button class="btn" onclick="desfazerUltima()" title="Desfaz ${esc(desfazerEstado.rotulo)}">↶ Desfazer</button>`:""}
         <button class="btn primary" onclick="abrirMontador()"${watch.size?"":" disabled"} title="Escolha um objetivo e gere uma proposta de agenda">⚡ Montar minha agenda</button>
         <button class="btn compartilhar" onclick="compartilharAgenda()" title="Manda um link com a sua agenda inteira — para outro aparelho seu ou para um amigo, sem precisar de conta">📤 Compartilhar</button>
+        <button class="btn mais-acoes" onclick="this.parentNode.classList.toggle('abre')" aria-label="Mais ações">⋯ Mais</button>
+        <span class="acoes-sec">
         <button class="btn perigo" onclick="limparAgenda()"${items.length?"":" disabled"} title="Tira todas as sessões da agenda">🗑 Limpar agenda</button>
         <button class="btn" onclick="exportarBackup()" title="Baixa marcações, agenda e preferências em JSON">⇩ Backup</button>
         <button class="btn" onclick="document.getElementById('backup-input').click()" title="Restaura um backup JSON">⇧ Restaurar</button>
         <button class="btn" onclick="copyAgenda()"${items.length?"":" disabled"}>⧉ Copiar</button>
         <button class="btn primary" onclick="exportICS()"${items.length?"":" disabled"} title="Baixa um .ics com todas as sessões — abre no Google Agenda, Apple e Outlook">📅 Agenda inteira (.ics)</button>
+        </span>
       </div>
       <p class="agenda-guide"><b>1</b> Marque filmes &nbsp;→&nbsp; <b>2</b> Defina disponibilidade &nbsp;→&nbsp; <b>3</b> Monte e revise sua agenda</p>
     </div>
