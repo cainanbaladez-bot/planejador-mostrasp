@@ -148,7 +148,7 @@ Programação raspada no dia em que saiu: **399 filmes, 1401 sessões, 49 cinema
 
 ## 🌍 Aba Mapa (09/10/2026)
 
-Aba entre *Filmes* e *Disponibilidade*: mapa-múndi com os filmes por país e destaques de
+Última aba, depois da *Minha Agenda* (a de menor hierarquia — movida em 10/10/2026): mapa-múndi com os filmes por país e destaques de
 coprodução.
 
 - **Contorno dos países:** `mapa/countries-110m.json` (world-atlas 2.0.2 = Natural Earth
@@ -391,3 +391,5 @@ próprio festival publica, e o `enrich_filmes.py` agora confere antes de aceitar
   último antes) — é nele que vai o troféu/louro. Festivais novos na lista: Jerusalém,
   Gotemburgo, Tóquio, Cracóvia, Clermont-Ferrand.
 Regra nova: **nunca completar com fonte externa** — se o texto do festival não diz, não aparece.
+
+**Palma de Ouro deitada (10/10/2026):** o símbolo de Cannes virou um ramo na horizontal (3 pares de folíolos), como o troféu; o desenho em pé não lembrava a palma.
