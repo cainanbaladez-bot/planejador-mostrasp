@@ -934,11 +934,62 @@ footer{
   .geo-lista{grid-template-columns:1fr}
 }
 
+/* ─── 📅 aba Por dia (10/10/2026) ─── */
+.dia-faixa{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:thin}
+.dia-chip{flex:none;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:50px;padding:7px 6px 6px;
+  background:var(--bg2);border:1px solid var(--line);border-radius:10px;color:var(--muted);cursor:pointer;font:inherit;position:relative}
+.dia-chip small{font:600 9.5px var(--font-mono);letter-spacing:.08em}
+.dia-chip b{font-family:var(--font-display);font-size:19px;line-height:1.1;color:var(--ink)}
+.dia-chip em{font:normal 9px var(--font-mono);color:var(--amber)}
+.dia-chip i{font:normal 600 9.5px var(--font-mono);background:var(--green);color:#14200c;border-radius:99px;padding:0 5px}
+.dia-chip.foi{opacity:.55}
+.dia-chip.on{border-color:var(--amber);background:var(--amber-soft)}
+.dia-chip.on b{color:var(--amber)}
+.dia-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:6px 0 10px}
+.dia-top h2{font-family:var(--font-display);font-size:22px;text-transform:capitalize}
+.dia-top p{color:var(--muted);font-size:13px}
+.dia-top p b{color:var(--green);font-weight:600}
+.dia-filtros{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.dia-fil{background:var(--bg2);border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:6px 12px;font:12.5px var(--font-body);cursor:pointer}
+.dia-fil.on{border-color:var(--amber);color:var(--ink)}
+.dia-filtros select{margin-left:auto}
+.dia-passadas{background:none;border:1px dashed var(--line);color:var(--dim);border-radius:8px;padding:7px 12px;
+  font:11.5px var(--font-mono);cursor:pointer;width:100%;margin-bottom:10px}
+.dia-lista{display:flex;flex-direction:column;gap:6px}
+.dia-hora{font:600 11px var(--font-mono);letter-spacing:.12em;color:var(--dim);margin:12px 0 2px;
+  position:sticky;top:0;background:var(--bg);padding:4px 0;z-index:1}
+.dia-row{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:10px;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--line);border-radius:10px;padding:9px 10px}
+.dia-row.w1,.dia-row.w2{border-left-color:var(--amber)}
+.dia-row.w3{border-left-color:var(--muted)}
+.dia-row.ag{border-left-color:var(--green);background:#1f2414}
+.dia-row.passou{opacity:.45}
+.dia-row.fora .dia-tit{color:var(--muted)}
+.dia-t b{display:block;font-family:var(--font-mono);font-size:15px;color:var(--ink)}
+.dia-t small{font:10.5px var(--font-mono);color:var(--dim)}
+.dia-f{background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer;min-width:0}
+.dia-tit{display:block;font-weight:600;font-size:14.5px;line-height:1.3;color:var(--ink)}
+.dia-pr{color:var(--amber);margin-right:5px}
+.dia-loc{display:block;font-size:12px;color:var(--dim);line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dia-warn{display:block;font-size:11.5px;color:var(--red)}
+.dia-fora{display:block;font:10.5px var(--font-mono);color:var(--dim)}
+.dia-agora{display:flex;align-items:center;gap:8px;margin:6px 0;color:var(--red);font:600 10.5px var(--font-mono);letter-spacing:.06em}
+.dia-agora::before,.dia-agora::after{content:"";height:1px;background:var(--red);flex:1;opacity:.6}
+.dia-vazio{color:var(--dim);padding:18px 4px}
+@media (max-width:640px){
+  .dia-row{grid-template-columns:42px minmax(0,1fr) auto;gap:8px;padding:8px}
+  .dia-row .sess-add{padding:6px 8px;font-size:10px;min-height:34px;white-space:nowrap}
+  .dia-tit{font-size:14px}
+  .dia-filtros select{margin-left:0;width:100%}
+}
+
 @media (max-width:640px){
   .header-in{padding:12px 14px 0}
   main{padding:18px 14px 70px}
   .tabs{margin-left:0;width:100%}
-  .tab{flex:1;text-align:center;padding:11px 6px 13px;font-size:14.5px}
+  .tabs{overflow-x:auto;scrollbar-width:none;gap:0}
+  .tab{flex:1 1 auto;min-width:0;text-align:center;padding:11px 4px 13px;font-size:13px;line-height:1.2}
+  .tab .badge{margin-left:3px;min-width:16px;padding:1px 4px;font-size:10px}
   .stub{width:74px}
   .modal-body{padding:6px 18px 22px}
   .ticket-side{flex-direction:row;align-items:flex-start;padding:12px 10px}
@@ -993,6 +1044,7 @@ footer{
     </div>
     <nav class="tabs">
       <button class="tab active" data-view="filmes" onclick="setView('filmes')">Filmes</button>
+      <button class="tab" data-view="dia" onclick="setView('dia')">Por dia</button>
       <button class="tab" data-view="disp" onclick="setView('disp')">Disponibilidade</button>
       <button class="tab" data-view="agenda" onclick="setView('agenda')">Minha Agenda<span class="badge" id="agenda-badge"></span></button>
       <button class="tab" data-view="mapa" onclick="setView('mapa')">Mapa</button>
@@ -1042,6 +1094,7 @@ footer{
   </section>
 
   <!-- ══ MINHA AGENDA (calendário + lista) ══ -->
+  <section id="view-dia" hidden><div id="dia-root"></div></section>
   <section id="view-mapa" hidden><div id="mapa-root"></div></section>
   <section id="view-disp" hidden><div id="disp-root"></div></section>
 
@@ -1521,19 +1574,100 @@ function listasMapa(){
     </div>`;
 }
 
+/* ── 📅 Por dia (10/10/2026) ───────────────────────────────────────────────────
+   Todas as sessões de UM dia em sequência, por horário (blocos de hora em hora).
+   Faixa de dias em cima (abre no dia de hoje durante a Mostra), filtros rápidos
+   (todas · marcados · na agenda · cabe na disponibilidade) e região. Cada linha:
+   início–fim, filme (toque = ficha), cinema/sala, ★ da prioridade, ⚠ se choca com a
+   agenda e o mesmo "+ AGENDA" da ficha. No dia de hoje, as que já começaram ficam
+   recolhidas num "mostrar as N que já passaram" e há uma linha de "agora". */
+const LS_DIA=`${LS_PREFIX}_pordia`;
+const diaPref=lerLocal(LS_DIA,{})||{};
+let diaSel=DIAS.includes(diaRio(agora()))?diaRio(agora()):(DIAS.includes(diaPref.d)?diaPref.d:DIAS[0]);
+let diaFiltro=["todas","marcados","agenda","cabe"].includes(diaPref.f)?diaPref.f:"todas";
+let diaReg=diaPref.r||"", diaVerPassadas=false;
+const FILTROS_DIA=[["todas","Todas"],["marcados","★ Marcados"],["agenda","✓ Na agenda"],["cabe","Cabe na disponibilidade"]];
+function guardarDia(){ gravarLocal(LS_DIA,{d:diaSel,f:diaFiltro,r:diaReg}); }
+function hhmm(m){ m=((m%1440)+1440)%1440; return `${pad(Math.floor(m/60))}:${pad(m%60)}`; }
+function renderDia(){
+  const root=document.getElementById("dia-root"); if(!root) return;
+  const hoje=diaRio(agora());
+  let ss=SESSOES.filter(s=>s.data===diaSel).sort((a,b)=>a.hora.localeCompare(b.hora)||a.titulo.localeCompare(b.titulo,"pt"));
+  const doDia=ss.length;
+  if(diaReg) ss=ss.filter(s=>CIN_REG.get(s.cinema)===diaReg);
+  if(diaFiltro==="marcados") ss=ss.filter(s=>watch.has(s.filme_id));
+  if(diaFiltro==="agenda") ss=ss.filter(s=>agenda.has(s.sessao_id));
+  if(diaFiltro==="cabe") ss=ss.filter(liberada);
+  const foram=ss.filter(s=>passou(s)&&!agenda.has(s.sessao_id));
+  const mostra=diaVerPassadas?ss:ss.filter(s=>!foram.includes(s));
+  const nAg=SESSOES.filter(s=>s.data===diaSel&&agenda.has(s.sessao_id)).length;
+  const faixa=DIAS.map(d=>{ const o=dObj(d), n=SESSOES.filter(s=>s.data===d&&agenda.has(s.sessao_id)).length;
+    return `<button class="dia-chip${d===diaSel?" on":""}${d<hoje?" foi":""}" data-d="${d}" aria-pressed="${d===diaSel}">
+      <small>${DOW3[o.getDay()]}</small><b>${o.getDate()}</b>${n?`<i title="${n} na sua agenda">${n}</i>`:d===hoje?"<em>hoje</em>":""}</button>`; }).join("");
+  const regs=REGIOES.map(r=>`<option value="${r.id}"${r.id===diaReg?" selected":""}>${esc(r.rot)}</option>`).join("");
+  let linhas="", hora=null, agoraPosto=diaSel!==hoje;
+  const minAgora=diaSel===hoje?(()=>{ const a=agora(); return Number(new Date(a.getTime()-3*3600e3).toISOString().slice(11,13))*60+Number(new Date(a.getTime()-3*3600e3).toISOString().slice(14,16)); })():null;
+  for(const s of mostra){
+    const ini=mins(s.hora);
+    if(!agoraPosto&&ini>=minAgora){ linhas+=`<div class="dia-agora"><span>agora · ${hhmm(minAgora)}</span></div>`; agoraPosto=true; }
+    const h=s.hora.slice(0,2);
+    if(h!==hora){ linhas+=`<div class="dia-hora">${h}h</div>`; hora=h; }
+    const f=FILME.get(s.filme_id)||{}, on=agenda.has(s.sessao_id), foi=passou(s), w=watch.get(s.filme_id);
+    const confs=on||foi?[]:conflitos(s), fora=!on&&!foi&&!liberada(s);
+    linhas+=`<div class="dia-row${on?" ag":""}${w?" w"+w:""}${foi?" passou":""}${fora?" fora":""}">
+      <div class="dia-t"><b>${esc(s.hora)}</b><small>${hhmm(ini+durMin(s.duracao))}</small></div>
+      <button class="dia-f" onclick="openModal('${s.filme_id}')">
+        <span class="dia-tit">${w?`<span class="dia-pr" title="${esc(PRIO_ROT[w])}">${PRIO_ICONE[w]}</span>`:""}${esc(s.titulo)}</span>
+        <span class="dia-loc">${esc(s.cinema)}${s.sala?` · ${esc(s.sala)}`:""} · ${esc(s.duracao||"")}${f.pais?` · ${esc(f.pais)}`:""}</span>
+        ${confs.length?`<span class="dia-warn">⚠ choca com ${esc(confs[0].titulo)}</span>`:fora?`<span class="dia-fora">fora da sua disponibilidade</span>`:""}
+      </button>
+      ${foi&&!on?`<span class="sess-passou">já passou</span>`:`<button class="sess-add${on?" on":""}" onclick="toggleSessao('${s.sessao_id}')">${on?"✓ AGENDA":"+ AGENDA"}</button>`}
+    </div>`;
+  }
+  if(!agoraPosto&&mostra.length) linhas+=`<div class="dia-agora"><span>agora · ${hhmm(minAgora)}</span></div>`;
+  const vazio=!doDia?"Nenhuma sessão neste dia.":
+    diaFiltro==="marcados"?"Nenhum filme marcado com ★ tem sessão neste dia (com esses filtros).":
+    diaFiltro==="agenda"?"Nada da sua agenda neste dia.":
+    diaFiltro==="cabe"?"Nenhuma sessão cabe na sua disponibilidade neste dia.":"Nenhuma sessão com esses filtros.";
+  root.innerHTML=`
+    <div class="dia-faixa" role="group" aria-label="Dia">${faixa}</div>
+    <div class="dia-top">
+      <h2>${esc(diaLabel(diaSel))}</h2>
+      <p>${doDia} sessões no dia${nAg?` · <b>${nAg} na sua agenda</b>`:""}${ss.length!==doDia?` · ${ss.length} com os filtros`:""}</p>
+    </div>
+    <div class="dia-filtros">
+      ${FILTROS_DIA.map(([v,r])=>`<button class="dia-fil${v===diaFiltro?" on":""}" data-f="${v}">${r}</button>`).join("")}
+      <select id="dia-reg" aria-label="Região"><option value="">Todas as regiões</option>${regs}</select>
+    </div>
+    ${foram.length&&!diaVerPassadas?`<button class="dia-passadas" data-ver="1">mostrar as ${foram.length} que já começaram</button>`:""}
+    ${foram.length&&diaVerPassadas?`<button class="dia-passadas" data-ver="0">esconder as que já começaram</button>`:""}
+    <div class="dia-lista">${linhas||`<p class="dia-vazio">${vazio}</p>`}</div>`;
+  root.querySelector(".dia-chip.on")?.scrollIntoView({block:"nearest",inline:"center"});
+}
+document.addEventListener("click",e=>{
+  if(!e.target.closest("#dia-root")) return;
+  const c=e.target.closest(".dia-chip"); if(c){ diaSel=c.dataset.d; diaVerPassadas=false; guardarDia(); renderDia(); return; }
+  const f=e.target.closest(".dia-fil"); if(f){ diaFiltro=f.dataset.f; guardarDia(); renderDia(); return; }
+  const p=e.target.closest(".dia-passadas"); if(p){ diaVerPassadas=p.dataset.ver==="1"; renderDia(); }
+});
+document.addEventListener("change",e=>{ if(e.target.id==="dia-reg"){ diaReg=e.target.value; guardarDia(); renderDia(); } });
+
 function setView(v){
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===v));
   document.getElementById("view-filmes").hidden = v!=="filmes";
   document.getElementById("view-disp").hidden   = v!=="disp";
   document.getElementById("view-mapa").hidden   = v!=="mapa";
+  document.getElementById("view-dia").hidden    = v!=="dia";
   document.getElementById("view-agenda").hidden = v!=="agenda";
   if(v==="agenda"){ renderAgenda(); medir("aba-agenda"); }
   if(v==="disp")  { renderDisp();   medir("aba-disponibilidade"); }
   if(v==="mapa")  { renderMapa();   medir("aba-mapa"); }
+  if(v==="dia")   { renderDia();    medir("aba-dia"); }
   window.scrollTo({top:0});
 }
 function refreshViews(){
   if(!document.getElementById("view-agenda").hidden) renderAgenda();
+  if(!document.getElementById("view-dia")?.hidden) renderDia();
   if(mapaPronto&&!document.getElementById("view-mapa")?.hidden){ marcarEscolhidos(); renderPaisSel(); }
 }
 function updateBadge(){

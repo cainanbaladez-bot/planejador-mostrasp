@@ -106,10 +106,12 @@ assert.doesNotThrow(() => boot({ mostra49_agenda: "json inválido", mostra49_wat
     for (const f of FILMES.filter(f=>(SESS_BY_FILME.get(f.id)||[]).length).slice(0,12)) {
       watch.set(f.id,1); agenda.add(SESS_BY_FILME.get(f.id)[0].sessao_id);
     }
-    setView("filmes"); setView("disp"); setView("agenda"); renderAgenda();
+    setView("filmes"); setView("dia"); setView("disp"); setView("agenda"); renderAgenda();
+    globalThis.__diaHTML = document.getElementById("dia-root").innerHTML;
     globalThis.__agendaHTML = document.getElementById("agenda-root").innerHTML;
   `, ag);
   assert.ok(ag.__agendaHTML.length > 200, "a Minha Agenda deve desenhar as sessões marcadas");
+  assert.ok(ag.__diaHTML.includes("dia-row"), "a aba Por dia deve listar as sessões do dia");
 }
 
 console.log("planner smoke: 11 casos passaram");

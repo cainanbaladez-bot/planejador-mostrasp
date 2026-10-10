@@ -395,3 +395,18 @@ Regra nova: **nunca completar com fonte externa** — se o texto do festival nã
 **Palma de Ouro deitada (10/10/2026):** o símbolo de Cannes virou um ramo na horizontal (3 pares de folíolos), como o troféu; o desenho em pé não lembrava a palma.
 
 **Conserto da Minha Agenda (sw v26, 10/10/2026):** desde a troca para a 50ª (commit 885c9ed) a aba abria vazia — `dicaBackupHTML()` (aviso de backup no iPhone/navegador de app) tinha sumido do template, só o comentário ficou, e `renderAgenda` quebrava. Função reposta (cópia da do Rio, com `LS_DICA`) e o smoke test agora abre as abas Filmes/Disponibilidade/Agenda com agenda cheia (11 casos).
+
+## 📅 Aba Por dia (sw v27, 10/10/2026)
+
+Segunda aba (Filmes · **Por dia** · Disponibilidade · Minha Agenda · Mapa): todas as sessões de
+UM dia em sequência, por horário, em blocos de hora em hora (`renderDia`).
+- Faixa de dias no topo (abre no dia de hoje durante a Mostra; fora dela, no último dia visto);
+  o selo verde no dia = quantas sessões suas tem ali.
+- Filtros: Todas · ★ Marcados · ✓ Na agenda · Cabe na disponibilidade (usa `liberada`) + região.
+  Dia/filtro/região ficam guardados (`LS_DIA`).
+- Linha: início e fim, título (toque = ficha), cinema · sala · duração · país, ★ da prioridade,
+  "⚠ choca com X" (mesma regra do montador) ou "fora da sua disponibilidade", e o mesmo
+  "+ AGENDA" da ficha (`toggleSessao`). Borda verde = na agenda; âmbar = marcado.
+- No dia de hoje: as que já começaram ficam recolhidas ("mostrar as N que já começaram"),
+  menos as da sua agenda, e uma linha vermelha marca a hora atual. Teste: `?agora=2026-10-17T16:10`.
+- Celular: as 5 abas encolhem para caber (fonte 13px, "Minha Agenda" pode quebrar linha).
