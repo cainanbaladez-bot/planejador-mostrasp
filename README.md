@@ -426,3 +426,5 @@ próxima; na lista, a nota entre os ingressos diz "folga de X até a próxima" n
 `FOLGA_MIN`, `FOLGA_BOA`.
 
 **Link "Página na Mostra" (sw v29, 10/10/2026):** davam 404 — o site da 50ª trocou a rota de `mostra.org/filmes/50/<slug>` para `mostra.org/filmes/<slug>`. Corrigido no `scrape_mostra.py` e o build conserta os dados já raspados; amostra de 20 páginas conferida pelo nome do diretor (20/20). O smoke test (12 casos) agora barra link fora do formato.
+
+**Por dia com festival e Letterboxd (sw v30, 10/10/2026):** cada sessão ganhou a linha do card — festivais pelo nome (troféu/louro no que premiou) + mini-histograma do Letterboxd com o número de notas (`festCardHTML` + `lbMiniHTML`, classe `.dia-extra`). Filme sem nada disso não ganha a linha.

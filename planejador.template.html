@@ -986,6 +986,9 @@ footer{
 .dia-agora{display:flex;align-items:center;gap:8px;margin:6px 0;color:var(--red);font:600 10.5px var(--font-mono);letter-spacing:.06em}
 .dia-agora::before,.dia-agora::after{content:"";height:1px;background:var(--red);flex:1;opacity:.6}
 .dia-vazio{color:var(--dim);padding:18px 4px}
+.dia-extra{display:flex;align-items:center;gap:10px;margin-top:5px;min-width:0}
+.dia-extra .fest-row{margin-top:0;flex:1 1 auto;min-width:0}
+.dia-extra .lb-mini{flex-direction:row;align-items:flex-end;gap:5px}
 @media (max-width:640px){
   .dia-row{grid-template-columns:42px minmax(0,1fr) auto;gap:8px;padding:8px}
   .dia-row .sess-add{padding:6px 8px;font-size:10px;min-height:34px;white-space:nowrap}
@@ -1646,6 +1649,7 @@ function renderDia(){
         <span class="dia-tit">${w?`<span class="dia-pr" title="${esc(PRIO_ROT[w])}">${PRIO_ICONE[w]}</span>`:""}${esc(s.titulo)}</span>
         <span class="dia-loc">${esc(s.cinema)}${s.sala?` · ${esc(s.sala)}`:""} · ${esc(s.duracao||"")}${f.pais?` · ${esc(f.pais)}`:""}</span>
         ${confs.length?`<span class="dia-warn">⚠ choca com ${esc(confs[0].titulo)}</span>`:fora?`<span class="dia-fora">fora da sua disponibilidade</span>`:""}
+        ${(()=>{ const x=festCardHTML(f)+lbMiniHTML(f); return x?`<span class="dia-extra">${x}</span>`:""; })()}
       </button>
       ${foi&&!on?`<span class="sess-passou">já passou</span>`:`<button class="sess-add${on?" on":""}" onclick="toggleSessao('${s.sessao_id}')">${on?"✓ AGENDA":"+ AGENDA"}</button>`}
     </div>`;
