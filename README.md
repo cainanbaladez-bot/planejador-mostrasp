@@ -457,3 +457,5 @@ agenda e montador). Módulo `programas.py`, chamado pelo build:
   no link compartilhado). Busca pelo título de um curta acha o programa. Nota do Letterboxd no
   card só quando a âncora tem 60+ min.
 - 50ª: 9 programas (399 filmes → 383 cards). Teste: 13 casos (inclui a migração).
+
+**Exportação rebaixada (sw v37, 10/10/2026):** na Minha Agenda só ⚡ Montar e 📤 Compartilhar ficam como botão; calendário (.ics), copiar texto, backup, restaurar e limpar agenda viraram uma linha de links miúdos ("EXPORTAR …", `.acoes-sec .lk`), no computador e no celular (saiu o "⋯ Mais").

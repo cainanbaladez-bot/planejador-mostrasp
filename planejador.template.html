@@ -563,8 +563,13 @@ body.agenda-mono .ticket .flag.red{background:none;color:var(--muted);border-col
 .agenda-stats b{color:var(--amber);font-weight:600}
 .agenda-stats .conf{color:var(--red)}
 .agenda-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;min-width:0}
-.acoes-sec{display:contents}
-.mais-acoes{display:none}
+.acoes-sec{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;width:100%;font:10.5px var(--font-mono);letter-spacing:.05em;color:var(--dim)}
+.acoes-rot{text-transform:uppercase;letter-spacing:.1em;color:var(--dim);opacity:.8}
+.acoes-sec .lk{background:none;border:0;padding:2px 0;font:inherit;letter-spacing:inherit;color:var(--muted);
+  border-bottom:1px dotted var(--line);cursor:pointer}
+.acoes-sec .lk:hover{color:var(--ink);border-bottom-color:var(--muted)}
+.acoes-sec .lk:disabled{opacity:.4;cursor:default}
+.acoes-sec .lk.perigo:hover{color:var(--red);border-bottom-color:var(--red)}
 .daystrip{
   display:flex;gap:6px;overflow-x:auto;padding:4px 2px 12px;margin-bottom:18px;
   scrollbar-width:thin;
@@ -1076,11 +1081,7 @@ footer{
   .sess-row{flex-wrap:wrap}
   .agenda-actions{margin-left:0;width:100%}
   .agenda-actions .btn{flex:1 1 auto;justify-content:center}
-  /* 10/10/2026: os 7 botões numa linha empurravam a página para 687px no celular */
-  .mais-acoes{display:inline-flex;flex:0 0 auto!important}
-  .acoes-sec{display:none}
-  .agenda-actions.abre .acoes-sec{display:flex;flex-wrap:wrap;gap:8px;width:100%}
-  .agenda-actions.abre .acoes-sec .btn{flex:1 1 40%}
+  .acoes-sec .lk{padding:6px 0}   /* alvo de toque maior no celular */
   /* calendário primeiro; "filmes selecionados" depois */
   .cal-layout{grid-template-columns:minmax(0,1fr)}
   .cal-col{order:1}
@@ -2377,14 +2378,15 @@ function renderAgenda(){
         ${desfazerEstado?`<button class="btn" onclick="desfazerUltima()" title="Desfaz ${esc(desfazerEstado.rotulo)}">↶ Desfazer</button>`:""}
         <button class="btn primary" onclick="abrirMontador()"${watch.size?"":" disabled"} title="Escolha um objetivo e gere uma proposta de agenda">⚡ Montar minha agenda</button>
         <button class="btn compartilhar" onclick="compartilharAgenda()" title="Manda um link com a sua agenda inteira — para outro aparelho seu ou para um amigo, sem precisar de conta">📤 Compartilhar</button>
-        <button class="btn mais-acoes" onclick="this.parentNode.classList.toggle('abre')" aria-label="Mais ações">⋯ Mais</button>
-        <span class="acoes-sec">
-        <button class="btn perigo" onclick="limparAgenda()"${items.length?"":" disabled"} title="Tira todas as sessões da agenda">🗑 Limpar agenda</button>
-        <button class="btn" onclick="exportarBackup()" title="Baixa marcações, agenda e preferências em JSON">⇩ Backup</button>
-        <button class="btn" onclick="document.getElementById('backup-input').click()" title="Restaura um backup JSON">⇧ Restaurar</button>
-        <button class="btn" onclick="copyAgenda()"${items.length?"":" disabled"}>⧉ Copiar</button>
-        <button class="btn primary" onclick="exportICS()"${items.length?"":" disabled"} title="Baixa um .ics com todas as sessões — abre no Google Agenda, Apple e Outlook">📅 Agenda inteira (.ics)</button>
-        </span>
+      </div>
+      <!-- 10/10/2026: modos de exportação em links miúdos, bem abaixo de Montar/Compartilhar -->
+      <div class="acoes-sec" role="group" aria-label="Exportar e guardar">
+        <span class="acoes-rot">exportar</span>
+        <button class="lk" onclick="exportICS()"${items.length?"":" disabled"} title="Baixa um .ics com todas as sessões — abre no Google Agenda, Apple e Outlook">calendário (.ics)</button>
+        <button class="lk" onclick="copyAgenda()"${items.length?"":" disabled"} title="Copia a agenda como texto">copiar texto</button>
+        <button class="lk" onclick="exportarBackup()" title="Baixa marcações, agenda e preferências em JSON">backup</button>
+        <button class="lk" onclick="document.getElementById('backup-input').click()" title="Restaura um backup JSON">restaurar</button>
+        <button class="lk perigo" onclick="limparAgenda()"${items.length?"":" disabled"} title="Tira todas as sessões da agenda">limpar agenda</button>
       </div>
       <p class="agenda-guide"><b>1</b> Marque filmes &nbsp;→&nbsp; <b>2</b> Defina disponibilidade &nbsp;→&nbsp; <b>3</b> Monte e revise sua agenda</p>
     </div>
