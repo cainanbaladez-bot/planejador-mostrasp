@@ -483,6 +483,16 @@ select:focus{outline:none;border-color:var(--amber)}
   font-family:var(--font-mono);font-size:10.5px;color:var(--dim);letter-spacing:.05em;
 }
 .cal-legend .sw{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:-1px;margin-right:5px}
+.cores-tg{background:none;border:0;border-bottom:1px dotted var(--line);padding:0 0 1px;color:var(--dim);
+  font:inherit;letter-spacing:inherit;text-transform:uppercase;cursor:pointer}
+.cores-tg:hover{color:var(--muted)}
+/* agenda monocromática */
+body.agenda-mono .cal-ev.ok,body.agenda-mono .cal-ev.aperto,body.agenda-mono .cal-ev.conf{background:var(--panel2);border-left-color:var(--muted)}
+body.agenda-mono .cal-ev b{color:var(--ink)}
+body.agenda-mono .ev-folga,body.agenda-mono .gap-note{color:var(--dim)!important}
+body.agenda-mono .ticket.conflict,body.agenda-mono .ticket.aperto{border-color:var(--line);background:var(--panel)}
+body.agenda-mono .ticket .stub .h1{color:var(--ink)!important}
+body.agenda-mono .ticket .flag.red{background:none;color:var(--muted);border-color:var(--line)}
 .cal-legend .mes{margin-left:auto;font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--ink);letter-spacing:0}
 .cal-wrap{overflow-x:auto}
 .cal{
@@ -1353,6 +1363,16 @@ function diaCurto(iso){ const d=dObj(iso); return `${DOW3[d.getDay()]} ${pad(d.g
 /* detalhe da sessão no calendário do celular (10/10/2026): fim estimado, cinema/sala,
    endereço (abre o mapa), folga até a próxima e links da Mostra e do Letterboxd.
    No computador a grade mensal segue compacta (.ev-det escondido > 640px). */
+/* Cores da folga podem ser desligadas (10/10/2026): agenda monocromática, guardado no
+   navegador. Só muda a aparência — avisos em texto ("⚠ choca com…") continuam. */
+const LS_CORES=`${LS_PREFIX}_agenda_mono`;
+let agendaMono=!!lerLocal(LS_CORES,false);
+document.body.classList.toggle("agenda-mono",agendaMono);
+function alternarCoresAgenda(){
+  agendaMono=!agendaMono; gravarLocal(LS_CORES,agendaMono);
+  document.body.classList.toggle("agenda-mono",agendaMono); medir(agendaMono?"cores-desligou":"cores-ligou");
+  renderAgenda();
+}
 function evDetHTML(s,fg,f){
   const pare='onclick="event.stopPropagation()" target="_blank" rel="noopener"';
   const mapa=s.endereco_cinema?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.endereco_cinema)}`:"";
@@ -2185,9 +2205,10 @@ function calBody(){
     <aside class="cal-side">${side}</aside>
     <div class="cal-col">
       <div class="cal-legend">
-        <span><span class="sw" style="background:var(--green)"></span>+1H ATÉ A PRÓXIMA</span>
+        ${agendaMono?`<span>CORES DESLIGADAS</span>`:`<span><span class="sw" style="background:var(--green)"></span>+1H ATÉ A PRÓXIMA</span>
         <span><span class="sw" style="background:var(--yellow)"></span>30 MIN–1H</span>
-        <span><span class="sw" style="background:var(--red)"></span>MENOS DE 30 MIN</span>
+        <span><span class="sw" style="background:var(--red)"></span>MENOS DE 30 MIN</span>`}
+        <button class="cores-tg" onclick="alternarCoresAgenda()" aria-pressed="${!agendaMono}" title="${agendaMono?"Ligar as cores de folga entre sessões":"Deixar a agenda sem cores"}">${agendaMono?"ligar cores":"sem cores"}</button>
         <span class="mes">Out — Nov 2026 · 50ª Mostra</span>
       </div>
       <div class="cal-wrap"><div class="cal">
