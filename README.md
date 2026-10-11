@@ -438,3 +438,22 @@ próxima; na lista, a nota entre os ingressos diz "folga de X até a próxima" n
 **Medição por filme — interna (sw v34, 10/10/2026):** na 1ª vez que um aparelho agenda (sessão manual ou proposta aplicada) ou marca (★) um filme, vai um evento `mostra/agenda/<slug>` ou `mostra/marcou/<slug>` ao GoatCounter (`medirFilme`; 1 vez por aparelho e filme, guardado em `LS_MEDF`). Nada aparece no site: o ranking "Filmes mais agendados / mais marcados" fica só no painel de uso (`27_uso.py`, bloco do planejador). Conta a partir desta versão.
 
 **Cores da agenda opcionais (sw v35, 10/10/2026):** na legenda do calendário, um link discreto "sem cores" / "ligar cores" deixa a agenda monocromática (classe `agenda-mono` no body, guardado em `LS_CORES`). Só a aparência muda: os avisos em texto ("⚠ choca com", "folga de…") continuam. Eventos `cores-desligou`/`cores-ligou`.
+
+## 🎞 Programas (sw v36, 10/10/2026)
+
+Curtas e filmes que a Mostra exibe JUNTOS viram **um card com o nome do programa**; a ficha
+mostra a ficha de cada filme (imagem, diretor, ano, duração, festivais, Letterboxd, sinopse,
+links) e as sessões do programa inteiro, com a **duração somada** (vale para folga, Por dia,
+agenda e montador). Módulo `programas.py`, chamado pelo build:
+- **Grupo e nome vêm do texto da Mostra** (a API não tem "programa": cada curta tem sessões
+  próprias que só coincidem em dia/hora/sala). "será exibido (junto/juntamente) com …" liga os
+  filmes; "dentro do X" / "faz parte do X" dá o nome (Projeto Pelechian 1 e 2, Displacement
+  Film Fund). Sem nome: os títulos ligados por " + ", o mais longo primeiro.
+- **A grade confirma**: os membros têm que passar no mesmo dia e hora. Tolera UMA sessão
+  divergente por membro e avisa no build (10/10/2026: "Nós" aparece às 12:00 em 27/10 no IMS e
+  os outros 3 do Projeto Pelechian 1 às 16:00 — erro do site; vale o horário da âncora).
+- O filme mais longo é a **âncora**: o id dele guarda ★/agenda; as sessões dos outros saem da
+  grade. Quem já tinha ★ ou sessão num curta é migrado (`aliasS`/`aliasF`, também no backup e
+  no link compartilhado). Busca pelo título de um curta acha o programa. Nota do Letterboxd no
+  card só quando a âncora tem 60+ min.
+- 50ª: 9 programas (399 filmes → 383 cards). Teste: 13 casos (inclui a migração).

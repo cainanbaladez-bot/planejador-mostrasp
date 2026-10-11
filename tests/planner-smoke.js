@@ -126,4 +126,15 @@ assert.doesNotThrow(() => boot({ mostra49_agenda: "json inválido", mostra49_wat
   assert.equal(ruins.length, 0, "link da página do filme fora do formato mostra.org/filmes/<slug>: " + ruins.slice(0, 3).join(", "));
 }
 
-console.log("planner smoke: 12 casos passaram");
+// 10/10/2026: programas — ★ e sessão marcados num curta antigo passam para o programa
+{
+  const info = JSON.parse(vm.runInContext(`JSON.stringify((()=>{ const p=FILMES.find(f=>f.programa&&Object.keys(f.programa.alias_s||{}).length);
+    const curto=p.programa.membros_ids.find(i=>i!==p.id); const [sCurta,sProg]=Object.entries(p.programa.alias_s)[0];
+    return {prog:p.id,curto,sCurta,sProg,nome:p.titulo}; })())`, boot()));
+  const app3 = boot({ mostra50_watch3: JSON.stringify([[info.curto, 1]]), mostra50_agenda: JSON.stringify([info.sCurta]) });
+  const r = JSON.parse(vm.runInContext(`JSON.stringify({w:watch.get(${JSON.stringify(info.prog)}), a:agenda.has(${JSON.stringify(info.sProg)}), n:FILMES.length})`, app3));
+  assert.equal(r.w, 1, "★ num curta deve virar ★ no programa " + info.nome);
+  assert.equal(r.a, true, "sessão de um curta deve virar sessão do programa " + info.nome);
+}
+
+console.log("planner smoke: 13 casos passaram");

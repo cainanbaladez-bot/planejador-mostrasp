@@ -61,6 +61,13 @@ for f in filmes_slim:
     f["lb_url"] = e.get("lb_url")
     f["lb_hist"] = e.get("lb_hist")   # 10 faixas de nota (09/10/2026)
 
+# programas (10/10/2026): curtas/filmes que a Mostra exibe juntos viram UM card com o nome
+# do programa (ver programas.py — grupo e nome vêm do texto da própria Mostra)
+from programas import detecta, aplica
+progs = detecta(filmes, sessoes)
+filmes_slim, sessoes = aplica(filmes_slim, sessoes, progs)
+print(f"programas: {len(progs)} — " + "; ".join(p["nome"] for p in progs))
+
 filmes_js = json.dumps(filmes_slim, ensure_ascii=False, separators=(",", ":"))
 sessoes_js = json.dumps(enxuga(sessoes, CAMPOS_SESSAO), ensure_ascii=False, separators=(",", ":"))
 
@@ -81,5 +88,5 @@ SAIDA.write_text(html, encoding="utf-8")
 SAIDA_SITE.parent.mkdir(parents=True, exist_ok=True)
 SAIDA_SITE.write_text(html, encoding="utf-8")
 
-print(f"OK: {SAIDA.name} + docs/{SAIDA_SITE.name} — {len(filmes)} filmes, "
+print(f"OK: {SAIDA.name} + docs/{SAIDA_SITE.name} — {len(filmes_slim)} cards ({len(filmes)} filmes), "
       f"{len(sessoes)} sessões, {SAIDA.stat().st_size/1024:.0f} KB")

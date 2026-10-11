@@ -336,6 +336,18 @@ select:focus{outline:none;border-color:var(--amber)}
   border-bottom:1px dotted var(--line);padding:2px 0;transition:color .15s;
 }
 .lb-line:hover{color:var(--ink)}
+.prog-tag{font:600 9.5px var(--font-mono);letter-spacing:.08em;color:var(--amber);margin-right:4px}
+.sess-h small{font:11px var(--font-mono);color:var(--dim);letter-spacing:.04em;margin-left:6px}
+.prog-fichas{display:flex;flex-direction:column;gap:14px;margin:6px 0 18px}
+.prog-f{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.prog-f img{width:150px;aspect-ratio:3/2;object-fit:cover;border-radius:8px;background:var(--panel2)}
+.prog-f h4{font-family:var(--font-display);font-size:18px;line-height:1.2;color:var(--ink)}
+.prog-f-n{font:600 10px var(--font-mono);color:var(--dim);letter-spacing:.1em}
+.prog-f-meta{font:11px var(--font-mono);color:var(--muted);margin-top:4px;line-height:1.5}
+.prog-f .sinopse{margin:8px 0 6px;font-size:14px}
+.prog-f-links{display:flex;flex-wrap:wrap;gap:8px}
+.prog-f-links a{font:600 11px var(--font-mono);color:var(--amber);text-decoration:none;border:1px solid #f2a93b55;border-radius:99px;padding:5px 10px}
+@media (max-width:640px){ .prog-f{grid-template-columns:1fr} .prog-f img{width:100%} }
 .lb-hist{display:inline-flex;flex-direction:column;gap:5px;text-decoration:none;margin-right:16px}
 .lb-barras{display:flex;align-items:flex-end;gap:2px;width:118px;height:30px}
 .lb-barras i{flex:1;background:#4f4a3d;border-radius:1px 1px 0 0;transition:background .15s}
@@ -1287,8 +1299,21 @@ function gravarLocal(chave, valor){
   try{ localStorage.setItem(chave,JSON.stringify(valor)); return true; }
   catch(e){ storageFalhou=true; return false; }
 }
+/* programas (10/10/2026): curtas exibidos juntos viram um card só (programas.py). Quem já
+   tinha ★ ou sessão num dos curtas não perde: o id/sessão do curta aponta para o programa. */
+const ALIAS_S=new Map(), ALIAS_F=new Map();
+for(const f of FILMES) if(f.programa){
+  for(const [k,v] of Object.entries(f.programa.alias_s||{})) ALIAS_S.set(k,v);
+  for(const i of f.programa.membros_ids||[]) if(i!==f.id) ALIAS_F.set(i,f.id);
+}
+const aliasS=id=>ALIAS_S.get(id)||id, aliasF=id=>ALIAS_F.get(id)||id;
+function aliasWatch(lista){            // [[id,prio]] → ids do programa; fica a prioridade mais alta
+  const m=new Map();
+  for(const [id,pr] of lista){ const k=aliasF(id); if(!m.has(k)||Number(pr)<m.get(k)) m.set(k,Number(pr)); }
+  return [...m];
+}
 const agendaSalva=lerLocal(LS_A,[]);
-let agenda = new Set((Array.isArray(agendaSalva)?agendaSalva:[]).filter(id=>SESSAO.has(id)));
+let agenda = new Set((Array.isArray(agendaSalva)?agendaSalva:[]).map(aliasS).filter(id=>SESSAO.has(id)));
 /* watch guarda prioridade: 1 = quero muito ver, 2 = se sobrar tempo.
    Formato antigo (lista de ids) migra para prioridade 1. */
 /* watch guarda a prioridade. Chave nova porque a escala mudou de 2 para 3
@@ -1298,7 +1323,7 @@ let watch = new Map((()=>{
   try{ novo=localStorage.getItem(LS_W3); }catch(e){ storageFalhou=true; }
   if(novo!==null){
     const parsed=lerLocal(LS_W3,[]);
-    return Array.isArray(parsed)?parsed.filter(x=>Array.isArray(x)&&FILME.has(x[0])&&[1,2,3].includes(Number(x[1]))):[];
+    return Array.isArray(parsed)?aliasWatch(parsed.filter(x=>Array.isArray(x))).filter(x=>FILME.has(x[0])&&[1,2,3].includes(Number(x[1]))):[];
   }
   const velho=lerLocal(LS_W,[])
     .map(v=>Array.isArray(v)?v:[v,1]);          /* mais velho ainda: só ids */
@@ -1876,7 +1901,7 @@ function filmesFiltrados(){
     if(filters.secao && f.secao!==filters.secao) return false;
     if(filters.fest==="__premiado"){ if(!f.premiado) return false; }
     else if(filters.fest && !(f.festivais||[]).includes(filters.fest)) return false;
-    if(q && !norm(`${f.titulo} ${f.titulo_original} ${f.diretores} ${f.elenco} ${f.pais}`).includes(q)) return false;
+    if(q && !norm(`${f.titulo} ${f.titulo_original} ${f.diretores} ${f.elenco} ${f.pais} ${f.programa?f.programa.filmes.map(m=>m.titulo+" "+(m.titulo_original||"")).join(" "):""}`).includes(q)) return false;
     if(filters.marca){
       const pr=watch.get(f.id);
       const naAgenda=(SESS_BY_FILME.get(f.id)||[]).some(s=>agenda.has(s.sessao_id));
@@ -1941,7 +1966,7 @@ function renderGrid(){
       </div>
       <div class="card-body">
         <div class="card-title">${esc(f.titulo)}</div>
-        <div class="card-dir">${esc(f.diretores)}</div>
+        <div class="card-dir">${f.programa?`<span class="prog-tag">PROGRAMA · ${f.programa.filmes.length} FILMES</span> ${esc(f.programa.filmes.map(m=>m.titulo).join(" · "))}`:esc(f.diretores)}</div>
         <div class="card-meta">
           <span>${esc(f.pais)}</span><span>${esc(f.ano)}</span><span>${esc(f.duracao)}</span>
           <span class="sess">${f.n_sessoes} ${Number(f.n_sessoes)===1?"sessão":"sessões"}</span>
@@ -2034,6 +2059,24 @@ function lbHistHTML(f){
     <span class="lb-barras">${h.map((v,i)=>`<i style="height:${Math.max(3,100*v/mx).toFixed(1)}%" title="${rot[i]} ★ — ${v.toLocaleString("pt-BR")} notas (${Math.round(100*v/tot)}%)"></i>`).join("")}</span>
     <span class="lb-media">${media}</span></a>`;
 }
+/* Ficha de cada filme dentro de um programa (10/10/2026) */
+function programaFichasHTML(f){
+  const pare='target="_blank" rel="noopener"';
+  return `<div class="prog-fichas">${f.programa.filmes.map((m,i)=>`
+    <section class="prog-f">
+      ${m.imagem?`<img src="${esc(m.imagem)}" alt="" loading="lazy" onerror="this.remove()">`:""}
+      <div class="prog-f-c">
+        <div class="prog-f-n">${i+1}/${f.programa.filmes.length}</div>
+        <h4>${esc(m.titulo)}</h4>
+        ${m.titulo_original&&m.titulo_original!==m.titulo?`<div class="modal-orig">${esc(m.titulo_original)}</div>`:""}
+        <div class="prog-f-meta">${[m.diretores&&"Dir. "+m.diretores,m.pais,m.ano,m.duracao].filter(Boolean).map(esc).join(" · ")}</div>
+        ${(m.lb_nota||(m.festivais||[]).length)?`<div class="modal-actions" style="margin:8px 0">${m.lb_nota?lbHistHTML(m):""}${festModalHTML(m)}</div>`:""}
+        ${m.premio_txt?`<div class="premio-box">🏆 ${esc(m.premio_txt)}</div>`:""}
+        <p class="sinopse">${esc(m.sinopse||"")}</p>
+        <div class="prog-f-links">${m.url_pagina?`<a href="${esc(m.url_pagina)}" ${pare}>Página na Mostra ↗</a>`:""}${m.lb_url?`<a href="${esc(m.lb_url)}" ${pare}>Letterboxd ↗</a>`:""}${m.trailer?`<a href="${esc(m.trailer)}" ${pare}>▶ Trailer</a>`:""}</div>
+      </div>
+    </section>`).join("")}</div>`;
+}
 function openModal(id, keepScroll){
   const f=FILME.get(id); if(!f) return;
   if(!keepScroll) modalTrigger=document.activeElement;
@@ -2053,6 +2096,7 @@ function openModal(id, keepScroll){
       <h2 class="modal-title">${esc(f.titulo)}</h2>
       ${f.titulo_original&&f.titulo_original!==f.titulo?`<div class="modal-orig">${esc(f.titulo_original)}</div>`:""}
       <div class="modal-meta">
+        ${f.programa?`<span>PROGRAMA · ${f.programa.filmes.length} FILMES EM SEQUÊNCIA</span>`:""}
         <span>DIR. ${esc(f.diretores).toUpperCase()}</span>
         <span>${esc(f.pais)}</span><span>${esc(f.ano)}</span><span>${esc(f.duracao)}</span>
       </div>
@@ -2060,7 +2104,7 @@ function openModal(id, keepScroll){
         ${f.lb_nota?lbHistHTML(f):""}
         ${festModalHTML(f)}
       </div>`:""}
-      ${f.premio_txt?`<div class="premio-box">🏆 ${esc(f.premio_txt)}</div>`:""}
+      ${f.premio_txt&&!f.programa?`<div class="premio-box">🏆 ${esc(f.premio_txt)}</div>`:""}
       <div class="modal-actions">
         <label class="prio-campo">
           <span class="prio-rot">Quero ver?</span>
@@ -2072,11 +2116,11 @@ function openModal(id, keepScroll){
           <option value="3"${watch.get(id)===3?" selected":""}>☆ Se sobrar tempo</option>
         </select></label>
         ${f.trailer?`<a class="btn" href="${esc(f.trailer)}" target="_blank" rel="noopener">▶ Trailer</a>`:""}
-        ${f.url_pagina?`<a class="btn" href="${esc(f.url_pagina)}" target="_blank" rel="noopener">Página na Mostra ↗</a>`:""}
+        ${f.url_pagina&&!f.programa?`<a class="btn" href="${esc(f.url_pagina)}" target="_blank" rel="noopener">Página na Mostra ↗</a>`:""}
       </div>
-      <p class="sinopse">${esc(f.sinopse)}</p>
-      ${fichaRows?`<div class="ficha">${fichaRows}</div>`:""}
-      <h3 class="sess-h">Sessões</h3>
+      ${f.programa?programaFichasHTML(f):`<p class="sinopse">${esc(f.sinopse)}</p>
+      ${fichaRows?`<div class="ficha">${fichaRows}</div>`:""}`}
+      <h3 class="sess-h">Sessões${f.programa?` <small>do programa inteiro · ${esc(f.duracao)}</small>`:""}</h3>
       ${Object.keys(porDia).sort().map(d=>`
         <div class="sess-day">
           <div class="sess-day-h">${esc(diaLabel(d))}</div>
@@ -2884,8 +2928,8 @@ async function importarBackup(arq){
     const d=JSON.parse(await arq.text());
     if(d.schema!==2||d.edicao!==LS_PREFIX||!Array.isArray(d.agenda)||!Array.isArray(d.watch))
       throw new Error("Este arquivo não pertence a esta edição do planejador");
-    const ag=d.agenda.filter(id=>SESSAO.has(id));
-    const wa=d.watch.filter(x=>Array.isArray(x)&&FILME.has(x[0])&&NIVEIS.includes(Number(x[1])));
+    const ag=d.agenda.map(aliasS).filter(id=>SESSAO.has(id));
+    const wa=aliasWatch(d.watch.filter(x=>Array.isArray(x))).filter(x=>FILME.has(x[0])&&NIVEIS.includes(Number(x[1])));
     if(!confirm(`Restaurar ${ag.length} ${ag.length===1?"sessão":"sessões"} e ${wa.length} ${wa.length===1?"filme marcado":"filmes marcados"}?\n\nA agenda atual será substituída.`)) return;
     guardarDesfazer("restaurar backup");
     agenda=new Set(ag); watch=new Map(wa);
@@ -2916,8 +2960,8 @@ function lerLink(){
 }
 function aplicarLink(l){
   if(l.incompativel){ toast(`Este link é da ${l.ed}ª edição`); return; }
-  agenda=new Set(l.ag);
-  watch=new Map(l.marc);
+  agenda=new Set(l.ag.map(aliasS).filter(id=>SESSAO.has(id)));
+  watch=new Map(aliasWatch(l.marc).filter(x=>FILME.has(x[0])));
   save(); updateBadge(); renderGrid(); refreshViews();
   history.replaceState(null,"",location.pathname);
   const n=l.ag.length;
