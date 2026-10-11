@@ -459,3 +459,5 @@ agenda e montador). Módulo `programas.py`, chamado pelo build:
 - 50ª: 9 programas (399 filmes → 383 cards). Teste: 13 casos (inclui a migração).
 
 **Exportação rebaixada (sw v37, 10/10/2026):** na Minha Agenda só ⚡ Montar e 📤 Compartilhar ficam como botão; calendário (.ics), copiar texto, backup, restaurar e limpar agenda viraram uma linha de links miúdos ("EXPORTAR …", `.acoes-sec .lk`), no computador e no celular (saiu o "⋯ Mais").
+
+**(sw v38, 10/10/2026)** saiu a linha-guia "1 Marque filmes → 2 Defina disponibilidade → 3 Monte e revise sua agenda" da Minha Agenda.

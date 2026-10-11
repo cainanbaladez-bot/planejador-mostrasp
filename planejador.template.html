@@ -941,8 +941,6 @@ footer{
 .planner-tolerance.show{display:flex}
 .planner-foot{display:flex;align-items:center;justify-content:flex-end;gap:9px}
 .planner-note{margin-right:auto;color:var(--dim);font-size:11px;max-width:44ch}
-.agenda-guide{width:100%;color:var(--muted);font-size:12px;margin:-6px 0 4px}
-.agenda-guide b{color:var(--amber)}
 .prop-metrics{display:flex;flex-wrap:wrap;gap:7px;margin:11px 0}
 .prop-metric{background:var(--bg2);border:1px solid var(--line);border-radius:7px;padding:6px 9px;font:10.5px var(--font-mono);color:var(--muted)}
 .prop-metric b{color:var(--ink)}
@@ -2388,7 +2386,6 @@ function renderAgenda(){
         <button class="lk" onclick="document.getElementById('backup-input').click()" title="Restaura um backup JSON">restaurar</button>
         <button class="lk perigo" onclick="limparAgenda()"${items.length?"":" disabled"} title="Tira todas as sessões da agenda">limpar agenda</button>
       </div>
-      <p class="agenda-guide"><b>1</b> Marque filmes &nbsp;→&nbsp; <b>2</b> Defina disponibilidade &nbsp;→&nbsp; <b>3</b> Monte e revise sua agenda</p>
     </div>
     ${propostaBody()}
     ${agendaMode==="cal" ? calBody()
