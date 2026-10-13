@@ -461,3 +461,5 @@ agenda e montador). Módulo `programas.py`, chamado pelo build:
 **Exportação rebaixada (sw v37, 10/10/2026):** na Minha Agenda só ⚡ Montar e 📤 Compartilhar ficam como botão; calendário (.ics), copiar texto, backup, restaurar e limpar agenda viraram uma linha de links miúdos ("EXPORTAR …", `.acoes-sec .lk`), no computador e no celular (saiu o "⋯ Mais").
 
 **(sw v38, 10/10/2026)** saiu a linha-guia "1 Marque filmes → 2 Defina disponibilidade → 3 Monte e revise sua agenda" da Minha Agenda.
+
+**Re-raspagem 12/10/2026 (sw v39):** nenhuma sessão mudou de dia/hora/sala, entrou ou saiu (1401 = 1401, comparado registro a registro). Mudou: "I Loove Boosters" → "I Love Boosters"; 8 sessões ganharam link de compra (Velox) — as de I Love Boosters e de O Sentido da Água (curta do Displacement Film Fund: `programas.py` agora passa o link do curta para a sessão do programa); classificação indicativa em 369 filmes. O site ainda lista "Nós" às 12:00 em 27/10 (o build segue avisando).

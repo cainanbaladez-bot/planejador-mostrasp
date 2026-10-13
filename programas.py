@@ -176,6 +176,7 @@ def aplica(filmes_slim, sessoes, progs):
             s["duracao"] = F[p["ancora"]]["duracao"]
             chave_anc[(p["ancora"], s["data"], s["hora"])] = s["sessao_id"]
             dia_cin[(p["ancora"], s["data"], s["cinema"])] = s["sessao_id"]
+    anc_sess = {s["sessao_id"]: s for s in sessoes}
     novas = []
     for s in sessoes:
         p = anc_de.get(s["filme_id"])
@@ -184,6 +185,9 @@ def aplica(filmes_slim, sessoes, progs):
                     or dia_cin.get((p["ancora"], s["data"], s["cinema"])))
             if alvo:
                 alias_s[s["sessao_id"]] = alvo
+                # link de compra (12/10/2026): a Mostra pôs o link no curta, não na âncora
+                if s.get("link_compra") and not anc_sess[alvo].get("link_compra"):
+                    anc_sess[alvo]["link_compra"] = s["link_compra"]
             continue
         novas.append(s)
     for p in progs:   # quem já tinha ★ ou agenda num curta não perde nada (o app migra)
